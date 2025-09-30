@@ -3,7 +3,7 @@
 
 ---
 
-## Usage:
+## Usage
 > [!IMPORTANT]
 > This program was made with Python 3.13 in mind. For best results, use this.
 
@@ -27,7 +27,7 @@ python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080>
 ```
 ---
 
-### Technologies:
+### Technologies
 - Python 3.13
 - pygame community edition 2.5.5
 - numpy 2.2.6

@@ -3,6 +3,30 @@
 
 ---
 
+## Usage:
+> [!IMPORTANT]
+> This program was made with Python 3.13 in mind. For best results, use this.
+
+Create a Python Virtual Environment.
+```
+python -m venv .venv
+```
+
+Activate the virtual environment, and install dependencies.
+```
+python -m pip install -r requirements.txt
+```
+
+- To run:
+```
+python main.py --client --ip <IP = 127.0.0.1> --port <PORT = 8080>
+```
+
+```
+python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080>
+```
+---
+
 ### Technologies:
 - Python 3.13
 - pygame community edition 2.5.5

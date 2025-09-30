@@ -1,12 +1,15 @@
 import sys
 
 from src import consts
+from src.client import Window
 
 def client(ip: str, port: int):
     """
     Main Entrypoint for client code (poolside)
     """
     print("-=- CLIENT -=-")
+    wnd = Window()
+    wnd.run()
 
 def server(ip: str, port: int):
     """

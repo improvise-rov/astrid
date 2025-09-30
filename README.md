@@ -1,9 +1,3 @@
-<img height=180 style="position:fixed" src="docs/wave.png"></img>
-
-<br>
-<br>
-<br>
-
 <h1 align=center> Astrid <img width=32 height=32 style="vertical-align:middle" src="docs/astrid_pixelart.png"></img> </h1>
 <p align=center><i>Source Code to impROVise's ROV, Astrid</i>
 

@@ -5,6 +5,9 @@
 
 ### Technologies:
 - Python 3.13
+- pygame community edition 2.5.5
+- numpy 2.2.6
+- opencv-python 4.12.0.88
 
 ---
 # Licensing

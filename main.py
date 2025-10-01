@@ -1,21 +1,18 @@
 import sys
 
 from src import consts
-from src.client import Window
+from src import client
 
-def client(ip: str, port: int):
-    """
-    Main Entrypoint for client code (poolside)
-    """
-    print("-=- CLIENT -=-")
-    wnd = Window()
-    wnd.run()
+"""
+main program entrypoint.
 
-def server(ip: str, port: int):
-    """
-    Main Entrypoint for server code (ROV)
-    """
-    print("-=- SERVER -=-")
+the main purpose of this script is to extract arguments from the command line
+and delegate to other parts of the program.
+
+this might get rewritten, it feels kinda weird and jank right now, but idk.
+
+- fynn
+"""
 
 def extract_args() -> tuple[str, int]:
     """
@@ -32,8 +29,8 @@ def extract_args() -> tuple[str, int]:
     return ip, port
 
 if __name__ == "__main__":
-    print(consts.ASTRID_ASCII_ART_STRING)
     print(consts.IMPROVISE_ASCII_ART_STRING)
+    print(" -=- ASTRID -=- ")
     print()
 
     use_client = '--client' in sys.argv
@@ -47,10 +44,10 @@ if __name__ == "__main__":
     ip, port = extract_args()
 
     if use_client:
-        client(ip, port)
+        client.main(ip, port)
         exit()
     if use_server:
-        server(ip, port)
+        pass
         exit()
 
     print("please use --client for the client xor --server for the server.")

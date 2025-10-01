@@ -2,13 +2,13 @@ import pygame
 
 from src import consts
 
+
 class Window():
     """
     Pygame Window Manager Class.
     """
 
     def __init__(self):
-        pygame.init()
 
         # WINDOW
         self.window = pygame.window.Window(

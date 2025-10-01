@@ -25,6 +25,13 @@ python main.py --client --ip <IP = 127.0.0.1> --port <PORT = 8080>
 ```
 python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080>
 ```
+
+> [!TIP]
+> - Use `--client` for the code that runs on the computer on the poolside.
+> - Use `--server` for the code that runs on the ROV.
+
+
+
 ---
 
 ### Technologies

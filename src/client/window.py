@@ -28,6 +28,9 @@ class Window():
         self.clock = pygame.Clock() # pygame clock ; helps keep time (see further down for note on delta time)
         self.target_fps = 0 # target fps (0 means unlimited)
 
+        # image
+        self.img_astrid_pixelart = pygame.image.load("docs/astrid_pixelart.png").convert_alpha()
+
     
     def run(self):
         self.keep_window_open = True # set the keep-open flag to true
@@ -89,4 +92,6 @@ class Window():
 
     def draw(self):
         # clear the surface with black (0x0 is a shortcut for 0x000000, which is like the hexcode #000000 (or black). replace the hash in a hexcode with 0x, and you can use it for colorlike objects)
-        self.wnd_surface.fill(0x0)
+        self.wnd_surface.fill(0x5980b1)
+
+        self.wnd_surface.blit(self.img_astrid_pixelart, (50, 50))

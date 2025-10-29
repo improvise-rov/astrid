@@ -2,6 +2,9 @@ import pygame
 
 from src.client.ui import UiContainer
 from src.client.ui import UiTexture
+from src.client.gamepad import GamepadManager
+from src.client.gamepad import Gamepad
+from src.client.callback import Callback
 from src.common import consts
 
 
@@ -32,6 +35,9 @@ class Window():
         # TIMING
         self.clock = pygame.Clock() # pygame clock ; helps keep time (see further down for note on delta time)
         self.target_fps = 0 # target fps (0 means unlimited)
+
+        # GAMEPAD
+        self.gamepad_manager = GamepadManager()
 
         ### UI Container ###
         self.container = UiContainer()
@@ -95,8 +101,11 @@ class Window():
             self.window.flip()
 
     def update(self, dt: float):
-        # update everything in ui container
+        # poll gamepad
+        if self.gamepad_manager.has():
+            self.gamepad_manager.fetch_first().poll_states()
 
+        # update everything in ui container
         self.container.update(dt, self.draw_surface)
 
     def event(self):
@@ -104,8 +113,10 @@ class Window():
             if e.type == pygame.QUIT:
                 self.keep_window_open = False
 
-            # later, ill add a callback system here that allows different areas of the program to listen for events and run code on them without having to do it all here
-            # thats a future job though
+            # call callbacks
+            if e.type in Callback.CALLBACKS:
+                for function in Callback.CALLBACKS[e.type]:
+                    function(e)
 
     def draw(self):
         # clear the surface with black (0x0 is a shortcut for 0x000000, which is like the hexcode #000000 (or black). replace the hash in a hexcode with 0x, and you can use it for colorlike objects)
@@ -116,6 +127,15 @@ class Window():
 
         # draw ui container (and therefore everything within it)
         self.container.draw(self.draw_surface)
+
+        #
+        if self.gamepad_manager.has(): # HACK test that the gamepad works
+            pygame.draw.circle(self.draw_surface, 0x000000, (500, 500), 100)
+            pygame.draw.circle(self.draw_surface, 0xffffff, pygame.Vector2(500, 500) + self.gamepad_manager.fetch_first().read_vector(
+                Gamepad.AXIS_LEFT_STICK_X, Gamepad.AXIS_LEFT_STICK_Y,
+            ) * 100, 20)
+
+        #
 
         # draw draw surface to window surface
         self.wnd_surface.blit(pygame.transform.scale(self.draw_surface, self.window.size))

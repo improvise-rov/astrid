@@ -54,6 +54,7 @@ _A certified impROVise classic activity_
 
 ## Client (Poolside)
 - [x] Create Window Manager
+    - [x] Maintain Aspect Ratio
 - [ ] Create Gamepad Manager
 
 ## Server (ROV)

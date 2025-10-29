@@ -4,16 +4,14 @@
 Shared Constants among other files in the program.
 
 Don't import anything here, we dont want cyclic imports.
-
-This is deliberately outside of /common. Why? 
-Well, I made this file first. Also, I didn't want to attribute this file to any of the three "sections of code".
-In the end, it doesn't really matter. It works.
 """
 
 # window
 WINDOW_TITLE: str = "impROVise: Astrid Client v2"
-WINDOW_WIDTH: int = 1280 #//2
-WINDOW_HEIGHT: int = 720 #//2
+WINDOW_WIDTH: int = 1280
+WINDOW_HEIGHT: int = 720
+SCREEN_WIDTH: int = 1280 // 2
+SCREEN_HEIGHT: int = 720 // 2
 
 # ascii art
 IMPROVISE_ASCII_ART_STRING: str = """  _                 ____   _____     ___          

@@ -1,6 +1,6 @@
 import pygame
 
-from src import consts
+from src.common import consts
 
 
 class Window():
@@ -16,10 +16,13 @@ class Window():
         # why? because i like it. there arent many differences anyway
         self.window = pygame.window.Window(
             title=consts.WINDOW_TITLE,
-            size=(consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT),
+            size=(consts.SCREEN_WIDTH, consts.SCREEN_HEIGHT),
+            resizable=True
+            
         )
 
         self.wnd_surface = self.window.get_surface() # get the surface of the window to draw onto. this initialises everything, too
+        self.draw_surface = pygame.Surface((consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT))
 
         # MANAGEMENT
         self.keep_window_open = False # this boolean is important as it keeps the window loop going. if its ever false at the end of a loop, the window closes.
@@ -92,6 +95,11 @@ class Window():
 
     def draw(self):
         # clear the surface with black (0x0 is a shortcut for 0x000000, which is like the hexcode #000000 (or black). replace the hash in a hexcode with 0x, and you can use it for colorlike objects)
-        self.wnd_surface.fill(0x5980b1)
+        self.wnd_surface.fill(0x0) # fill window surface
 
-        self.wnd_surface.blit(self.img_astrid_pixelart, (50, 50))
+        # from here draw to the draw surfacc
+        self.draw_surface.fill(0x5980b1)
+        self.draw_surface.blit(self.img_astrid_pixelart, (50, 50))
+
+        # draw draw surface to window surface
+        self.wnd_surface.blit(pygame.transform.scale(self.draw_surface, self.window.size))

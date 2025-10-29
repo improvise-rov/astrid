@@ -1,10 +1,10 @@
 
 
 """
-Simple identifiers for packet types. They're just integers..
+Simple identifier constants for packet types. They're just integers..
 """
-PACKET_NONE: int = 0 # in case of emergency! blank packets shouldn't do anything, and they would resolve to 0.
 
+PACKET_NONE: int = 0 # in case of emergency! blank packets shouldn't do anything, and they would resolve to 0.
 
 PACKET_C2S_HANDSHAKE: int = 1
 PACKET_C2S_DISCONNECT: int = 2

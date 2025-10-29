@@ -1,6 +1,6 @@
 import sys
 
-from src import consts
+from src.common import consts
 from src import client
 
 """

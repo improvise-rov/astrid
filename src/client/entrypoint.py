@@ -1,8 +1,8 @@
 import pygame
 
-from src.client import Window
+from src.client.window import Window
 
-def main(ip: str, port: int):
+def client_main(ip: str, port: int):
     """
     Main Entrypoint for the client.
     """

@@ -1,7 +1,7 @@
 import sys
 
 from src.common import consts
-from src import client
+from src.client.entrypoint import client_main
 
 """
 main program entrypoint.
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     ip, port = extract_args()
 
     if use_client:
-        client.main(ip, port)
+        client_main(ip, port)
         exit()
     if use_server:
         pass

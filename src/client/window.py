@@ -31,6 +31,7 @@ class Window():
 
         # MANAGEMENT
         self.keep_window_open = False # this boolean is important as it keeps the window loop going. if its ever false at the end of a loop, the window closes.
+        self.fullscreen = False # true if window should fullscreen
 
         # TIMING
         self.clock = pygame.Clock() # pygame clock ; helps keep time (see further down for note on delta time)
@@ -107,6 +108,16 @@ class Window():
 
         # update everything in ui container
         self.container.update(dt, self.draw_surface)
+
+        # check if f11 is pressed to toggle fullscreen
+        if pygame.key.get_just_pressed()[pygame.K_F11]:
+            self.fullscreen = not self.fullscreen
+
+            if self.fullscreen:
+                self.window.set_fullscreen(True)
+            else:
+                self.window.set_windowed()
+        
 
     def event(self):
         for e in pygame.event.get(): # fetch every event from this frame

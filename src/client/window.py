@@ -2,6 +2,7 @@ import pygame
 
 from src.client.ui import UiContainer
 from src.client.ui import UiTexture
+from src.client.ui import UiText
 from src.client.gamepad import GamepadManager
 from src.client.gamepad import Gamepad
 from src.client.callback import Callback
@@ -43,11 +44,16 @@ class Window():
         ### UI Container ###
         self.container = UiContainer()
 
-        astrid = self.container.add(UiTexture(
+        self.container.add(UiTexture(
             pygame.Vector2(100, 100), 
             pygame.image.load('docs/astrid_pixelart.png').convert_alpha(),
             scale=pygame.Vector2(2, 2),
             centered=False
+        ))
+
+        self.container.add(UiText(
+            pygame.Vector2(300, 300),
+            "Hello, World!"
         ))
 
         ####################

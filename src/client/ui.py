@@ -2,6 +2,8 @@ from __future__ import annotations
 import pygame
 import typing
 
+from src.client.draw import Renderer
+
 class UiContainer():
     """
     A `UiContainer` is a type of object that keeps track of `UiElement`s.
@@ -93,3 +95,14 @@ class UiTexture(UiElement):
     def _update_texture(self):
         self.texture = pygame.transform.scale_by(self.original_texture, self.scale)
         self.texture = pygame.transform.rotate(self.texture, self.rotation)
+
+class UiText(UiElement):
+    def __init__(self, pos: pygame.Vector2, text: str):
+        super().__init__(pos)
+        self.text = text
+
+    def draw(self, surface: pygame.Surface):
+        super().draw(surface)
+        
+        # HACK this is very bad bc im rendering the text every frame when i dont need to i will make it better i promise
+        Renderer.render_text(surface, self.text, 0xffffff, 24, self.resolve_position())

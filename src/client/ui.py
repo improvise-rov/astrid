@@ -3,6 +3,7 @@ import pygame
 import typing
 
 from src.client.draw import Renderer
+from src.common.network import Netsock
 
 class UiContainer():
     """
@@ -96,13 +97,38 @@ class UiTexture(UiElement):
         self.texture = pygame.transform.scale_by(self.original_texture, self.scale)
         self.texture = pygame.transform.rotate(self.texture, self.rotation)
 
-class UiText(UiElement):
-    def __init__(self, pos: pygame.Vector2, text: str):
-        super().__init__(pos)
+class UiText(UiTexture):
+    def __init__(self, pos: pygame.Vector2, text: str, color: pygame.typing.ColorLike, scale: pygame.Vector2 = pygame.Vector2(1, 1), rotation: float = 0, centered: bool = False, sysfont: str = 'consolas'):
+        self.font = pygame.font.SysFont(sysfont, 24, False, False)
+        super().__init__(pos, self.font.render(text, False, color), scale, rotation, centered)
         self.text = text
+        self.color = color
+
+    def set_text(self, text: str):
+        self.text = text
+        self._update_texture()
+
+    def set_color(self, color: pygame.typing.ColorLike):
+        self.color = color
+
+    def _update_texture(self):
+        self.original_texture = self.font.render(self.text, False, self.color)
+        super()._update_texture()
+
+class UiServerConnectionStatusIndicator(UiElement):
+    def __init__(self, pos: pygame.Vector2, net: Netsock):
+        super().__init__(pos)
+        self.net = net
+
+        self.font = pygame.font.SysFont('consolas', 24)
+        
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
-        
-        # HACK this is very bad bc im rendering the text every frame when i dont need to i will make it better i promise
-        Renderer.render_text(surface, self.text, 0xffffff, 24, self.resolve_position())
+        pygame.draw.circle(surface, 0x000000, self.resolve_position(), 10)
+        pygame.draw.circle(surface, 0x00ff00 if self.net.is_open() else 0xff0000, self.resolve_position(), 8)
+
+        string = "Not Connected"
+        if self.net.is_open():
+            string = f"Connected ({self.net.ip}:{self.net.port})"
+        surface.blit(self.font.render(string, False, 0xffffffff), self.resolve_position() + pygame.Vector2(15, 0))

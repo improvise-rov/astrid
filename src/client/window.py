@@ -1,11 +1,15 @@
 import pygame
+import struct
 
 from src.client.ui import UiContainer
 from src.client.ui import UiTexture
 from src.client.ui import UiText
+from src.client.ui import UiServerConnectionStatusIndicator
 from src.client.gamepad import GamepadManager
 from src.client.gamepad import Gamepad
 from src.client.callback import Callback
+from src.common.network import Netsock
+from src.common import packets
 from src.common import consts
 
 
@@ -14,7 +18,7 @@ class Window():
     Pygame Window Manager Class.
     """
 
-    def __init__(self):
+    def __init__(self, ip: str, port: int):
 
         # WINDOW OBJECTS
 
@@ -41,6 +45,15 @@ class Window():
         # GAMEPAD
         self.gamepad_manager = GamepadManager()
 
+        ### NETWORK ###
+        self.net = Netsock(ip, port)
+        self.i = 0
+
+        
+
+        ###############
+
+
         ### UI Container ###
         self.container = UiContainer()
 
@@ -51,9 +64,9 @@ class Window():
             centered=False
         ))
 
-        self.container.add(UiText(
-            pygame.Vector2(300, 300),
-            "Hello, World!"
+        self.container.add(UiServerConnectionStatusIndicator(
+            pygame.Vector2(20, 20),
+            self.net
         ))
 
         ####################
@@ -107,6 +120,8 @@ class Window():
             # FLIP - flip the framebuffers (rendering works in two buffers; the one on the screen (frontbuffer) and the one you are drawing to (backbuffer). this prevents graphical glitches)
             self.window.flip()
 
+        self.shutdown()
+
     def update(self, dt: float):
         # poll gamepad
         if self.gamepad_manager.has():
@@ -115,14 +130,21 @@ class Window():
         # update everything in ui container
         self.container.update(dt, self.draw_surface)
 
+        # keycheck
+        just_pressed = pygame.key.get_just_pressed()
         # check if f11 is pressed to toggle fullscreen
-        if pygame.key.get_just_pressed()[pygame.K_F11]:
+        if just_pressed[pygame.K_F11]:
             self.fullscreen = not self.fullscreen
 
             if self.fullscreen:
                 self.window.set_fullscreen(True)
             else:
                 self.window.set_windowed()
+
+
+        # check if connect button is pressed
+        if just_pressed[pygame.K_SPACE]:
+            self.net.start_client()
         
 
     def event(self):
@@ -145,14 +167,13 @@ class Window():
         # draw ui container (and therefore everything within it)
         self.container.draw(self.draw_surface)
 
-        #
-        if self.gamepad_manager.has(): # HACK test that the gamepad works
-            pygame.draw.circle(self.draw_surface, 0x000000, (500, 500), 100)
-            pygame.draw.circle(self.draw_surface, 0xffffff, pygame.Vector2(500, 500) + self.gamepad_manager.fetch_first().read_vector(
-                Gamepad.AXIS_LEFT_STICK_X, Gamepad.AXIS_LEFT_STICK_Y,
-            ) * 100, 20)
-
-        #
 
         # draw draw surface to window surface
         self.wnd_surface.blit(pygame.transform.scale(self.draw_surface, self.window.size))
+
+
+    def shutdown(self):
+
+        # net
+        self.net.disconnect()
+        self.net.close()

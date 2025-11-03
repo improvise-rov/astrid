@@ -2,6 +2,7 @@ import sys
 
 from src.common import consts
 from src.client.entrypoint import client_main
+from src.server.entrypoint import server_main
 
 """
 main program entrypoint.
@@ -44,10 +45,12 @@ if __name__ == "__main__":
     ip, port = extract_args()
 
     if use_client:
+        print("[client]")
         client_main(ip, port)
         exit()
     if use_server:
-        pass
+        print("[server]")
+        server_main(ip, port)
         exit()
 
     print("please use --client for the client xor --server for the server.")

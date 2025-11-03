@@ -9,7 +9,4 @@ class Renderer():
     """
     
 
-    @staticmethod
-    def render_text(surface: pygame.Surface, text: str, color: pygame.typing.ColorLike, size: int, pos: pygame.Vector2, bold: bool = False, italic: bool = False):
-        font = pygame.font.SysFont('consolas', size, bold, italic)
-        surface.blit(font.render(text, False, color), pos)
+    pass

@@ -8,5 +8,5 @@ def client_main(ip: str, port: int):
     """
     pygame.init() # initialise pygame
 
-    wnd = Window()
+    wnd = Window(ip, port)
     wnd.run()

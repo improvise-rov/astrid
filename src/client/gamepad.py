@@ -82,6 +82,10 @@ class Gamepad():
     AXIS_DPAD_X: str = 'dpad_x'
     AXIS_DPAD_Y: str = 'dpad_y'
 
+    LEFT_STICK: tuple[str, str] = (AXIS_LEFT_STICK_X, AXIS_LEFT_STICK_Y)
+    RIGHT_STICK: tuple[str, str] = (AXIS_RIGHT_STICK_X, AXIS_RIGHT_STICK_Y)
+    DPAD: tuple[str, str] = (AXIS_DPAD_X, AXIS_DPAD_Y)
+
     MAPPING: dict[str, typing.Callable[[Gamepad], typing.Any]] = { # based off an xbox controller even though i have an 8bitdo
             NONE: lambda g: 0.0,
 

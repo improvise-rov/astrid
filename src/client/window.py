@@ -1,5 +1,4 @@
 import pygame
-import struct
 
 from src.client.ui import UiContainer
 from src.client.ui import UiTexture
@@ -47,7 +46,9 @@ class Window():
 
         ### NETWORK ###
         self.net = Netsock(ip, port)
-        self.i = 0
+        self._latest_frame = pygame.Surface((1920, 1080))
+
+        self.net.add_packet_handler(packets.PACKET_CAMERA, self._recv_camera_frame)
 
         
 
@@ -167,6 +168,7 @@ class Window():
         # draw ui container (and therefore everything within it)
         self.container.draw(self.draw_surface)
 
+        self.draw_surface.blit(self._latest_frame)
 
         # draw draw surface to window surface
         self.wnd_surface.blit(pygame.transform.scale(self.draw_surface, self.window.size))
@@ -177,3 +179,8 @@ class Window():
         # net
         self.net.disconnect()
         self.net.close()
+
+    
+    def _recv_camera_frame(self, id: int, data: bytes):
+        if data != b'':
+            self._latest_frame = pygame.image.frombuffer(data, (1920, 1080), 'ARGB')

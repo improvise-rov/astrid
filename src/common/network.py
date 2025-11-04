@@ -2,7 +2,6 @@ import socket
 import threading
 import typing
 import struct
-import time
 
 from src.common import packets
 
@@ -43,8 +42,6 @@ class Netsock():
 
         self._pipe_socket: socket.socket = self.sock
 
-        self._recvd_bytes = b''
-
         self._packet_handlers: dict[int, list[Netsock._PacketCallback]] = {}
 
         self.add_packet_handler(packets.PACKET_DISCONNECT,
@@ -54,7 +51,8 @@ class Netsock():
     def start_server(self):
         if self._open:
             return
-        
+        print("starting server", flush=True)
+
         self._open = True
         self._is_server = True
 
@@ -69,6 +67,7 @@ class Netsock():
     def start_client(self):
         if self._open:
             return
+        print("starting client", flush=True)
         
         try:
             self._is_server = False
@@ -123,27 +122,27 @@ class Netsock():
         return self._open
             
     
-    def _recv_to_pipe(self):
-        self._recvd_bytes = self._pipe_socket.recv(Netsock.READ_SIZE) # HACK its too slow, so i either discard old data or i need to speed it up.. 
-
-    def _read_from_pipe(self, n: int) -> bytes:
-        data = self._recvd_bytes[:n]
-        self._recvd_bytes = self._recvd_bytes[n:]
-        return data
+    def _recv(self, n: int) -> bytes:
+        data = b''
+        while len(data) < n:
+            pckt = self._pipe_socket.recv(n - len(data))
+            if not pckt:
+                raise ValueError("received None packet")
+            data += pckt
+        return data 
 
     def _recv_thread(self):
         while self._open:
             try:
-                self._recv_to_pipe()
 
                 # recv length
                 headersize = struct.calcsize(Netsock.HEADER_STRUCT_FORMAT)
-                data = self._read_from_pipe(headersize)
+                data = self._recv(headersize)
                 size, id = struct.unpack(Netsock.HEADER_STRUCT_FORMAT, data)
                 self._recent_packet_type = id
 
                 # recv data
-                data = self._read_from_pipe(size)
+                data = self._recv(size)
                 self._handle_packet(id, data)
                 self._consecutive_errors = 0 # reset consecutive errors
             except Exception as e:
@@ -159,12 +158,8 @@ class Netsock():
 
     def _check_giveup(self):
         if self._consecutive_errors >= Netsock.GIVE_UP_POINT:
-            print("Reached give up threshold. Restarting socket..")
+            print("Reached give up threshold. Closing socket..")
             self.close()
-            if self._is_server:
-                self.start_server()
-            else:
-                self.start_client()
 
     def _make_socket(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

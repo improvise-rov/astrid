@@ -1,4 +1,5 @@
 import pygame
+import io
 
 from src.client.ui import UiContainer
 from src.client.ui import UiTexture
@@ -43,11 +44,11 @@ class Window():
 
         # GAMEPAD
         self.gamepad_manager = GamepadManager()
+        Gamepad.NINTENDOIFIED_MAPPING = True
 
         ### NETWORK ###
         self.net = Netsock(ip, port)
-        self._latest_frame = pygame.Surface((1920, 1080))
-
+        self._last_frame = pygame.Surface((500, 500))
         self.net.add_packet_handler(packets.PACKET_CAMERA, self._recv_camera_frame)
 
         
@@ -131,6 +132,14 @@ class Window():
         # update everything in ui container
         self.container.update(dt, self.draw_surface)
 
+        # send status of controller
+        if self.gamepad_manager.has():
+            gp = self.gamepad_manager.fetch_first()
+
+            lstick = gp.read_vector(*Gamepad.LEFT_STICK)
+
+            self.net.send(packets.PACKET_MSG, f"{lstick}".encode('utf-8'))
+
         # keycheck
         just_pressed = pygame.key.get_just_pressed()
         # check if f11 is pressed to toggle fullscreen
@@ -168,7 +177,7 @@ class Window():
         # draw ui container (and therefore everything within it)
         self.container.draw(self.draw_surface)
 
-        self.draw_surface.blit(self._latest_frame)
+        self.draw_surface.blit(self._last_frame, )
 
         # draw draw surface to window surface
         self.wnd_surface.blit(pygame.transform.scale(self.draw_surface, self.window.size))
@@ -182,5 +191,4 @@ class Window():
 
     
     def _recv_camera_frame(self, id: int, data: bytes):
-        if data != b'':
-            self._latest_frame = pygame.image.frombuffer(data, (1920, 1080), 'ARGB')
+        self._last_frame = pygame.image.load(io.BytesIO(data), 'jpg').convert()

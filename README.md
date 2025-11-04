@@ -46,19 +46,18 @@ We use a Raspberry Pi 4 onboard our ROV for flight control. The GPIO Pinouts are
 _A certified impROVise classic activity_
 
 ## Common
-- [ ] Create Netcode Framework
-    - [ ] Handshakes
-    - [ ] Error Handling (yay...)
-    - [ ] S2C Camera Stream Protocol
+- [x] Create Netcode Framework
+    - [x] Error Handling (yay...)
+    - [x] S2C Camera Stream Protocol
     - [ ] C2S Control Protocol
 
 ## Client (Poolside)
 - [x] Create Window Manager
     - [x] Maintain Aspect Ratio
-- [ ] Create Gamepad Manager
+- [x] Create Gamepad Manager
 
 ## Server (ROV)
-- [ ] Write Camera Handler
+- [x] Write Camera Handler
 - [ ] Write GPIO Handler
 
 ---

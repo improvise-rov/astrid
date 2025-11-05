@@ -10,3 +10,7 @@ PACKET_MSG: int = 1
 PACKET_DISCONNECT: int = 2
 PACKET_DISCONNECT_ACK: int = 3
 PACKET_CAMERA: int = 4
+PACKET_CONTROL: int = 5
+
+# the following are format strings for struct library
+FORMAT_PACKET_CONTROL: str = "iiiiii"

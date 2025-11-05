@@ -1,10 +1,10 @@
 import pygame
-import io
 
 from src.client.ui import UiContainer
 from src.client.ui import UiTexture
-from src.client.ui import UiText
 from src.client.ui import UiServerConnectionStatusIndicator
+from src.client.ui import UiCameraFeed
+from src.client.ui import UiControlMonitor
 from src.client.gamepad import GamepadManager
 from src.client.gamepad import Gamepad
 from src.client.callback import Callback
@@ -48,9 +48,6 @@ class Window():
 
         ### NETWORK ###
         self.net = Netsock(ip, port)
-        self._last_frame = pygame.Surface((500, 500))
-        self.net.add_packet_handler(packets.PACKET_CAMERA, self._recv_camera_frame)
-
         
 
         ###############
@@ -60,15 +57,30 @@ class Window():
         self.container = UiContainer()
 
         self.container.add(UiTexture(
-            pygame.Vector2(100, 100), 
+            pygame.Vector2(1850, 20), 
             pygame.image.load('docs/astrid_pixelart.png').convert_alpha(),
-            scale=pygame.Vector2(2, 2),
+            scale=pygame.Vector2(1, 1),
             centered=False
         ))
 
         self.container.add(UiServerConnectionStatusIndicator(
             pygame.Vector2(20, 20),
             self.net
+        ))
+
+        self.container.add(UiCameraFeed(
+            pygame.Vector2(20, 50),
+            pygame.transform.scale_by(
+                pygame.image.load("docs/no_camera.jpg"),
+                8
+            ),
+            self.net
+        ))
+
+        self.container.add(UiControlMonitor(
+            pygame.Vector2(1000, 20),
+            self.net,
+            self.gamepad_manager
         ))
 
         ####################
@@ -177,8 +189,6 @@ class Window():
         # draw ui container (and therefore everything within it)
         self.container.draw(self.draw_surface)
 
-        self.draw_surface.blit(self._last_frame, )
-
         # draw draw surface to window surface
         self.wnd_surface.blit(pygame.transform.scale(self.draw_surface, self.window.size))
 
@@ -188,7 +198,3 @@ class Window():
         # net
         self.net.disconnect()
         self.net.close()
-
-    
-    def _recv_camera_frame(self, id: int, data: bytes):
-        self._last_frame = pygame.image.load(io.BytesIO(data), 'jpg').convert()

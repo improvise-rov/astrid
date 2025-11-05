@@ -27,7 +27,6 @@ class Netsock():
     type _PacketCallback = typing.Callable[[int, bytes], typing.Any]
     HEADER_STRUCT_FORMAT: str = '>LH'
     GIVE_UP_POINT: int = 10
-    READ_SIZE: int = 4096
 
     def __init__(self, ip: str, port: int):
         self._make_socket()
@@ -120,7 +119,6 @@ class Netsock():
 
     def is_open(self) -> bool:
         return self._open
-            
     
     def _recv(self, n: int) -> bytes:
         data = b''

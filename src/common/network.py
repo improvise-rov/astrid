@@ -26,7 +26,7 @@ Notes to self:
 class Netsock():
     type _PacketCallback = typing.Callable[[int, bytes], typing.Any]
     HEADER_STRUCT_FORMAT: str = '>LH'
-    GIVE_UP_POINT: int = 10
+    GIVE_UP_POINT: int = 10 # after how many consecutive errors without a successful send/recv does the socket give up
 
     def __init__(self, ip: str, port: int):
         self._make_socket()

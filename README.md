@@ -49,7 +49,7 @@ _A certified impROVise classic activity_
 - [x] Create Netcode Framework
     - [x] Error Handling (yay...)
     - [x] S2C Camera Stream Protocol
-    - [ ] C2S Control Protocol
+    - [x] C2S Control Protocol
 
 ## Client (Poolside)
 - [x] Create Window Manager

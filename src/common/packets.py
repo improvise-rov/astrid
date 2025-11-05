@@ -13,4 +13,4 @@ PACKET_CAMERA: int = 4
 PACKET_CONTROL: int = 5
 
 # the following are format strings for struct library
-FORMAT_PACKET_CONTROL: str = "iiiiii"
+FORMAT_PACKET_CONTROL: str = "iiiiiiiii"

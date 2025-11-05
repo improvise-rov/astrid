@@ -159,25 +159,29 @@ class UiControlMonitor(UiElement):
         self.net = net
         self.gamepad_manager = gamepad_manager
 
-        self.motor_pwm_signals = {
-            'lf': 0,
-            'rf': 0,
-            'lt': 0,
-            'rt': 0,
-            'lb': 0,
-            'rb': 0,
+        self.pwm = {
+            'lf': 0, # front left
+            'rf': 0, # front right
+            'lt': 0, # top left
+            'rt': 0, # top right
+            'lb': 0, # back left
+            'rb': 0, # back right
+
+            'ca': 0, # camera angle
+            'tw': 0, # tool wrist
+            'tg': 0, # tool grip
         }
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
 
         text = self.font.render(
-            "lf:".ljust(3) + f"{self.motor_pwm_signals['lf']}".rjust(5) + "   " +
-            "rf:".ljust(3) + f"{self.motor_pwm_signals['rf']}".rjust(5) + "\n" + 
-            "lt:".ljust(3) + f"{self.motor_pwm_signals['lt']}".rjust(5) + "   " +
-            "rt:".ljust(3) + f"{self.motor_pwm_signals['rt']}".rjust(5) + "\n" + 
-            "lb:".ljust(3) + f"{self.motor_pwm_signals['lb']}".rjust(5) + "   " +
-            "rb:".ljust(3) + f"{self.motor_pwm_signals['rb']}".rjust(5) + "\n",
+            "lf:".ljust(3) + f"{self.pwm['lf']}".rjust(5) + "   " +
+            "rf:".ljust(3) + f"{self.pwm['rf']}".rjust(5) + "\n" + 
+            "lt:".ljust(3) + f"{self.pwm['lt']}".rjust(5) + "   " +
+            "rt:".ljust(3) + f"{self.pwm['rt']}".rjust(5) + "\n" + 
+            "lb:".ljust(3) + f"{self.pwm['lb']}".rjust(5) + "   " +
+            "rb:".ljust(3) + f"{self.pwm['rb']}".rjust(5) + "\n",
             False, 0x000000ff
         )
 
@@ -191,20 +195,23 @@ class UiControlMonitor(UiElement):
         keys = pygame.key.get_pressed()
         reverse = keys[pygame.K_KP_0]
 
-        self.motor_pwm_signals['lf'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_7] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.motor_pwm_signals['rf'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_9] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.motor_pwm_signals['lt'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_4] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.motor_pwm_signals['rt'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_6] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.motor_pwm_signals['lb'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_1] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.motor_pwm_signals['rb'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_3] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
+        self.pwm['lf'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_7] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
+        self.pwm['rf'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_9] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
+        self.pwm['lt'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_4] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
+        self.pwm['rt'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_6] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
+        self.pwm['lb'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_1] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
+        self.pwm['rb'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_3] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
 
 
         # send data
         self.net.send(packets.PACKET_CONTROL, struct.pack(packets.FORMAT_PACKET_CONTROL,
-                                                          self.motor_pwm_signals['lf'],
-                                                          self.motor_pwm_signals['rf'],
-                                                          self.motor_pwm_signals['lt'],
-                                                          self.motor_pwm_signals['rt'],
-                                                          self.motor_pwm_signals['lb'],
-                                                          self.motor_pwm_signals['rb'],
+                                                          self.pwm['lf'],
+                                                          self.pwm['rf'],
+                                                          self.pwm['lt'],
+                                                          self.pwm['rt'],
+                                                          self.pwm['lb'],
+                                                          self.pwm['rb'],
+                                                          self.pwm['ca'],
+                                                          self.pwm['tw'],
+                                                          self.pwm['tg'],
                                                           ))

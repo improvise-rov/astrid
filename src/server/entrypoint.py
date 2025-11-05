@@ -25,6 +25,6 @@ def server_main(ip: str, port: int):
         time.sleep(1/60) # try and keep at 60 loops / seconds
 
 def _recv_control(id: int, data: bytes):
-    lf, rf, lt, rt, lb, rb = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
+    lf, rf, lt, rt, lb, rb, ca, tw, tg = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
 
-    print(lf, rf, lt, rt, lb, rb)
+    print(lf, rf, lt, rt, lb, rb, ca, tw, tg)

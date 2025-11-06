@@ -1,5 +1,6 @@
 
 from src.server.camera import CameraFeed
+from src.server.gpio import GpioManager
 from src.common.network import Netsock
 from src.common import packets
 import time
@@ -7,18 +8,19 @@ import struct
    
     
 
-def server_main(ip: str, port: int):
+def server_main(ip: str, port: int, simulated_gpio: bool):
     """
     Main Entrypoint for the server.
     """
 
     net = Netsock(ip, port) # create networking socket
     cam = CameraFeed(cam_id=0) # create camera handler
+    gpio = GpioManager(simulated_gpio)
 
     # register control packet handler; 
     # this tells the networking socket's processing thread to run _recv_control 
     # whenever a new PACKET_CONTROL packet is received
-    net.add_packet_handler(packets.PACKET_CONTROL, _recv_control)
+    net.add_packet_handler(packets.PACKET_CONTROL, _recv_control, gpio)
 
     net.start_server() # start the server (blocks until client connects)
 
@@ -27,7 +29,7 @@ def server_main(ip: str, port: int):
         net.send(packets.PACKET_CAMERA, frame) # send the camera frame down socket
         time.sleep(1/60) # try and keep at 60 loops / second (this is not really acccurate, as it takes time to do everything. but its approximate enough.)
 
-def _recv_control(id: int, data: bytes):
+def _recv_control(id: int, data: bytes, args: tuple):
     """
     runs when the server receives information from the client about controls.
 
@@ -45,6 +47,19 @@ def _recv_control(id: int, data: bytes):
     tw: tool wrist servo
     tg: tool grip servo
     """
+    gpio: GpioManager = args[0]
+
     lf, rf, lt, rt, lb, rb, ca, tw, tg = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
 
     print(lf, rf, lt, rt, lb, rb, ca, tw, tg)
+
+    gpio.set_motor('left_front', lf)
+    gpio.set_motor('right_front', rf)
+    gpio.set_motor('left_top', lt)
+    gpio.set_motor('right_top', rt)
+    gpio.set_motor('left_back', lb)
+    gpio.set_motor('right_back', rb)
+
+    gpio.set_servo('camera_angle', ca)
+    gpio.set_servo('tool_wrist', tw)
+    gpio.set_servo('tool_grip', tg)

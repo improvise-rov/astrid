@@ -24,7 +24,7 @@ Notes to self:
 """
 
 class Netsock():
-    type _PacketCallback = typing.Callable[[int, bytes], typing.Any]
+    type _PacketCallback = typing.Callable[[int, bytes, tuple], typing.Any]
     HEADER_STRUCT_FORMAT: str = '>LH'
     GIVE_UP_POINT: int = 10 # after how many consecutive errors without a successful send/recv does the socket give up
 
@@ -41,10 +41,10 @@ class Netsock():
 
         self._pipe_socket: socket.socket = self.sock
 
-        self._packet_handlers: dict[int, list[Netsock._PacketCallback]] = {}
+        self._packet_handlers: dict[int, list[tuple[Netsock._PacketCallback, tuple]]] = {}
 
         self.add_packet_handler(packets.PACKET_DISCONNECT,
-                                lambda id, data: self._remote_disconnect())
+                                lambda id, data, args: self._remote_disconnect())
 
 
     def start_server(self):
@@ -151,8 +151,8 @@ class Netsock():
 
     def _handle_packet(self, id: int, data: bytes):
         callbacks = self._packet_handlers.get(id, [])
-        for callback in callbacks:
-            callback(id, data)
+        for (callback, args) in callbacks:
+            callback(id, data, args)
 
     def _check_giveup(self):
         if self._consecutive_errors >= Netsock.GIVE_UP_POINT:
@@ -168,9 +168,9 @@ class Netsock():
         self.send(packets.PACKET_DISCONNECT_ACK, b'')
         self.close()
 
-    def add_packet_handler(self, id: int, callback: _PacketCallback):
+    def add_packet_handler(self, id: int, callback: _PacketCallback, *args):
         callbacks = self._packet_handlers.get(id, [])
-        callbacks.append(callback)
+        callbacks.append((callback, args))
         self._packet_handlers[id] = callbacks
 
 

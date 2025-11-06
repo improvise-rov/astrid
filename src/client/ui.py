@@ -186,6 +186,21 @@ class UiControlMonitor(UiElement):
         )
 
         surface.blit(text, self.resolve_position())
+
+
+
+        if self.gamepad_manager.has():
+            gp = self.gamepad_manager.fetch_first()
+
+            pygame.draw.circle(surface, 0x000000, (800, 500), 100)
+            pygame.draw.circle(surface, 0xffffff, pygame.Vector2(800, 500) + gp.read_vector(
+                *Gamepad.LEFT_STICK
+            ) * 100, 20)
+
+            pygame.draw.circle(surface, 0x000000, (1200, 500), 100)
+            pygame.draw.circle(surface, 0xffffff, pygame.Vector2(1200, 500) + gp.read_vector(
+                *Gamepad.RIGHT_STICK
+            ) * 100, 20)
     
     def update(self, dt: float, surface: pygame.Surface):
 
@@ -195,12 +210,12 @@ class UiControlMonitor(UiElement):
         keys = pygame.key.get_pressed()
         reverse = keys[pygame.K_KP_0]
 
-        self.pwm['lf'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_7] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.pwm['rf'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_9] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.pwm['lt'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_4] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.pwm['rt'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_6] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.pwm['lb'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_1] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
-        self.pwm['rb'] = (consts.ESC_PWM_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_PWM_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_3] else consts.ESC_PWM_MOTOR_SPEED_NEUTRAL
+        self.pwm['lf'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_7] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.pwm['rf'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_9] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.pwm['lt'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_4] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.pwm['rt'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_6] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.pwm['lb'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_1] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.pwm['rb'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_3] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
 
 
         # send data

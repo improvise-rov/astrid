@@ -15,19 +15,21 @@ this might get rewritten, it feels kinda weird and jank right now, but idk.
 - fynn
 """
 
-def extract_args() -> tuple[str, int]:
+def extract_args() -> tuple[str, int, bool]:
     """
     loops over the list of arguments passed to the program and extracts data from them
     """
 
     ip = "127.0.0.1"
     port = 8080
+    simulated_gpio = False
 
     for idx, arg in enumerate(sys.argv):
         if arg == '--ip': ip = sys.argv[idx + 1] # get the next arg
         if arg == '--port': port = int(sys.argv[idx + 1])
+        if arg == '--simulated-gpio': simulated_gpio = True
 
-    return ip, port
+    return ip, port, simulated_gpio
 
 if __name__ == "__main__":
     print(consts.IMPROVISE_ASCII_ART_STRING)
@@ -42,7 +44,7 @@ if __name__ == "__main__":
         use_client = False
         use_server = False
 
-    ip, port = extract_args()
+    ip, port, simulated_gpio = extract_args()
 
     if use_client:
         print("[client]")
@@ -50,7 +52,7 @@ if __name__ == "__main__":
         exit()
     if use_server:
         print("[server]")
-        server_main(ip, port)
+        server_main(ip, port, simulated_gpio)
         exit()
 
     print("please use --client for the client xor --server for the server.")

@@ -1,3 +1,4 @@
 {
-    "axis.camera_angle_change": "lstick_y"
+    "axis.tool_grip": "rtrigger_analogue",
+    "axis.camera_angle_change": "dpad_y"
 }

@@ -199,14 +199,20 @@ class UiControlMonitor(UiElement):
         if self.gamepad_manager.has():
             gp = self.gamepad_manager.fetch_first()
 
-            camera_angle_change = -gp.read_axis(
+            camera_angle_change = gp.read_axis(
                 self.gamepad_manager.keymap_translate('axis.camera_angle_change')
+            )
+
+            tool_grip = gp.read_axis(
+                self.gamepad_manager.keymap_translate('axis.tool_grip')
             )
 
             self.values['ca'] = RovMath.clamp(
                 -1, 1, 
                 self.values['ca'] + camera_angle_change * self.camera_angle_speed
                 )
+            
+            self.values['tg'] = tool_grip
 
 
         # manual override

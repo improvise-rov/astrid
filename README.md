@@ -58,7 +58,8 @@ _A certified impROVise classic activity_
 
 ## Server (ROV)
 - [x] Write Camera Handler
-- [ ] Write GPIO Handler
+- [x] Write GPIO Handler
+    - [ ] Actually handle key inputs
 
 ---
 # Licensing

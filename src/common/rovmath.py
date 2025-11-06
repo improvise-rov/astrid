@@ -4,6 +4,16 @@ class RovMath():
     type _Number = int | float
 
     @staticmethod
+    def motor_to_byte(speed: float) -> int:
+        speed = RovMath.clamp(-1.0, 1.0, speed)
+        return RovMath.map(
+            -1.0, 0.0, 1.0, speed,
+            consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE,
+            consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL,
+            consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD,
+        )
+
+    @staticmethod
     def servo_angle_to_byte(angle: float) -> int:
         angle = RovMath.clamp(-1.0, 1.0, angle)
         return RovMath.map(

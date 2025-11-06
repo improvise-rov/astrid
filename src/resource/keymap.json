@@ -1,4 +1,12 @@
 {
     "axis.tool_grip": "rtrigger_analogue",
-    "axis.camera_angle_change": "dpad_y"
+    "axis.camera_angle_change": "dpad_y",
+
+    "digital.rotate_wrist.ccw": "lbumper",
+    "digital.rotate_wrist.cw": "rbumper",
+
+    "axis.rov.strafe": "lstick_x",
+    "axis.rov.forward": "lstick_y",
+    "axis.rov.rotate": "rstick_x",
+    "axis.rov.elevate": "rstick_y"
 }

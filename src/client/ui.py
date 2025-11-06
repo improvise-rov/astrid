@@ -7,6 +7,7 @@ import io
 from src.client.gamepad import GamepadManager
 from src.client.gamepad import Gamepad
 from src.common.network import Netsock
+from src.common.rovmath import RovMath
 from src.common import consts
 from src.common import packets
 
@@ -138,7 +139,7 @@ class UiCameraFeed(UiElement):
             surface.blit(self._no_connection_frame, self.resolve_position())
 
 
-    def _recv_camera_frame(self, id: int, data: bytes):
+    def _recv_camera_frame(self, id: int, data: bytes, args: tuple):
         pygame.transform.scale(
             pygame.image.load(io.BytesIO(data), 'jpg').convert(),
             self._last_frame.size,
@@ -159,7 +160,7 @@ class UiControlMonitor(UiElement):
         self.net = net
         self.gamepad_manager = gamepad_manager
 
-        self.pwm = {
+        self.values: dict[str, RovMath._Number] = {
             'lf': 0, # front left
             'rf': 0, # front right
             'lt': 0, # top left
@@ -167,66 +168,68 @@ class UiControlMonitor(UiElement):
             'lb': 0, # back left
             'rb': 0, # back right
 
-            'ca': 0, # camera angle
-            'tw': 0, # tool wrist
-            'tg': 0, # tool grip
+            'ca': 0.0, # camera angle
+            'tw': 0.0, # tool wrist
+            'tg': 0.0, # tool grip
         }
+
+        self.camera_angle_speed = 0.001
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
 
         text = self.font.render(
-            "lf:".ljust(3) + f"{self.pwm['lf']}".rjust(5) + "   " +
-            "rf:".ljust(3) + f"{self.pwm['rf']}".rjust(5) + "\n" + 
-            "lt:".ljust(3) + f"{self.pwm['lt']}".rjust(5) + "   " +
-            "rt:".ljust(3) + f"{self.pwm['rt']}".rjust(5) + "\n" + 
-            "lb:".ljust(3) + f"{self.pwm['lb']}".rjust(5) + "   " +
-            "rb:".ljust(3) + f"{self.pwm['rb']}".rjust(5) + "\n",
+            "lf:".ljust(3) + f"{self.values['lf']}".rjust(5) + "   " +
+            "rf:".ljust(3) + f"{self.values['rf']}".rjust(5) + "\n" + 
+            "lt:".ljust(3) + f"{self.values['lt']}".rjust(5) + "   " +
+            "rt:".ljust(3) + f"{self.values['rt']}".rjust(5) + "\n" + 
+            "lb:".ljust(3) + f"{self.values['lb']}".rjust(5) + "   " +
+            "rb:".ljust(3) + f"{self.values['rb']}".rjust(5) + "\n" +
+            "\n\n\n" +
+            f"camera angle : {self.values['ca']}",
             False, 0x000000ff
         )
 
         surface.blit(text, self.resolve_position())
 
-
-
-        if self.gamepad_manager.has():
-            gp = self.gamepad_manager.fetch_first()
-
-            pygame.draw.circle(surface, 0x000000, (800, 500), 100)
-            pygame.draw.circle(surface, 0xffffff, pygame.Vector2(800, 500) + gp.read_vector(
-                *Gamepad.LEFT_STICK
-            ) * 100, 20)
-
-            pygame.draw.circle(surface, 0x000000, (1200, 500), 100)
-            pygame.draw.circle(surface, 0xffffff, pygame.Vector2(1200, 500) + gp.read_vector(
-                *Gamepad.RIGHT_STICK
-            ) * 100, 20)
     
     def update(self, dt: float, surface: pygame.Surface):
 
         # calculate speeds
+        if self.gamepad_manager.has():
+            gp = self.gamepad_manager.fetch_first()
+
+            camera_angle_change = -gp.read_axis(
+                self.gamepad_manager.keymap_translate('axis.camera_angle_change')
+            )
+
+            self.values['ca'] = RovMath.clamp(
+                -1, 1, 
+                self.values['ca'] + camera_angle_change * self.camera_angle_speed
+                )
+
 
         # manual override
         keys = pygame.key.get_pressed()
         reverse = keys[pygame.K_KP_0]
 
-        self.pwm['lf'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_7] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
-        self.pwm['rf'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_9] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
-        self.pwm['lt'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_4] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
-        self.pwm['rt'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_6] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
-        self.pwm['lb'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_1] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
-        self.pwm['rb'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_3] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.values['lf'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_7] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.values['rf'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_9] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.values['lt'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_4] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.values['rt'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_6] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.values['lb'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_1] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
+        self.values['rb'] = (consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE if reverse else consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD) if keys[pygame.K_KP_3] else consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL
 
 
         # send data
         self.net.send(packets.PACKET_CONTROL, struct.pack(packets.FORMAT_PACKET_CONTROL,
-                                                          self.pwm['lf'],
-                                                          self.pwm['rf'],
-                                                          self.pwm['lt'],
-                                                          self.pwm['rt'],
-                                                          self.pwm['lb'],
-                                                          self.pwm['rb'],
-                                                          self.pwm['ca'],
-                                                          self.pwm['tw'],
-                                                          self.pwm['tg'],
+                                                          self.values['lf'],
+                                                          self.values['rf'],
+                                                          self.values['lt'],
+                                                          self.values['rt'],
+                                                          self.values['lb'],
+                                                          self.values['rb'],
+                                                          RovMath.servo_angle_to_byte(self.values['ca']),
+                                                          RovMath.servo_angle_to_byte(self.values['tw']),
+                                                          RovMath.servo_angle_to_byte(self.values['tg']),
                                                           ))

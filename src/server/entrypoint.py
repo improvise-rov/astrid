@@ -13,6 +13,9 @@ def server_main(ip: str, port: int, simulated_gpio: bool):
     Main Entrypoint for the server.
     """
 
+    if simulated_gpio:
+        print("(simulating gpio)")
+
     net = Netsock(ip, port) # create networking socket
     cam = CameraFeed(cam_id=0) # create camera handler
     gpio = GpioManager(simulated_gpio)
@@ -51,7 +54,6 @@ def _recv_control(id: int, data: bytes, args: tuple):
 
     lf, rf, lt, rt, lb, rb, ca, tw, tg = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
 
-    print(lf, rf, lt, rt, lb, rb, ca, tw, tg)
 
     gpio.set_motor('left_front', lf)
     gpio.set_motor('right_front', rf)
@@ -63,3 +65,6 @@ def _recv_control(id: int, data: bytes, args: tuple):
     gpio.set_servo('camera_angle', ca)
     gpio.set_servo('tool_wrist', tw)
     gpio.set_servo('tool_grip', tg)
+
+    if gpio.simulated:
+        gpio.print_states()

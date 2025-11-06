@@ -44,6 +44,7 @@ class Window():
 
         # GAMEPAD
         self.gamepad_manager = GamepadManager()
+        self.gamepad_manager.load_mappings('src/resource/keymap.json')
         Gamepad.NINTENDOIFIED_MAPPING = True
 
         ### NETWORK ###
@@ -71,7 +72,7 @@ class Window():
         self.container.add(UiCameraFeed(
             pygame.Vector2(20, 50),
             pygame.transform.scale_by(
-                pygame.image.load("docs/no_camera.jpg"),
+                pygame.image.load("src/resource/no_camera.jpg"),
                 8
             ),
             self.net

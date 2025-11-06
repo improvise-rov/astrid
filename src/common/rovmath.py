@@ -4,13 +4,13 @@ class RovMath():
     type _Number = int | float
 
     @staticmethod
-    def servo_angle(angle: float) -> int:
+    def servo_angle_to_byte(angle: float) -> int:
         angle = RovMath.clamp(-1.0, 1.0, angle)
         return RovMath.map(
             -1.0, 0.0, 1.0, angle,
-            consts.PWM_SERVO_MINIMUM,
-            consts.PWM_SERVO_NEUTRAL,
-            consts.PWM_SERVO_MAXIMUM,
+            consts.SERVO_BYTE_COUNTER_CLOCKWISE,
+            consts.SERVO_BYTE_CENTERED,
+            consts.SERVO_BYTE_CLOCKWISE,
         )
     
     @staticmethod
@@ -27,7 +27,7 @@ class RovMath():
         
         if map == zero:
             return target_zero
-
+        
         delta = (map - low) / (high - low)
         value = int(target_low + delta * (target_high - target_low))
 

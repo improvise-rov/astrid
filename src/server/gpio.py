@@ -30,10 +30,14 @@ class GpioManager():
 
     def __init__(self, simulated: bool = False) -> None:
         self.simulated = simulated
-        if self.simulated:
+        if not self.simulated:
             self.pi = pigpio.pi()
 
+        self.pin_bytes: dict[GpioManager._Motor | GpioManager._Servo, int] = {}
+
     def set_motor(self, motor: _Motor, byte: int):
+        self.pin_bytes[motor] = byte
+
         pin = GpioManager.PINS[motor]
         self._set_pin(
             pin, RovMath.map(
@@ -48,6 +52,8 @@ class GpioManager():
         )
 
     def set_servo(self, servo: _Servo, byte: int):
+        self.pin_bytes[servo] = byte
+
         pin = GpioManager.PINS[servo]
         self._set_pin(
             pin, RovMath.map(
@@ -61,7 +67,18 @@ class GpioManager():
             )
         )
 
-    
+    def print_states(self):
+        print(
+            self.pin_bytes.get('left_front', -1),
+            self.pin_bytes.get('right_front', -1),
+            self.pin_bytes.get('left_top', -1),
+            self.pin_bytes.get('right_top', -1),
+            self.pin_bytes.get('left_back', -1),
+            self.pin_bytes.get('right_back', -1),
+            self.pin_bytes.get('camera_angle', -1),
+            self.pin_bytes.get('tool_wrist', -1),
+            self.pin_bytes.get('tool_grip', -1),
+            )  
         
 
     def _set_pin(self, pin: int, microseconds: int):

@@ -1,12 +1,15 @@
 from __future__ import annotations
 import pygame
 import typing
+import json
 
 from src.client.callback import Callback
 
 class GamepadManager():
     def __init__(self) -> None:
         self.gamepads: dict[int, Gamepad] = {}
+
+        self.mappings: dict[str, str] = {}
 
         Callback.add_listener(pygame.JOYDEVICEADDED, self._device_connect)
         Callback.add_listener(pygame.JOYDEVICEREMOVED, self._device_remove)
@@ -18,6 +21,13 @@ class GamepadManager():
         for value in self.gamepads.values():
             return value
         raise RuntimeError("Tried to fetch gamepad when none was available")
+    
+    def keymap_translate(self, mapping_key: str) -> str:
+        return self.mappings.get(mapping_key, Gamepad.NONE)
+
+    def load_mappings(self, path: str):
+        with open(path, 'r') as f:
+            self.mappings = json.load(f)
 
     def _device_connect(self, event: pygame.Event):
         id: int = event.device_index

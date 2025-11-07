@@ -180,12 +180,12 @@ class UiControlMonitor(UiElement):
         super().draw(surface)
 
         text = self.font.render(
-            "lf:".ljust(3) + f"{self.values['lf']}".rjust(5) + "   " +
-            "rf:".ljust(3) + f"{self.values['rf']}".rjust(5) + "\n" + 
-            "lt:".ljust(3) + f"{self.values['lt']}".rjust(5) + "   " +
-            "rt:".ljust(3) + f"{self.values['rt']}".rjust(5) + "\n" + 
-            "lb:".ljust(3) + f"{self.values['lb']}".rjust(5) + "   " +
-            "rb:".ljust(3) + f"{self.values['rb']}".rjust(5) + "\n" +
+            "lf:".ljust(3) + f"{round(self.values['lf'], 2)}".rjust(5) + "   " +
+            "rf:".ljust(3) + f"{round(self.values['rf'], 2)}".rjust(5) + "\n" + 
+            "lt:".ljust(3) + f"{round(self.values['lt'], 2)}".rjust(5) + "   " +
+            "rt:".ljust(3) + f"{round(self.values['rt'], 2)}".rjust(5) + "\n" + 
+            "lb:".ljust(3) + f"{round(self.values['lb'], 2)}".rjust(5) + "   " +
+            "rb:".ljust(3) + f"{round(self.values['rb'], 2)}".rjust(5) + "\n" +
             "\n\n\n" +
             f"camera angle: {round(self.values['ca'], 2)}\n" +
             f"grip: {round(self.values['tg'], 2)}\n" +

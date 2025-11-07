@@ -34,6 +34,10 @@ class Window():
         self.wnd_surface = self.window.get_surface() # get the surface of the window to draw onto. this initialises everything, too
         self.draw_surface = pygame.Surface((consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT))
 
+        # ICON
+        astrid_texture = pygame.image.load('docs/astrid_pixelart.png').convert_alpha()
+        self.window.set_icon(astrid_texture)
+
         # MANAGEMENT
         self.keep_window_open = False # this boolean is important as it keeps the window loop going. if its ever false at the end of a loop, the window closes.
         self.fullscreen = False # true if window should fullscreen
@@ -59,7 +63,7 @@ class Window():
 
         self.container.add(UiTexture(
             pygame.Vector2(1850, 20), 
-            pygame.image.load('docs/astrid_pixelart.png').convert_alpha(),
+            astrid_texture,
             scale=pygame.Vector2(1, 1),
             centered=False
         ))
@@ -73,7 +77,7 @@ class Window():
             pygame.Vector2(20, 50),
             pygame.transform.scale_by(
                 pygame.image.load("src/resource/no_camera.jpg"),
-                8
+                10
             ),
             self.net
         ))

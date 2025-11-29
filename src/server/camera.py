@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+from common.consts import CAMERA_JPEG_COMPRESSION_VALUE
 from src.common import consts
 
 class CameraFeed():
@@ -29,3 +30,4 @@ class CameraFeed():
             return b''
         
         return frame.tobytes() # convert to bytes and return
+    

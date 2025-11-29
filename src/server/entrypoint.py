@@ -3,6 +3,7 @@ from src.server.camera import CameraFeed
 from src.server.gpio import GpioManager
 from src.common.network import Netsock
 from src.common import packets
+from src.common import consts
 import time
 import struct
    
@@ -17,7 +18,7 @@ def server_main(ip: str, port: int, simulated_gpio: bool):
         print("(simulating gpio)")
 
     net = Netsock(ip, port) # create networking socket
-    cam = CameraFeed(cam_id=0) # create camera handler
+    cam = CameraFeed(cam_id=consts.CAMERA_ID) # create camera handler
     gpio = GpioManager(simulated_gpio)
 
     # register control packet handler; 

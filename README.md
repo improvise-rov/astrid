@@ -23,7 +23,7 @@ python main.py --client --ip <IP = 127.0.0.1> --port <PORT = 8080>
 ```
 
 ```
-python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080>
+python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080> [OPTIONAL: --simulated-gpio]
 ```
 
 > [!TIP]
@@ -40,6 +40,7 @@ We use a Raspberry Pi 4 onboard our ROV for flight control. The GPIO Pinouts are
 - pygame community edition 2.5.5
 - numpy 2.2.6
 - opencv-python 4.12.0.88
+- gpiozero 2.0.1 (& dependencies)
 
 ---
 # To-Do List

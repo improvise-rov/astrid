@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 
-from common.consts import CAMERA_JPEG_COMPRESSION_VALUE
 from src.common import consts
 
 class CameraFeed():

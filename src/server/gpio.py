@@ -1,44 +1,46 @@
-import pigpio
 import typing
+from gpiozero import PWMOutputDevice
 from src.common import consts
 from src.common.rovmath import RovMath
 
 class GpioManager():
 
-    type _Motor = typing.Literal[
+    type _MotorKey = typing.Literal[
         'left_front', 'right_front',
         'left_top', 'right_top',
         'left_back', 'right_back'
         ]
     
-    type _Servo = typing.Literal[
+    type _ServoKey = typing.Literal[
         'camera_angle', 'tool_wrist', 'tool_grip'
     ]
     
-    PINS: dict[_Motor | _Servo, int] = {
-        'left_front': consts.PIN_ESC_MOTOR_FRONT_LEFT,
-        'right_front': consts.PIN_ESC_MOTOR_FRONT_RIGHT,
-        'left_top': consts.PIN_ESC_MOTOR_TOP_LEFT,
-        'right_top': consts.PIN_ESC_MOTOR_TOP_RIGHT,
-        'left_back': consts.PIN_ESC_MOTOR_BACK_LEFT,
-        'right_back': consts.PIN_ESC_MOTOR_BACK_RIGHT,
-
-        'camera_angle': consts.PIN_SERVO_CAMERA_ANGLE,
-        'tool_wrist': consts.PIN_SERVO_CLAW_WRIST,
-        'tool_grip': consts.PIN_SERVO_CLAW_GRIP,
-    }
 
     def __init__(self, simulated: bool = False) -> None:
         self.simulated = simulated
+
+        self.pins: dict[GpioManager._MotorKey | GpioManager._ServoKey, PWMOutputDevice] = {}
+
         if not self.simulated:
-            self.pi = pigpio.pi()
+            self.pins = { # i just want to outputt PWM signals
+                'left_front': PWMOutputDevice(consts.PIN_ESC_MOTOR_FRONT_LEFT),
+                'right_front': PWMOutputDevice(consts.PIN_ESC_MOTOR_FRONT_RIGHT),
+                'left_top': PWMOutputDevice(consts.PIN_ESC_MOTOR_TOP_LEFT),
+                'right_top': PWMOutputDevice(consts.PIN_ESC_MOTOR_TOP_RIGHT),
+                'left_back': PWMOutputDevice(consts.PIN_ESC_MOTOR_BACK_LEFT),
+                'right_back': PWMOutputDevice(consts.PIN_ESC_MOTOR_BACK_RIGHT),
 
-        self.pin_bytes: dict[GpioManager._Motor | GpioManager._Servo, int] = {}
+                'camera_angle': PWMOutputDevice(consts.PIN_SERVO_CAMERA_ANGLE),
+                'tool_wrist': PWMOutputDevice(consts.PIN_SERVO_CLAW_WRIST),
+                'tool_grip': PWMOutputDevice(consts.PIN_SERVO_CLAW_GRIP),
+            }
 
-    def set_motor(self, motor: _Motor, byte: int):
+        self.pin_bytes: dict[GpioManager._MotorKey | GpioManager._ServoKey, int] = {}
+
+    def set_motor(self, motor: _MotorKey, byte: int):
         self.pin_bytes[motor] = byte
 
-        pin = GpioManager.PINS[motor]
+        pin = self.pins[motor]
         self._set_pin(
             pin, RovMath.map(
                 consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE,
@@ -51,10 +53,10 @@ class GpioManager():
             )
         )
 
-    def set_servo(self, servo: _Servo, byte: int):
+    def set_servo(self, servo: _ServoKey, byte: int):
         self.pin_bytes[servo] = byte
 
-        pin = GpioManager.PINS[servo]
+        pin = self.pins[servo]
         self._set_pin(
             pin, RovMath.map(
                 consts.SERVO_BYTE_COUNTER_CLOCKWISE,
@@ -81,9 +83,16 @@ class GpioManager():
             )  
         
 
-    def _set_pin(self, pin: int, microseconds: int):
+    def _set_pin(self, pin: PWMOutputDevice, microseconds: int):
         if self.simulated:
             return
-        self.pi.set_servo_pulsewidth(pin, microseconds)
+        
+        # since i deal with the pulses in uS and gpiozero deals with it in Hz, i need to convert
+        # frequency is the number of oscillations/cycles per second
+        # which means frequency and time are inversely proportional
+        # so f = 1/t when t is in seconds
+        #   (hz) = 1e6 / (us)
+
+        pin.frequency = 1_000_000 / microseconds
 
 

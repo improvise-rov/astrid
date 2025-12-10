@@ -124,7 +124,7 @@ class Netsock():
         data = b''
         while len(data) < n:
             pckt = self._pipe_socket.recv(n - len(data))
-            if not pckt:
+            if pckt is None:
                 raise ValueError("received None packet")
             data += pckt
         return data 
@@ -145,7 +145,7 @@ class Netsock():
                 self._consecutive_errors = 0 # reset consecutive errors
             except Exception as e:
                 if self._open:
-                    print("error recv'ing data: " + str(e))
+                    print("error recv'ing data: " + str(e) + " - " + str(type(e)))
                     self._consecutive_errors += 1
                     self._check_giveup()
 

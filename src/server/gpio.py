@@ -40,34 +40,36 @@ class GpioManager():
     def set_motor(self, motor: _MotorKey, byte: int):
         self.pin_bytes[motor] = byte
 
-        pin = self.pins[motor]
-        self._set_pin(
-            pin, RovMath.map(
-                consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE,
-                consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL,
-                consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD,
-                byte,
-                consts.PWM_REVERSE_ESC_MICROSECONDS,
-                consts.PWM_INITIALISE_ESC_MICROSECONDS,
-                consts.PWM_FORWARD_ESC_MICROSECONDS,
+        pin = self.pins.get(motor, None)
+        if pin is not None:
+            self._set_pin(
+                pin, RovMath.map(
+                    consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE,
+                    consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL,
+                    consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD,
+                    byte,
+                    consts.PWM_REVERSE_ESC_MICROSECONDS,
+                    consts.PWM_INITIALISE_ESC_MICROSECONDS,
+                    consts.PWM_FORWARD_ESC_MICROSECONDS,
+                )
             )
-        )
 
     def set_servo(self, servo: _ServoKey, byte: int):
         self.pin_bytes[servo] = byte
 
-        pin = self.pins[servo]
-        self._set_pin(
-            pin, RovMath.map(
-                consts.SERVO_BYTE_COUNTER_CLOCKWISE,
-                consts.SERVO_BYTE_CENTERED,
-                consts.SERVO_BYTE_CLOCKWISE,
-                byte,
-                consts.PWM_SERVO_MINIMUM,
-                consts.PWM_SERVO_NEUTRAL,
-                consts.PWM_SERVO_MAXIMUM,
+        pin = self.pins.get(servo, None)
+        if pin is not None:
+            self._set_pin(
+                pin, RovMath.map(
+                    consts.SERVO_BYTE_COUNTER_CLOCKWISE,
+                    consts.SERVO_BYTE_CENTERED,
+                    consts.SERVO_BYTE_CLOCKWISE,
+                    byte,
+                    consts.PWM_SERVO_MINIMUM,
+                    consts.PWM_SERVO_NEUTRAL,
+                    consts.PWM_SERVO_MAXIMUM,
+                )
             )
-        )
 
     def print_states(self):
         print(

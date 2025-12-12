@@ -19,20 +19,20 @@ class GpioManager():
     def __init__(self, simulated: bool = False) -> None:
         self.simulated = simulated
 
-        self.pins: dict[GpioManager._MotorKey | GpioManager._ServoKey, PWMOutputDevice] = {}
+        self.pins: dict[GpioManager._MotorKey | GpioManager._ServoKey, PWMOutputDevice | None] = {}
 
         if not self.simulated:
             self.pins = { # i just want to outputt PWM signals
-                'left_front': PWMOutputDevice(consts.PIN_ESC_MOTOR_FRONT_LEFT),
-                'right_front': PWMOutputDevice(consts.PIN_ESC_MOTOR_FRONT_RIGHT),
-                'left_top': PWMOutputDevice(consts.PIN_ESC_MOTOR_TOP_LEFT),
-                'right_top': PWMOutputDevice(consts.PIN_ESC_MOTOR_TOP_RIGHT),
-                'left_back': PWMOutputDevice(consts.PIN_ESC_MOTOR_BACK_LEFT),
-                'right_back': PWMOutputDevice(consts.PIN_ESC_MOTOR_BACK_RIGHT),
+                'left_front': PWMOutputDevice(consts.PIN_ESC_MOTOR_FRONT_LEFT) if consts.PIN_ESC_MOTOR_FRONT_LEFT != -1 else None,
+                'right_front': PWMOutputDevice(consts.PIN_ESC_MOTOR_FRONT_RIGHT) if consts.PIN_ESC_MOTOR_FRONT_RIGHT != -1 else None,
+                'left_top': PWMOutputDevice(consts.PIN_ESC_MOTOR_TOP_LEFT) if consts.PIN_ESC_MOTOR_TOP_LEFT != -1 else None,
+                'right_top': PWMOutputDevice(consts.PIN_ESC_MOTOR_TOP_RIGHT) if consts.PIN_ESC_MOTOR_TOP_RIGHT != -1 else None,
+                'left_back': PWMOutputDevice(consts.PIN_ESC_MOTOR_BACK_LEFT) if consts.PIN_ESC_MOTOR_BACK_LEFT != -1 else None,
+                'right_back': PWMOutputDevice(consts.PIN_ESC_MOTOR_BACK_RIGHT) if consts.PIN_ESC_MOTOR_BACK_RIGHT != -1 else None,
 
-                'camera_angle': PWMOutputDevice(consts.PIN_SERVO_CAMERA_ANGLE),
-                'tool_wrist': PWMOutputDevice(consts.PIN_SERVO_CLAW_WRIST),
-                'tool_grip': PWMOutputDevice(consts.PIN_SERVO_CLAW_GRIP),
+                'camera_angle': PWMOutputDevice(consts.PIN_SERVO_CAMERA_ANGLE) if consts.PIN_SERVO_CAMERA_ANGLE != -1 else None,
+                'tool_wrist': PWMOutputDevice(consts.PIN_SERVO_CLAW_WRIST) if consts.PIN_SERVO_CLAW_WRIST != -1 else None,
+                'tool_grip': PWMOutputDevice(consts.PIN_SERVO_CLAW_GRIP) if consts.PIN_SERVO_CLAW_GRIP != -1 else None,
             }
 
         self.pin_bytes: dict[GpioManager._MotorKey | GpioManager._ServoKey, int] = {}

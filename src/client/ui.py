@@ -160,7 +160,7 @@ class UiControlMonitor(UiElement):
         self.net = net
         self.gamepad_manager = gamepad_manager
 
-        self.values: dict[str, RovMath._Number] = {
+        self.values: dict[str, int | float] = {
             'lf': 0, # front left
             'rf': 0, # front right
             'lt': 0, # top left

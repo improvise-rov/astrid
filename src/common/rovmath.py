@@ -22,7 +22,7 @@ class RovMath():
         )
     
     @staticmethod
-    def clamp[T: int | float](low: T, high: T, v: T) -> T:
+    def clamp(low: int | float, high: int | float, v: int | float) -> int | float:
         if v > high:
             return high
         elif v < low:
@@ -39,4 +39,4 @@ class RovMath():
         delta = (map - low) / (high - low)
         value = int(target_low + delta * (target_high - target_low))
 
-        return RovMath.clamp(target_low, target_high, value)
+        return int(RovMath.clamp(target_low, target_high, value))

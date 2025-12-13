@@ -1,8 +1,6 @@
 from src.common import consts
 
 class RovMath():
-    type _Number = int | float
-
     @staticmethod
     def motor_to_byte(speed: float) -> int:
         speed = RovMath.clamp(-1.0, 1.0, speed)
@@ -24,7 +22,7 @@ class RovMath():
         )
     
     @staticmethod
-    def clamp[T: _Number](low: T, high: T, v: T) -> T:
+    def clamp[T: int | float](low: T, high: T, v: T) -> T:
         if v > high:
             return high
         elif v < low:
@@ -33,7 +31,7 @@ class RovMath():
             return v
 
     @staticmethod
-    def map(low: _Number, zero: _Number, high: _Number, map: _Number, target_low: int, target_zero: int, target_high: int) -> int:
+    def map(low: int | float, zero: int | float, high: int | float, map: int | float, target_low: int, target_zero: int, target_high: int) -> int:
         
         if map == zero:
             return target_zero

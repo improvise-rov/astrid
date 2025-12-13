@@ -5,17 +5,17 @@ from src.common.rovmath import RovMath
 
 class GpioManager():
 
-    type _Motor = typing.Literal[
-        'left_front', 'right_front',
-        'left_top', 'right_top',
-        'left_back', 'right_back'
-        ]
+    #type _Motor = typing.Literal[
+    #    'left_front', 'right_front',
+    #    'left_top', 'right_top',
+    #    'left_back', 'right_back'
+    #    ]
     
-    type _Servo = typing.Literal[
-        'camera_angle', 'tool_wrist', 'tool_grip'
-    ]
+    #type _Servo = typing.Literal[
+    #    'camera_angle', 'tool_wrist', 'tool_grip'
+    #]
     
-    PINS: dict[_Motor | _Servo, int] = {
+    PINS: dict[str, int] = {
         'left_front': consts.PIN_ESC_MOTOR_FRONT_LEFT,
         'right_front': consts.PIN_ESC_MOTOR_FRONT_RIGHT,
         'left_top': consts.PIN_ESC_MOTOR_TOP_LEFT,
@@ -33,9 +33,9 @@ class GpioManager():
         if not self.simulated:
             self.pi = pigpio.pi()
 
-        self.pin_bytes: dict[GpioManager._Motor | GpioManager._Servo, int] = {}
+        self.pin_bytes: dict[str, int] = {}
 
-    def set_motor(self, motor: _Motor, byte: int):
+    def set_motor(self, motor: str, byte: int):
         self.pin_bytes[motor] = byte
 
         pin = GpioManager.PINS[motor]
@@ -51,7 +51,7 @@ class GpioManager():
             )
         )
 
-    def set_servo(self, servo: _Servo, byte: int):
+    def set_servo(self, servo: str, byte: int):
         self.pin_bytes[servo] = byte
 
         pin = GpioManager.PINS[servo]

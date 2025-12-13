@@ -3,12 +3,11 @@ import typing
 
 
 class Callback():
-    type _CallbackFunction = typing.Callable[[pygame.Event], typing.Any]
 
-    CALLBACKS: dict[int, list[_CallbackFunction]] = {}
+    CALLBACKS: dict[int, list[typing.Callable[[pygame.Event], typing.Any]]] = {}
 
     @staticmethod
-    def add_listener(signal: int, function: _CallbackFunction):
+    def add_listener(signal: int, function: typing.Callable[[pygame.Event], typing.Any]):
         arr = Callback.CALLBACKS.get(signal, [])
         arr.append(function)
         Callback.CALLBACKS[signal] = arr

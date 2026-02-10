@@ -22,14 +22,14 @@ def extract_args() -> tuple[str, int, bool]:
 
     ip = "127.0.0.1"
     port = 8080
-    simulated_gpio = False
+    simulated_hardware = False
 
     for idx, arg in enumerate(sys.argv):
         if arg == '--ip': ip = sys.argv[idx + 1] # get the next arg
         if arg == '--port': port = int(sys.argv[idx + 1])
-        if arg == '--simulated-gpio': simulated_gpio = True
+        if arg == '--simulated': simulated_hardware = True
 
-    return ip, port, simulated_gpio
+    return ip, port, simulated_hardware
 
 if __name__ == "__main__":
     print(consts.IMPROVISE_ASCII_ART_STRING)

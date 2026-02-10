@@ -1,6 +1,6 @@
 
 from src.server.camera import CameraFeed
-from src.server.gpio import GpioManager
+from src.server.hardware import HardwareManager
 from src.common.network import Netsock
 from src.common import packets
 from src.common import consts
@@ -9,22 +9,22 @@ import struct
    
     
 
-def server_main(ip: str, port: int, simulated_gpio: bool):
+def server_main(ip: str, port: int, simulated_hardware: bool):
     """
     Main Entrypoint for the server.
     """
 
-    if simulated_gpio:
-        print("(simulating gpio)")
+    if simulated_hardware:
+        print("(simulating hardware)")
 
     net = Netsock(ip, port) # create networking socket
     cam = CameraFeed(cam_id=consts.CAMERA_ID) # create camera handler
-    gpio = GpioManager(simulated_gpio)
+    hardware = HardwareManager(simulated_hardware)
 
     # register control packet handler; 
     # this tells the networking socket's processing thread to run _recv_control 
     # whenever a new PACKET_CONTROL packet is received
-    net.add_packet_handler(packets.PACKET_CONTROL, _recv_control, gpio)
+    net.add_packet_handler(packets.PACKET_CONTROL, _recv_control, hardware)
 
     net.start_server() # start the server (blocks until client connects)
 
@@ -51,21 +51,21 @@ def _recv_control(id: int, data: bytes, args: tuple):
     tw: tool wrist servo
     tg: tool grip servo
     """
-    gpio: GpioManager = args[0]
+    hardware: HardwareManager = args[0]
 
     lf, rf, lt, rt, lb, rb, ca, tw, tg = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
 
 
-    gpio.set_motor('left_front', lf)
-    gpio.set_motor('right_front', rf)
-    gpio.set_motor('left_top', lt)
-    gpio.set_motor('right_top', rt)
-    gpio.set_motor('left_back', lb)
-    gpio.set_motor('right_back', rb)
+    hardware.set_motor('left_front', lf)
+    hardware.set_motor('right_front', rf)
+    hardware.set_motor('left_top', lt)
+    hardware.set_motor('right_top', rt)
+    hardware.set_motor('left_back', lb)
+    hardware.set_motor('right_back', rb)
 
-    gpio.set_servo('camera_angle', ca)
-    gpio.set_servo('tool_wrist', tw)
-    gpio.set_servo('tool_grip', tg)
+    hardware.set_servo('camera_angle', ca)
+    hardware.set_servo('tool_wrist', tw)
+    hardware.set_servo('tool_grip', tg)
 
-    if gpio.simulated:
-        gpio.print_states()
+    if hardware.simulated:
+        hardware.print_states()

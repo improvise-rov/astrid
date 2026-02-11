@@ -13,9 +13,12 @@ class Driver():
 
     @staticmethod
     def write(address: byte, byte: byte):
+        Driver._assert_byte(address)
+        Driver._assert_byte(byte)
         #i2c_device.I2CDevice(board.I2C(), address).write()
         pass
 
     @staticmethod
     def read(address: byte) -> byte:
+        Driver._assert_byte(address)
         pass

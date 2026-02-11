@@ -1,4 +1,5 @@
 import typing
+import time
 from adafruit_servokit import ServoKit # we treat everything as a servo; even the brushless motors
 
 def servo(i: ServoKit, address: int, angle: int):
@@ -13,3 +14,6 @@ if __name__ == "__main__":
         ang += delta
         if ang >= 180 or ang <= 0:
             delta = -delta
+
+        print(ang)
+        time.sleep(0.01) # print and wait a bit

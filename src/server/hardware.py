@@ -34,7 +34,7 @@ class HardwareManager():
     def __init__(self, simulated: bool = False) -> None:
         self.simulated = simulated
         if not self.simulated:
-            self.interface = ServoKit(channels=consts.I2C_ADDRESS_COUNT)
+            self.interface = ServoKit(channels=consts.SERVOBOARD_CHANNEL_COUNT)
 
         self.registers: dict[str, int] = {} # technically THESE arent registers, but it makes the most sense for the analogy im going for
 

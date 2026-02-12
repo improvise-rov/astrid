@@ -5,6 +5,10 @@ from src.client.ui import UiTexture
 from src.client.ui import UiServerConnectionStatusIndicator
 from src.client.ui import UiCameraFeed
 from src.client.ui import UiControlMonitor
+from src.client.ui import UiCorrectionSubsysStatus
+from src.client.ui import UiTextLog
+from src.client.logger import Logger
+from src.client.irov import RovInterface
 from src.client.gamepad import GamepadManager
 from src.client.gamepad import Gamepad
 from src.client.callback import Callback
@@ -53,7 +57,12 @@ class Window():
 
         ### NETWORK ###
         self.net = Netsock(ip, port)
-        
+
+        self.net.add_packet_handler(packets.DISCONNECT, lambda id, data, args: Logger.log("Server closed!", False))
+
+        ## ROV ##
+        self.rov = RovInterface(self.net, self.gamepad_manager)
+
 
         ###############
 
@@ -82,11 +91,23 @@ class Window():
             self.net
         ))
 
-        self.container.add(UiControlMonitor(
-            pygame.Vector2(1000, 20),
-            self.net,
-            self.gamepad_manager
+        self.container.add(UiTextLog(
+            pygame.Vector2(20, 710),
+            pygame.Vector2(850, 350),
+            16
         ))
+
+        self.container.add(UiCorrectionSubsysStatus(
+            pygame.Vector2(1000, 20),
+            self.rov
+        ))
+
+        self.container.add(UiControlMonitor(
+            pygame.Vector2(1000, 40),
+            self.rov
+        ))
+
+        
 
         ####################
 
@@ -146,6 +167,9 @@ class Window():
         if self.gamepad_manager.has():
             self.gamepad_manager.fetch_first().poll_states()
 
+        # update rov
+        self.rov.update(dt)
+
         # update everything in ui container
         self.container.update(dt, self.draw_surface)
 
@@ -155,7 +179,7 @@ class Window():
 
             lstick = gp.read_vector(*Gamepad.LEFT_STICK)
 
-            self.net.send(packets.PACKET_MSG, f"{lstick}".encode('utf-8'))
+            self.net.send(packets.MSG, f"{lstick}".encode('utf-8'))
 
         # keycheck
         just_pressed = pygame.key.get_just_pressed()
@@ -171,7 +195,33 @@ class Window():
 
         # check if connect button is pressed
         if just_pressed[pygame.K_SPACE]:
-            self.net.start_client()
+            if not self.net.is_open():
+                Logger.log("Trying to connect..", False)
+                connected = self.net.start_client()
+                if connected:
+                    self.rov.correction_enabled = True
+                    self.net.send(packets.ENABLE_CORRECTION, bytes())
+                    Logger.log("Connected!", False)
+                else:
+                    Logger.log("Connection failed! (the server is probably not open)", False)
+
+
+        # correction
+        if just_pressed[pygame.K_RETURN]:
+            self.rov.correction_enabled = not self.rov.correction_enabled
+            if self.rov.correction_enabled:
+                self.net.send(packets.ENABLE_CORRECTION, bytes())
+                Logger.log("Enabled correction")
+            else:
+                self.net.send(packets.DISABLE_CORRECTION, bytes())
+                Logger.log("Disabled correction")
+
+        # server die
+        if just_pressed[pygame.K_BACKSPACE]:
+            if self.net.is_open():
+                Logger.log("killing remote server")
+                self.net.close()
+                self.net.send(packets.STOP_SERVER, bytes())
         
 
     def event(self):

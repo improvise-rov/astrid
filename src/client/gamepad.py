@@ -3,6 +3,7 @@ import pygame
 import typing
 import json
 
+from src.client.logger import Logger
 from src.client.callback import Callback
 
 class GamepadManager():
@@ -36,12 +37,12 @@ class GamepadManager():
         instance_id = joystick.get_instance_id()
         self.gamepads[instance_id] = Gamepad(joystick)
 
-        print(f"Gamepad (id: {id}, instance: {instance_id}) connected!")
+        Logger.log(f"Gamepad (id: {id}, instance: {instance_id}) connected!")
 
     def _device_remove(self, event: pygame.Event):
         id: int = event.instance_id
         if id in self.gamepads:
-            print(f"Gamepad (instance: {id}) disconnected!")
+            Logger.log(f"Gamepad (instance: {id}) disconnected!")
             self.gamepads[id].destroy()
             del self.gamepads[id]
 

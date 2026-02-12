@@ -43,7 +43,7 @@ class Netsock():
 
         self._packet_handlers: dict[int, list[tuple[Netsock._PacketCallback, tuple]]] = {}
 
-        self.add_packet_handler(packets.PACKET_DISCONNECT,
+        self.add_packet_handler(packets.DISCONNECT,
                                 lambda id, data, args: self._remote_disconnect())
 
 
@@ -52,7 +52,7 @@ class Netsock():
             return
         print("starting server", flush=True)
 
-        self._open = True
+        
         self._is_server = True
 
         self._make_socket()
@@ -60,12 +60,13 @@ class Netsock():
         self.sock.listen()
         self._pipe_socket, addr = self.sock.accept()
         print("accepted connection at " + str(addr))
+        self._open = True
 
         self.thread.start()
 
-    def start_client(self):
+    def start_client(self) -> bool:
         if self._open:
-            return
+            return False
         print("starting client", flush=True)
         
         try:
@@ -78,12 +79,14 @@ class Netsock():
             self._open = True
 
             self.thread.start()
+            return True
         except:
             print("failed to start client (the server is probably not open yet)")
+            return False
 
     def disconnect(self):
-        self.send(packets.PACKET_DISCONNECT, b'')
-        self.wait_for_packet(packets.PACKET_DISCONNECT_ACK)
+        self.send(packets.DISCONNECT, b'')
+        self.wait_for_packet(packets.DISCONNECT_ACK)
 
     def close(self):
         self._open = False
@@ -91,6 +94,10 @@ class Netsock():
         self._pipe_socket.close()
         if self._is_server:
             self.sock.close()
+
+    def stop_server(self):
+        self.close()
+        raise Exception("server closed") # break out loop
 
     def send(self, type: int, data: bytes):
         if not self._open:
@@ -165,7 +172,7 @@ class Netsock():
 
     def _remote_disconnect(self):
         print("remote disconnecting, acknowledging...")
-        self.send(packets.PACKET_DISCONNECT_ACK, b'')
+        self.send(packets.DISCONNECT_ACK, b'')
         self.close()
 
     def add_packet_handler(self, id: int, callback: _PacketCallback, *args):

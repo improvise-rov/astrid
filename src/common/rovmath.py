@@ -1,8 +1,10 @@
 from src.common import consts
 
-type Number = int | float
 
 class RovMath():
+    type Number = int | float
+    type Vec = tuple[Number, Number, Number]
+
     @staticmethod
     def motor_to_byte(speed: float) -> int:
         speed = RovMath.clamp(-1.0, 1.0, speed)
@@ -24,7 +26,7 @@ class RovMath():
         ))
     
     @staticmethod
-    def clamp(low: Number, high: Number, v: Number) -> Number:
+    def clamp[T: Number](low: T, high: T, v: T) -> T:
         if v > high:
             return high
         elif v < low:

@@ -71,10 +71,9 @@ PWM_SERVO_MAXIMUM: int = 2000
 
 # imu
 IMU_I2C_ADDRESS: int = 0x00
-IMU_I2C_PAYLOAD_SIZE: int = 0
 
 # opencv
-CAMERA_ID: int = 0
+CAMERA_ID: int = 1
 CAMERA_JPEG_COMPRESSION_VALUE: int = 65
 
 # competition

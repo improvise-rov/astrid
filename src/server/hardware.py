@@ -1,5 +1,12 @@
+NO_SERVOKIT: bool = False
+
 import typing
-from adafruit_servokit import ServoKit # we treat everything as a servo; even the brushless motors
+try:
+    from adafruit_servokit import ServoKit # we treat everything as a servo; even the brushless motors
+except:
+    print("** NO SERVOKIT LIB FOUND!! **")
+    NO_SERVOKIT = True
+from src.server import imu
 from src.common import consts
 from src.common.rovmath import RovMath
 
@@ -33,14 +40,32 @@ class HardwareManager():
 
     def __init__(self, simulated: bool = False) -> None:
         self.simulated = simulated
-        if not self.simulated:
-            self.interface = ServoKit(channels=consts.SERVOBOARD_CHANNEL_COUNT)
+        if not self.simulated and not NO_SERVOKIT:
+            self.motor_interface = ServoKit(channels=consts.SERVOBOARD_CHANNEL_COUNT) # type: ignore
+            self.imu = imu.Imu(consts.IMU_I2C_ADDRESS)
 
-        self.registers: dict[str, int] = {} # technically THESE arent registers, but it makes the most sense for the analogy im going for
+        self.motor_registers: dict[_Motor | _Servo, float] = {} # technically THESE arent registers, but it makes the most sense for the analogy im going for
+
+    def get_gyroscope(self) -> RovMath.Vec:
+        if self.simulated:
+            return (0, 0, 0)
+        #          (yaw, pitch, roll)
+        
+        # 
+        # rotation around x axis (forward back) -> roll
+        # rotation around y axis (left right) -> pitch
+        # rotation around z axis (up down) -> yaw
+        #
+        # https://en.wikipedia.org/wiki/Aircraft_principal_axes
+        #
+        
+        return self.imu.gyro()
 
 
-    def set_motor(self, motor: _Motor, byte: int):
-        self.registers[motor] = byte
+    def set_motor(self, motor: _Motor, throttle: float):
+        throttle = RovMath.clamp(-1, 1, throttle)
+
+        self.motor_registers[motor] = throttle
 
         address = HardwareManager.ADDRESSES[motor]
 
@@ -48,7 +73,23 @@ class HardwareManager():
             return
         
         # 
-        self.interface.continuous_servo[address].throttle = RovMath.map(
+        self.motor_interface.continuous_servo[address].throttle = throttle
+
+    def set_servo(self, servo: _Servo, byte: int):
+        byte = RovMath.clamp(0, 180, byte)
+
+        self.motor_registers[servo] = byte
+
+        address = HardwareManager.ADDRESSES[servo]
+
+        if self.simulated: # make sure we arent simulating
+            return
+        
+        # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
+        self.motor_interface.servo[address].angle = byte
+
+    def decode_motor_byte(self, byte: int) -> float:
+        return RovMath.map(
                 consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE,
                 consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL,
                 consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD,
@@ -58,29 +99,17 @@ class HardwareManager():
                 consts.MOTOR_THROTTLE_POSITIVE
             )
 
-    def set_servo(self, servo: _Servo, byte: int):
-        self.registers[servo] = byte
-
-        address = HardwareManager.ADDRESSES[servo]
-
-        if self.simulated: # make sure we arent simulating
-            return
-        
-        # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
-        self.interface.servo[address].angle = byte
-
-
     def print_states(self):
         print(
-            self.registers.get('left_front', -1),
-            self.registers.get('right_front', -1),
-            self.registers.get('left_top', -1),
-            self.registers.get('right_top', -1),
-            self.registers.get('left_back', -1),
-            self.registers.get('right_back', -1),
-            self.registers.get('camera_angle', -1),
-            self.registers.get('tool_wrist', -1),
-            self.registers.get('tool_grip', -1),
+            self.motor_registers.get('left_front', -1),
+            self.motor_registers.get('right_front', -1),
+            self.motor_registers.get('left_top', -1),
+            self.motor_registers.get('right_top', -1),
+            self.motor_registers.get('left_back', -1),
+            self.motor_registers.get('right_back', -1),
+            self.motor_registers.get('camera_angle', -1),
+            self.motor_registers.get('tool_wrist', -1),
+            self.motor_registers.get('tool_grip', -1),
             )  
         
 

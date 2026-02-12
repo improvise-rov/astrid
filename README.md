@@ -5,7 +5,7 @@
 
 ## Usage
 > [!IMPORTANT]
-> We use a Raspberry Pi 4 for both the the client and the server. From our testing, this will not run on Windows. (Tested on Windows 11)
+> We use a Raspberry Pi 4 for both the the client and the server.
 
 Create a Python Virtual Environment:
 ```

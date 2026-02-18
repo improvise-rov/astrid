@@ -116,7 +116,9 @@ class UiServerConnectionStatusIndicator(UiElement):
 
         string = "Not Connected"
         if self.net.is_open():
-            string = f"Connected ({self.net.ip}:{self.net.port})"
+            string = "Connected"
+
+        string += f" ({self.net.ip}:{self.net.port})"
         surface.blit(self.font.render(string, False, 0xffffffff), self.resolve_position() + pygame.Vector2(15, -10))
 
 class UiCameraFeed(UiElement):

@@ -35,7 +35,7 @@ class RovInterface():
         }
 
         self.camera_angle_speed = 0.001
-        self.wrist_rotate_speed = 0.001
+        self.wrist_rotate_speed = 0.01
 
         self.correction_enabled = True # if true, the ROV will attempt to stabilise itself using its IMU.
 

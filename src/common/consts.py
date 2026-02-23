@@ -38,6 +38,8 @@ ADDRESS_SERVO_CAMERA_ANGLE: int     = 15
 # towards motors <- 0123 4567 8911 1111 -> towards camera
 #                               01 2345
 #
+# (alternatively, 0 is leftmost when the pin header colours are the german flag but upside down) 
+#
 # if i address the motors nearest the physical end where the ESCs are, the wiring is neater
 # likewise, if i put the camera servo at the opposite end and the tool servos somewhere in the middle
 # 

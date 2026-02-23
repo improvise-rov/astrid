@@ -3,6 +3,7 @@ import threading
 import time
 import struct
 from src.common import packets
+from src.common import consts
 from src.common.network import Netsock
 from src.common.rovmath import RovMath
 from src.server.hardware import HardwareManager, _Motor, _Servo
@@ -51,7 +52,19 @@ class Rov():
         self.camera_thread.daemon = True
         self.camera_thread.start()
 
+        # motor init seq
+        self.motor_init_seq('left_front')
+        self.motor_init_seq('right_front')
+        self.motor_init_seq('left_top')
+        self.motor_init_seq('right_top')
+        self.motor_init_seq('left_back')
+        self.motor_init_seq('right_back')
 
+    def motor_init_seq(self, motor: _Motor):
+        # low -> high -> mid
+        self.hardware.set_motor(motor, consts.MOTOR_THROTTLE_NEGATIVE)
+        self.hardware.set_motor(motor, consts.MOTOR_THROTTLE_POSITIVE)
+        self.hardware.set_motor(motor, consts.MOTOR_THROTTLE_NEUTRAL)
 
 
     def tick(self):

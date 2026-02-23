@@ -100,6 +100,24 @@ class HardwareManager():
         # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
         self.motor_interface.servo[address].angle = byte
 
+    def set_motor_bypass(self, motor: _Motor, throttle: float):
+        """
+        hardcoded alternative to set_motor where i manually calculate the duty cycle. just in case. i shouldnt need to use this.
+        """
+        throttle = RovMath.clamp(-1.0, 1.0, throttle)
+
+        self.motor_registers[motor] = throttle
+
+        address = HardwareManager.ADDRESSES[motor]
+
+        if self.simulated: # make sure we arent simulating
+            return
+        
+        # set pulsewidth
+        pulsewidth = RovMath.map(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE, 
+                                 throttle,
+                                 consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_INITIALISE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS)
+        self.motor_interface.servo[address]._pwm.duty_cycle = pulsewidth / 200 # at 50hz: dutycycle = pulsewidth/200
 
     def print_states(self):
         print(

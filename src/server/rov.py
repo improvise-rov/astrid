@@ -24,7 +24,7 @@ class Rov():
         self.hardware = hardware
 
         # values
-        self.net_motor_cache: dict[_Motor | _Servo, int] = {
+        self.net_motor_cache: dict[_Motor | _Servo, RovMath.Number] = {
             "left_front": 0,
             "right_front": 0,
             "left_top": 0,
@@ -59,6 +59,11 @@ class Rov():
         self.motor_init_seq('left_back')
         self.motor_init_seq('right_back')
 
+        # set servo ranges
+        self.hardware.set_servo_pulsewidth_range('camera_angle')
+        self.hardware.set_servo_pulsewidth_range('tool_wrist')
+        self.hardware.set_servo_pulsewidth_range('tool_grip')
+
     def motor_init_seq(self, motor: _Motor):
         # needs to go high?
         self.hardware.set_motor_pulsewidth_range(motor)
@@ -67,12 +72,12 @@ class Rov():
 
     def tick(self):
 
-        lf = self.hardware.decode_motor_byte(self.net_motor_cache['left_front'])
-        rf = self.hardware.decode_motor_byte(self.net_motor_cache['right_front'])
-        lt = self.hardware.decode_motor_byte(self.net_motor_cache['left_top'])
-        rt = self.hardware.decode_motor_byte(self.net_motor_cache['right_top'])
-        lb = self.hardware.decode_motor_byte(self.net_motor_cache['left_back'])
-        rb = self.hardware.decode_motor_byte(self.net_motor_cache['right_back'])
+        lf = self.net_motor_cache['left_front']
+        rf = self.net_motor_cache['right_front']
+        lt = self.net_motor_cache['left_top']
+        rt = self.net_motor_cache['right_top']
+        lb = self.net_motor_cache['left_back']
+        rb = self.net_motor_cache['right_back']
 
         # calculate correction ; PID?? honestly i have no idea if this works
         if self.correction_enabled:
@@ -98,13 +103,13 @@ class Rov():
         self.hardware.set_motor('left_back',    lb)
         self.hardware.set_motor('right_back',   rb)
 
-        self.hardware.set_servo('camera_angle', self.net_motor_cache['camera_angle'])
-        self.hardware.set_servo('tool_wrist', self.net_motor_cache['tool_wrist'])
-        self.hardware.set_servo('tool_grip', self.net_motor_cache['tool_grip'])
+        self.hardware.set_servo('camera_angle', int(self.net_motor_cache['camera_angle']))
+        self.hardware.set_servo('tool_wrist',   int(self.net_motor_cache['tool_wrist']))
+        self.hardware.set_servo('tool_grip',    int(self.net_motor_cache['tool_grip']))
 
         # print if simulated
-        #if self.hardware.simulated:
-        #    self.hardware.print_states()
+        if self.hardware.simulated:
+            self.hardware.print_states()
 
 
     def _camera_thread_activity(self):

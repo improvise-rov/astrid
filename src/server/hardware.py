@@ -41,7 +41,7 @@ class HardwareManager():
     def __init__(self, simulated: bool = False) -> None:
         self.simulated = simulated
         if not self.simulated and not NO_SERVOKIT:
-            self.motor_interface = ServoKit(channels=consts.SERVOBOARD_CHANNEL_COUNT) # type: ignore
+            self.motor_interface = ServoKit(channels=consts.SERVOBOARD_CHANNEL_COUNT) # type: ignore # warning normally because ServoKit might not exist
             self.imu = imu.Imu(consts.IMU_I2C_ADDRESS)
 
         self.motor_registers: dict[_Motor | _Servo, float] = {} # technically THESE arent registers, but it makes the most sense for the analogy im going for
@@ -62,11 +62,20 @@ class HardwareManager():
         return self.imu.gyro()
     
     def set_motor_pulsewidth_range(self, motor: _Motor):
+        if self.simulated:
+            return
         address = HardwareManager.ADDRESSES[motor]
         self.motor_interface.continuous_servo[address].set_pulse_width_range(consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS)
 
+    def set_servo_pulsewidth_range(self, servo: _Servo):
+        if self.simulated:
+            return
+        address = HardwareManager.ADDRESSES[servo]
+        self.motor_interface.servo[address].set_pulse_width_range(consts.PWM_SERVO_MINIMUM, consts.PWM_SERVO_MAXIMUM)
+
+
     def set_motor(self, motor: _Motor, throttle: float):
-        throttle = RovMath.clamp(-1, 1, throttle)
+        throttle = RovMath.clamp(-1.0, 1.0, throttle)
 
         self.motor_registers[motor] = throttle
 
@@ -91,16 +100,6 @@ class HardwareManager():
         # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
         self.motor_interface.servo[address].angle = byte
 
-    def decode_motor_byte(self, byte: int) -> float:
-        return RovMath.map(
-                consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE,
-                consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL,
-                consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD,
-                byte,
-                consts.MOTOR_THROTTLE_NEGATIVE,
-                consts.MOTOR_THROTTLE_NEUTRAL,
-                consts.MOTOR_THROTTLE_POSITIVE
-            )
 
     def print_states(self):
         print(

@@ -16,4 +16,5 @@ DISABLE_CORRECTION: int = 7 # when received, disables correction
 STOP_SERVER: int = 8 # when received, server kills itself nicely
 
 # the following are format strings for struct library
-FORMAT_PACKET_CONTROL: str = "iiiiiiiii"
+# lf, rf, lt, rt, lb, rb, ca, tw, tg
+FORMAT_PACKET_CONTROL: str = "ffffffiii"

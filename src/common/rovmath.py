@@ -5,15 +5,7 @@ class RovMath():
     type Number = int | float
     type Vec = tuple[Number, Number, Number]
 
-    @staticmethod
-    def motor_to_byte(speed: float) -> int:
-        speed = RovMath.clamp(-1.0, 1.0, speed)
-        return int(RovMath.map(
-            -1.0, 0.0, 1.0, speed,
-            consts.ESC_BYTE_MOTOR_SPEED_FULL_REVERSE,
-            consts.ESC_BYTE_MOTOR_SPEED_NEUTRAL,
-            consts.ESC_BYTE_MOTOR_SPEED_FULL_FORWARD,
-        ))
+    
 
     @staticmethod
     def servo_angle_to_byte(angle: float) -> int:

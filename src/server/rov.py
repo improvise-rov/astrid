@@ -16,7 +16,6 @@ class Rov():
     """
 
     TARGET_ROLL: float = 0.0
-
     ROLL_CORRECTION: float = 0.01
 
     def __init__(self, cam: CameraFeed, net: Netsock, hardware: HardwareManager) -> None:
@@ -61,10 +60,9 @@ class Rov():
         self.motor_init_seq('right_back')
 
     def motor_init_seq(self, motor: _Motor):
-        # low -> high -> mid
-        self.hardware.set_motor(motor, consts.MOTOR_THROTTLE_NEGATIVE)
+        # needs to go high?
+        self.hardware.set_motor_pulsewidth_range(motor)
         self.hardware.set_motor(motor, consts.MOTOR_THROTTLE_POSITIVE)
-        self.hardware.set_motor(motor, consts.MOTOR_THROTTLE_NEUTRAL)
 
 
     def tick(self):

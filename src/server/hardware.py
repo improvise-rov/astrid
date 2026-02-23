@@ -60,7 +60,10 @@ class HardwareManager():
         #
         
         return self.imu.gyro()
-
+    
+    def set_motor_pulsewidth_range(self, motor: _Motor):
+        address = HardwareManager.ADDRESSES[motor]
+        self.motor_interface.continuous_servo[address].set_pulse_width_range(consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS)
 
     def set_motor(self, motor: _Motor, throttle: float):
         throttle = RovMath.clamp(-1, 1, throttle)

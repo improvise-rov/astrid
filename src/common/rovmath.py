@@ -4,8 +4,18 @@ from src.common import consts
 class RovMath():
     type Number = int | float
     type Vec = tuple[Number, Number, Number]
-
     
+    @staticmethod
+    def calc_motor_dutycycle(throttle: float, freq: float = 50):
+        assert throttle > -1.0 and throttle < 1.0
+
+        pw =  RovMath.map(
+            -1.0, 0.0, 1.0,
+            throttle,
+            consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_INITIALISE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS
+        )
+
+        return pw / (1/freq) * 1000
 
     @staticmethod
     def servo_angle_to_byte(angle: float) -> int:

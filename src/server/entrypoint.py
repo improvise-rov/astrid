@@ -27,6 +27,18 @@ def server_main(ip: str, port: int, simulated_hardware: bool):
     try:
         net.start_server() # start the server (blocks until client connects)
 
+        # motor init seq
+        rov.motor_init_seq('left_front')
+        rov.motor_init_seq('right_front')
+        rov.motor_init_seq('left_top')
+        rov.motor_init_seq('right_top')
+        rov.motor_init_seq('left_back')
+        rov.motor_init_seq('right_back')
+
+        # set servo ranges
+        rov.hardware.set_servo_pulsewidth_range('camera_angle')
+        rov.hardware.set_servo_pulsewidth_range('tool_wrist')
+        rov.hardware.set_servo_pulsewidth_range('tool_grip')
         
         while net.is_open(): # loops until the client disconnects!
             rov.tick()

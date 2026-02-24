@@ -1,6 +1,7 @@
 NO_SERVOKIT: bool = False
 
 import typing
+import RPi.GPIO as GPIO
 try:
     from adafruit_servokit import ServoKit # we treat everything as a servo; even the brushless motors
 except:
@@ -44,7 +45,25 @@ class HardwareManager():
             self.motor_interface = ServoKit(channels=consts.SERVOBOARD_CHANNEL_COUNT) # type: ignore # warning normally because ServoKit might not exist
             self.imu = imu.Imu(consts.IMU_I2C_ADDRESS)
 
-        self.motor_registers: dict[_Motor | _Servo, float] = {} # technically THESE arent registers, but it makes the most sense for the analogy im going for
+            GPIO.setmode(GPIO.BCM) # broadcom pins
+            GPIO.setup(consts.PIN_FRONT_LEFT_MOTOR, GPIO.OUT)
+            GPIO.setup(consts.PIN_FRONT_RIGHT_MOTOR, GPIO.OUT)
+            GPIO.setup(consts.PIN_TOP_LEFT_MOTOR, GPIO.OUT)
+            GPIO.setup(consts.PIN_TOP_RIGHT_MOTOR, GPIO.OUT)
+            GPIO.setup(consts.PIN_BACK_LEFT_MOTOR, GPIO.OUT)
+            GPIO.setup(consts.PIN_BACK_RIGHT_MOTOR, GPIO.OUT)
+            self.mots: dict[_Motor, GPIO.PWM] = {
+                'left_front': GPIO.PWM(consts.PIN_FRONT_LEFT_MOTOR, 50),
+                'right_front': GPIO.PWM(consts.PIN_FRONT_RIGHT_MOTOR, 50),
+                'left_top': GPIO.PWM(consts.PIN_TOP_LEFT_MOTOR, 50),
+                'right_top': GPIO.PWM(consts.PIN_TOP_RIGHT_MOTOR, 50),
+                'left_back': GPIO.PWM(consts.PIN_BACK_LEFT_MOTOR, 50),
+                'right_back': GPIO.PWM(consts.PIN_BACK_RIGHT_MOTOR, 50),
+            }
+            for pin in self.mots:
+                self.mots[pin].start(RovMath.calc_motor_dutycycle(0))
+
+        self.motor_caches: dict[_Motor | _Servo, float] = {}
 
     def get_gyroscope(self) -> RovMath.Vec:
         if self.simulated:
@@ -77,7 +96,7 @@ class HardwareManager():
     def set_motor(self, motor: _Motor, throttle: float):
         throttle = RovMath.clamp(-1.0, 1.0, throttle)
 
-        self.motor_registers[motor] = throttle
+        self.motor_caches[motor] = throttle
 
         address = HardwareManager.ADDRESSES[motor]
 
@@ -90,7 +109,7 @@ class HardwareManager():
     def set_servo(self, servo: _Servo, byte: int):
         byte = RovMath.clamp(0, 180, byte)
 
-        self.motor_registers[servo] = byte
+        self.motor_caches[servo] = byte
 
         address = HardwareManager.ADDRESSES[servo]
 
@@ -100,36 +119,44 @@ class HardwareManager():
         # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
         self.motor_interface.servo[address].angle = byte
 
-    def set_motor_bypass(self, motor: _Motor, throttle: float):
+    def set_motor_bypass(self, motor: _Motor, pw: int):
         """
         hardcoded alternative to set_motor where i manually calculate the duty cycle. just in case. i shouldnt need to use this.
         """
-        throttle = RovMath.clamp(-1.0, 1.0, throttle)
-
-        self.motor_registers[motor] = throttle
-
         address = HardwareManager.ADDRESSES[motor]
 
         if self.simulated: # make sure we arent simulating
             return
         
         # set pulsewidth
-        pulsewidth = RovMath.map(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE, 
-                                 throttle,
-                                 consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_INITIALISE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS)
-        self.motor_interface.servo[address]._pwm.duty_cycle = pulsewidth / 200 # at 50hz: dutycycle = pulsewidth/200
+        self.motor_interface.continuous_servo[address]._pwm_out.duty_cycle = pw / 200 # at 50hz: dutycycle = pulsewidth/200
+
+
+    def set_motor_rpi(self, motor: _Motor, throttle: float):
+        throttle = RovMath.clamp(-1.0, 1.0, throttle)
+        if self.simulated: # make sure we arent simulating
+            return
+        self.mots[motor].ChangeDutyCycle(RovMath.calc_motor_dutycycle(throttle))
 
     def print_states(self):
         print(
-            self.motor_registers.get('left_front', -1),
-            self.motor_registers.get('right_front', -1),
-            self.motor_registers.get('left_top', -1),
-            self.motor_registers.get('right_top', -1),
-            self.motor_registers.get('left_back', -1),
-            self.motor_registers.get('right_back', -1),
-            self.motor_registers.get('camera_angle', -1),
-            self.motor_registers.get('tool_wrist', -1),
-            self.motor_registers.get('tool_grip', -1),
+            self.motor_caches.get('left_front', -1),
+            self.motor_caches.get('right_front', -1),
+            self.motor_caches.get('left_top', -1),
+            self.motor_caches.get('right_top', -1),
+            self.motor_caches.get('left_back', -1),
+            self.motor_caches.get('right_back', -1),
+            self.motor_caches.get('camera_angle', -1),
+            self.motor_caches.get('tool_wrist', -1),
+            self.motor_caches.get('tool_grip', -1),
             )  
+        
+    def cleanup(self):
+        if self.simulated:
+            return
+        
+        for pin in self.mots:
+            self.mots[pin].stop()
+        GPIO.cleanup()
         
 

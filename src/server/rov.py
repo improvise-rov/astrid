@@ -51,23 +51,10 @@ class Rov():
         self.camera_thread.daemon = True
         self.camera_thread.start()
 
-        # motor init seq
-        self.motor_init_seq('left_front')
-        self.motor_init_seq('right_front')
-        self.motor_init_seq('left_top')
-        self.motor_init_seq('right_top')
-        self.motor_init_seq('left_back')
-        self.motor_init_seq('right_back')
-
-        # set servo ranges
-        self.hardware.set_servo_pulsewidth_range('camera_angle')
-        self.hardware.set_servo_pulsewidth_range('tool_wrist')
-        self.hardware.set_servo_pulsewidth_range('tool_grip')
-
     def motor_init_seq(self, motor: _Motor):
         # needs to go high?
         self.hardware.set_motor_pulsewidth_range(motor)
-        self.hardware.set_motor(motor, consts.MOTOR_THROTTLE_POSITIVE)
+        self.hardware.set_motor_bypass(motor, consts.PWM_INITIALISE_ESC_MICROSECONDS)
 
 
     def tick(self):

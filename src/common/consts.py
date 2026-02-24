@@ -44,6 +44,13 @@ ADDRESS_SERVO_CAMERA_ANGLE: int     = 15
 # likewise, if i put the camera servo at the opposite end and the tool servos somewhere in the middle
 # 
 
+# rpi pins
+PIN_FRONT_LEFT_MOTOR: int = 17
+PIN_FRONT_RIGHT_MOTOR: int = 27
+PIN_TOP_LEFT_MOTOR: int = 23
+PIN_TOP_RIGHT_MOTOR: int = 24
+PIN_BACK_LEFT_MOTOR: int = 5
+PIN_BACK_RIGHT_MOTOR: int = 6
 
 
 # byte quantities

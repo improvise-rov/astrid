@@ -5,6 +5,10 @@ from adafruit_servokit import ServoKit # we treat everything as a servo; even th
 def motor(i: ServoKit, address: int, throttle: float):
     i.continuous_servo[address].throttle = throttle
 
+def motor_manual(i: ServoKit, address: int, pulse: int):
+    assert pulse >= 1100 and pulse <= 1900
+    i.continuous_servo[address]._pwm_out.duty_cycle = (pulse / 20)
+
 if __name__ == "__main__":
     interface = ServoKit(channels=16)
     t = 0.5

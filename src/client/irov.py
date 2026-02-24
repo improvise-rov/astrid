@@ -92,12 +92,12 @@ class RovInterface():
 
         # send data
         self.net.send(packets.CONTROL, struct.pack(packets.FORMAT_PACKET_CONTROL,
-                                                          RovMath.motor_to_byte(self.motors['lf']),
-                                                          RovMath.motor_to_byte(self.motors['rf']),
-                                                          RovMath.motor_to_byte(self.motors['lt']),
-                                                          RovMath.motor_to_byte(self.motors['rt']),
-                                                          RovMath.motor_to_byte(self.motors['lb']),
-                                                          RovMath.motor_to_byte(self.motors['rb']),
+                                                          self.motors['lf'],
+                                                          self.motors['rf'],
+                                                          self.motors['lt'],
+                                                          self.motors['rt'],
+                                                          self.motors['lb'],
+                                                          self.motors['rb'],
 
                                                           RovMath.servo_angle_to_byte(self.motors['ca']),
                                                           RovMath.servo_angle_to_byte(self.motors['tw']),

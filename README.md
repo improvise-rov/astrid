@@ -39,7 +39,7 @@ python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080> [OPTIONAL: --
 ---
 
 # Hardware
-We use a Raspberry Pi 4 onboard our ROV for flight control. The Hardware I2C Addresses are defined in [consts.py](src/consts.py), as well as some other physical quantities such as motor throttles and servo angles. We use a ethernet cable along our tether for digital communications. The poolside client computer is also a Raspberry Pi.
+We use a Raspberry Pi 5 onboard our ROV for flight control. This Pi 5 is connected to a I2C PCA9685 board to control our motors and servos. The addresses for this board are defined in [consts.py](src/consts.py), as well as some other physical quantities such as motor throttles and servo angles. We use a fiber optic cable along our tether ethernet adapters on either end for digital communications. The poolside client computer is a Raspberry Pi 4.
 
 
 ---

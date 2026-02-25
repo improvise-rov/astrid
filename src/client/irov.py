@@ -41,6 +41,14 @@ class RovInterface():
 
 
     def update(self, dt: float):
+
+        # zero
+        self.motors['lf'] = 0
+        self.motors['rf'] = 0
+        self.motors['lt'] = 0
+        self.motors['rt'] = 0
+        self.motors['lb'] = 0
+        self.motors['rb'] = 0
         
         # calculate speeds
         if self.gamepad_manager.has():
@@ -62,12 +70,12 @@ class RovInterface():
             rotate right            lb - rb   rotate left
             """
 
-            self.motors['lf'] = -rotate - strafe + forward 
-            self.motors['rf'] =  rotate + strafe + forward
-            self.motors['lt'] =  elevate
-            self.motors['rt'] =  elevate
-            self.motors['lb'] =  rotate - strafe - forward
-            self.motors['rb'] = -rotate + strafe - forward
+            self.motors['lf'] = RovMath.clamp(-1.0, 1.0, -rotate - strafe + forward )
+            self.motors['rf'] = RovMath.clamp(-1.0, 1.0,  rotate + strafe + forward )
+            self.motors['lt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
+            self.motors['rt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
+            self.motors['lb'] = RovMath.clamp(-1.0, 1.0,  rotate - strafe - forward )
+            self.motors['rb'] = RovMath.clamp(-1.0, 1.0, -rotate + strafe - forward )
 
             # TODO test that this is the right configuration lol
 

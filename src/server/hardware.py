@@ -53,12 +53,12 @@ class HardwareManager():
             GPIO.setup(consts.PIN_BACK_LEFT_MOTOR, GPIO.OUT)
             GPIO.setup(consts.PIN_BACK_RIGHT_MOTOR, GPIO.OUT)
             self.mots: dict[_Motor, GPIO.PWM] = {
-                'left_front': GPIO.PWM(consts.PIN_FRONT_LEFT_MOTOR, 50),
-                'right_front': GPIO.PWM(consts.PIN_FRONT_RIGHT_MOTOR, 50),
-                'left_top': GPIO.PWM(consts.PIN_TOP_LEFT_MOTOR, 50),
-                'right_top': GPIO.PWM(consts.PIN_TOP_RIGHT_MOTOR, 50),
-                'left_back': GPIO.PWM(consts.PIN_BACK_LEFT_MOTOR, 50),
-                'right_back': GPIO.PWM(consts.PIN_BACK_RIGHT_MOTOR, 50),
+                'left_front': GPIO.PWM(consts.PIN_FRONT_LEFT_MOTOR, consts.ESC_PWM_FREQUENCY),
+                'right_front': GPIO.PWM(consts.PIN_FRONT_RIGHT_MOTOR, consts.ESC_PWM_FREQUENCY),
+                'left_top': GPIO.PWM(consts.PIN_TOP_LEFT_MOTOR, consts.ESC_PWM_FREQUENCY),
+                'right_top': GPIO.PWM(consts.PIN_TOP_RIGHT_MOTOR, consts.ESC_PWM_FREQUENCY),
+                'left_back': GPIO.PWM(consts.PIN_BACK_LEFT_MOTOR, consts.ESC_PWM_FREQUENCY),
+                'right_back': GPIO.PWM(consts.PIN_BACK_RIGHT_MOTOR, consts.ESC_PWM_FREQUENCY),
             }
             for pin in self.mots:
                 self.mots[pin].start(RovMath.calc_motor_dutycycle(0))

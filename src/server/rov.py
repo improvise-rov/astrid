@@ -83,12 +83,12 @@ class Rov():
 
 
         # set motors
-        self.hardware.set_motor_rpi('left_front',   lf)
-        self.hardware.set_motor_rpi('right_front',  rf)
-        self.hardware.set_motor_rpi('left_top',     lt)
-        self.hardware.set_motor_rpi('right_top',    rt)
-        self.hardware.set_motor_rpi('left_back',    lb)
-        self.hardware.set_motor_rpi('right_back',   rb)
+        self.hardware.set_motor('left_front',   lf)
+        self.hardware.set_motor('right_front',  rf)
+        self.hardware.set_motor('left_top',     lt)
+        self.hardware.set_motor('right_top',    rt)
+        self.hardware.set_motor('left_back',    lb)
+        self.hardware.set_motor('right_back',   rb)
 
         self.hardware.set_servo('camera_angle', int(self.net_motor_cache['camera_angle']))
         self.hardware.set_servo('tool_wrist',   int(self.net_motor_cache['tool_wrist']))

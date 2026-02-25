@@ -93,7 +93,7 @@ class HardwareManager():
             return
         
         # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
-        #self.motor_interface.servo[address].angle = byte
+        self.motor_interface.channels[address].duty_cycle = RovMath.calc_servo_dutycycle(byte)
 
 
     def print_states(self):
@@ -113,6 +113,11 @@ class HardwareManager():
         if self.simulated:
             return
         
-        pass
+        self.set_motor('left_front', 0.0)
+        self.set_motor('right_front', 0.0)
+        self.set_motor('left_top', 0.0)
+        self.set_motor('right_top', 0.0)
+        self.set_motor('left_back', 0.0)
+        self.set_motor('left_back', 0.0)
         
 

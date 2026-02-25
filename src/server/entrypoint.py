@@ -41,6 +41,7 @@ def server_main(ip: str, port: int, simulated_hardware: bool):
         pass
 
     rov.camera_running = False
+    rov.hardware.cleanup()
     net.close()
 
     os.kill(os.getpid(), signal.SIGTERM) # is this bad? i almost guarantee it

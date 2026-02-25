@@ -71,9 +71,9 @@ MOTOR_THROTTLE_NEUTRAL: float = 0.0
 MOTOR_THROTTLE_POSITIVE: float = 1.0
 
 # pwm values ; now unneeded! but i left them here for reference in case they are needed at some point
-PWM_REVERSE_ESC_MICROSECONDS: int = 1100
-PWM_INITIALISE_ESC_MICROSECONDS: int = 1500
-PWM_FORWARD_ESC_MICROSECONDS: int = 1900
+PWM_REVERSE_ESC_MICROSECONDS: int = 1200
+PWM_INITIALISE_ESC_MICROSECONDS: int = 1600 # 100us higher than it should be but we ball
+PWM_FORWARD_ESC_MICROSECONDS: int = 2000
 PWM_SERVO_MINIMUM: int = 1000
 PWM_SERVO_NEUTRAL: int = 1500
 PWM_SERVO_MAXIMUM: int = 2000

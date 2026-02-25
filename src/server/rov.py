@@ -53,8 +53,7 @@ class Rov():
 
     def motor_init_seq(self, motor: _Motor):
         # needs to go high?
-        self.hardware.set_motor_pulsewidth_range(motor)
-        self.hardware.set_motor_rpi(motor, consts.PWM_INITIALISE_ESC_MICROSECONDS)
+        self.hardware.set_motor(motor, consts.PWM_INITIALISE_ESC_MICROSECONDS)
 
 
     def tick(self):

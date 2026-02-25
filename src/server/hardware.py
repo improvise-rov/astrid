@@ -1,9 +1,10 @@
 NO_SERVOKIT: bool = False
 
 import typing
-import RPi.GPIO as GPIO
 try:
-    from adafruit_servokit import ServoKit # we treat everything as a servo; even the brushless motors
+    import busio
+    import board
+    from adafruit_pca9685 import PCA9685 # we treat everything as a servo; even the brushless motors
 except:
     print("** NO SERVOKIT LIB FOUND!! **")
     NO_SERVOKIT = True
@@ -42,26 +43,13 @@ class HardwareManager():
     def __init__(self, simulated: bool = False) -> None:
         self.simulated = simulated
         if not self.simulated and not NO_SERVOKIT:
-            self.motor_interface = ServoKit(channels=consts.SERVOBOARD_CHANNEL_COUNT) # type: ignore # warning normally because ServoKit might not exist
+            self.i2c_bus = busio.I2C(board.SCL, board.SDA) # type: ignore
+            self.motor_interface = PCA9685(self.i2c_bus) # type: ignore # warning normally because ServoKit might not exist
             self.imu = imu.Imu(consts.IMU_I2C_ADDRESS)
 
-            GPIO.setmode(GPIO.BCM) # broadcom pins
-            GPIO.setup(consts.PIN_FRONT_LEFT_MOTOR, GPIO.OUT)
-            GPIO.setup(consts.PIN_FRONT_RIGHT_MOTOR, GPIO.OUT)
-            GPIO.setup(consts.PIN_TOP_LEFT_MOTOR, GPIO.OUT)
-            GPIO.setup(consts.PIN_TOP_RIGHT_MOTOR, GPIO.OUT)
-            GPIO.setup(consts.PIN_BACK_LEFT_MOTOR, GPIO.OUT)
-            GPIO.setup(consts.PIN_BACK_RIGHT_MOTOR, GPIO.OUT)
-            self.mots: dict[_Motor, GPIO.PWM] = {
-                'left_front': GPIO.PWM(consts.PIN_FRONT_LEFT_MOTOR, consts.ESC_PWM_FREQUENCY),
-                'right_front': GPIO.PWM(consts.PIN_FRONT_RIGHT_MOTOR, consts.ESC_PWM_FREQUENCY),
-                'left_top': GPIO.PWM(consts.PIN_TOP_LEFT_MOTOR, consts.ESC_PWM_FREQUENCY),
-                'right_top': GPIO.PWM(consts.PIN_TOP_RIGHT_MOTOR, consts.ESC_PWM_FREQUENCY),
-                'left_back': GPIO.PWM(consts.PIN_BACK_LEFT_MOTOR, consts.ESC_PWM_FREQUENCY),
-                'right_back': GPIO.PWM(consts.PIN_BACK_RIGHT_MOTOR, consts.ESC_PWM_FREQUENCY),
-            }
-            for pin in self.mots:
-                self.mots[pin].start(RovMath.calc_motor_dutycycle(0))
+            self.motor_interface.frequency = consts.ESC_PWM_FREQUENCY
+
+            
 
         self.motor_caches: dict[_Motor | _Servo, float] = {}
 
@@ -79,18 +67,6 @@ class HardwareManager():
         #
         
         return self.imu.gyro()
-    
-    def set_motor_pulsewidth_range(self, motor: _Motor):
-        if self.simulated:
-            return
-        address = HardwareManager.ADDRESSES[motor]
-        self.motor_interface.continuous_servo[address].set_pulse_width_range(consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS)
-
-    def set_servo_pulsewidth_range(self, servo: _Servo):
-        if self.simulated:
-            return
-        address = HardwareManager.ADDRESSES[servo]
-        self.motor_interface.servo[address].set_pulse_width_range(consts.PWM_SERVO_MINIMUM, consts.PWM_SERVO_MAXIMUM)
 
 
     def set_motor(self, motor: _Motor, throttle: float):
@@ -104,7 +80,7 @@ class HardwareManager():
             return
         
         # 
-        self.motor_interface.continuous_servo[address].throttle = throttle
+        self.motor_interface.channels[address].duty_cycle = RovMath.calc_motor_dutycycle(throttle)
 
     def set_servo(self, servo: _Servo, byte: int):
         byte = RovMath.clamp(0, 180, byte)
@@ -117,26 +93,8 @@ class HardwareManager():
             return
         
         # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
-        self.motor_interface.servo[address].angle = byte
+        #self.motor_interface.servo[address].angle = byte
 
-    def set_motor_bypass(self, motor: _Motor, pw: int):
-        """
-        hardcoded alternative to set_motor where i manually calculate the duty cycle. just in case. i shouldnt need to use this.
-        """
-        address = HardwareManager.ADDRESSES[motor]
-
-        if self.simulated: # make sure we arent simulating
-            return
-        
-        # set pulsewidth
-        self.motor_interface.continuous_servo[address]._pwm_out.duty_cycle = pw / 200 # at 50hz: dutycycle = pulsewidth/200
-
-
-    def set_motor_rpi(self, motor: _Motor, throttle: float):
-        throttle = RovMath.clamp(-1.0, 1.0, throttle)
-        if self.simulated: # make sure we arent simulating
-            return
-        self.mots[motor].ChangeDutyCycle(RovMath.calc_motor_dutycycle(throttle))
 
     def print_states(self):
         print(
@@ -155,8 +113,6 @@ class HardwareManager():
         if self.simulated:
             return
         
-        for pin in self.mots:
-            self.mots[pin].stop()
-        GPIO.cleanup()
+        pass
         
 

@@ -6,16 +6,17 @@ class RovMath():
     type Vec = tuple[Number, Number, Number]
     
     @staticmethod
-    def calc_motor_dutycycle(throttle: float):
+    def calc_motor_dutycycle(throttle: float) -> int:
         assert throttle > -1.0 and throttle < 1.0
 
-        pw =  RovMath.map(
+        pulse =  RovMath.map(
             -1.0, 0.0, 1.0,
             throttle,
             consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_INITIALISE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS
         )
+        period = 1_000_000 / consts.ESC_PWM_FREQUENCY
 
-        return pw / (1 / consts.ESC_PWM_FREQUENCY) / 1000
+        return int((pulse / period) * 0xFFFF)
 
     @staticmethod
     def servo_angle_to_byte(angle: float) -> int:

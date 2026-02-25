@@ -36,19 +36,23 @@ class RovInterface():
 
         self.camera_angle_speed = 0.001
         self.wrist_rotate_speed = 0.01
+        self.motor_smoothing = 0.01
 
         self.correction_enabled = True # if true, the ROV will attempt to stabilise itself using its IMU.
 
 
     def update(self, dt: float):
 
-        # zero
-        self.motors['lf'] = 0
-        self.motors['rf'] = 0
-        self.motors['lt'] = 0
-        self.motors['rt'] = 0
-        self.motors['lb'] = 0
-        self.motors['rb'] = 0
+        # tick
+        motor_tick: dict[RovInterface._MotorKey, RovMath.Number] = {
+            'lf': 0, # front left
+            'rf': 0, # front right
+            'lt': 0, # top left
+            'rt': 0, # top right
+            'lb': 0, # back left
+            'rb': 0, # back right
+        }
+
         
         # calculate speeds
         if self.gamepad_manager.has():
@@ -70,12 +74,12 @@ class RovInterface():
             rotate right            lb - rb   rotate left
             """
 
-            self.motors['lf'] = RovMath.clamp(-1.0, 1.0, -rotate - strafe + forward )
-            self.motors['rf'] = RovMath.clamp(-1.0, 1.0,  rotate + strafe + forward )
-            self.motors['lt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
-            self.motors['rt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
-            self.motors['lb'] = RovMath.clamp(-1.0, 1.0,  rotate - strafe - forward )
-            self.motors['rb'] = RovMath.clamp(-1.0, 1.0, -rotate + strafe - forward )
+            motor_tick['lf'] = RovMath.clamp(-1.0, 1.0, -rotate - strafe + forward )
+            motor_tick['rf'] = RovMath.clamp(-1.0, 1.0,  rotate + strafe + forward )
+            motor_tick['lt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
+            motor_tick['rt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
+            motor_tick['lb'] = RovMath.clamp(-1.0, 1.0,  rotate - strafe - forward )
+            motor_tick['rb'] = RovMath.clamp(-1.0, 1.0, -rotate + strafe - forward )
 
             # TODO test that this is the right configuration lol
 
@@ -90,12 +94,19 @@ class RovInterface():
 
         reverse = keys[pygame.K_KP_0]
 
-        self.motors['lf'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_7] else self.motors['lf']
-        self.motors['rf'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_9] else self.motors['rf']
-        self.motors['lt'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_4] else self.motors['lt']
-        self.motors['rt'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_6] else self.motors['rt']
-        self.motors['lb'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_1] else self.motors['lb']
-        self.motors['rb'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_3] else self.motors['rb']
+        motor_tick['lf'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_7] else motor_tick['lf']
+        motor_tick['rf'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_9] else motor_tick['rf']
+        motor_tick['lt'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_4] else motor_tick['lt']
+        motor_tick['rt'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_6] else motor_tick['rt']
+        motor_tick['lb'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_1] else motor_tick['lb']
+        motor_tick['rb'] = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_3] else motor_tick['rb']
+
+        self.motors['lf'] = RovMath.move_toward(self.motors['lf'], motor_tick['lf'], self.motor_smoothing)
+        self.motors['rf'] = RovMath.move_toward(self.motors['rf'], motor_tick['rf'], self.motor_smoothing)
+        self.motors['lt'] = RovMath.move_toward(self.motors['lt'], motor_tick['lt'], self.motor_smoothing)
+        self.motors['rt'] = RovMath.move_toward(self.motors['rt'], motor_tick['rt'], self.motor_smoothing)
+        self.motors['lb'] = RovMath.move_toward(self.motors['lb'], motor_tick['lb'], self.motor_smoothing)
+        self.motors['rb'] = RovMath.move_toward(self.motors['rb'], motor_tick['rb'], self.motor_smoothing)
 
 
         # send data

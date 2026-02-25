@@ -60,3 +60,18 @@ class RovMath():
         value = target_low + delta * (target_high - target_low)
 
         return RovMath.clamp(target_low, target_high, value)
+    
+    @staticmethod
+    def move_toward(current: float, target: float, delta: float) -> float:
+        if current == target:
+            return target
+        
+        if current < target and current + delta > target:
+            return target
+        elif current > target and current - delta < target:
+            return target
+
+        if current > target:
+            return current - delta
+        else:
+            return current + delta

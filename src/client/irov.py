@@ -88,7 +88,6 @@ class RovInterface():
             self.motors['tg'] = tool_grip
             self.motors['tw'] = RovMath.clamp(-1, 1, self.motors['tw'] + wrist * self.wrist_rotate_speed)
 
-
         # manual override
         keys = pygame.key.get_pressed()
 

@@ -90,7 +90,7 @@ class Rov():
         self.hardware.set_motor('right_back',   rb)
 
         self.hardware.set_servo('camera_angle', int(self.net_motor_cache['camera_angle']))
-        self.hardware.set_servo('tool_wrist',   int(self.net_motor_cache['tool_wrist']), camera = False)
+        self.hardware.set_servo('tool_wrist',   int(self.net_motor_cache['tool_wrist'] / 2), camera = False) # the tool gripper only actually needs to go 0..90, so i divide the range by 2 (because its transmitted as a number 0..180)
         self.hardware.set_servo('tool_grip',    int(self.net_motor_cache['tool_grip']), camera = False)
 
         # print if simulated

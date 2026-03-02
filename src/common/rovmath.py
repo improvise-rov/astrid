@@ -12,22 +12,24 @@ class RovMath():
         pulse =  RovMath.map(
             -1.0, 0.0, 1.0,
             throttle,
-            consts.PWM_REVERSE_ESC_MICROSECONDS, consts.PWM_INITIALISE_ESC_MICROSECONDS, consts.PWM_FORWARD_ESC_MICROSECONDS
+            consts.PWM_ESC_REVERSE, consts.PWM_ESC_INITIALISE, consts.PWM_ESC_FORWARD
         )
-        period = 1_000_000 / consts.ESC_PWM_FREQUENCY
+        period = 1_000_000 / consts.PWM_FREQUENCY
 
         return int((pulse / period) * 0xFFFF)
     
     @staticmethod
-    def calc_servo_dutycycle(angle: int) -> int:
+    def calc_servo_dutycycle(angle: int, camera: bool) -> int:
         assert angle >= 0 and angle <= 180
 
         pulse =  RovMath.map(
             0, 90, 180,
             angle,
-            consts.PWM_SERVO_MINIMUM, consts.PWM_SERVO_NEUTRAL, consts.PWM_SERVO_MAXIMUM
+            consts.PWM_CAMERA_SERVO_MINIMUM if camera else consts.PWM_TOOL_SERVO_MINIMUM, 
+            consts.PWM_CAMERA_SERVO_NEUTRAL if camera else consts.PWM_TOOL_SERVO_NEUTRAL, 
+            consts.PWM_CAMERA_SERVO_MAXIMUM if camera else consts.PWM_TOOL_SERVO_MAXIMUM
         )
-        period = 1_000_000 / consts.ESC_PWM_FREQUENCY
+        period = 1_000_000 / consts.PWM_FREQUENCY
 
         return int((pulse / period) * 0xFFFF)
 

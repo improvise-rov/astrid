@@ -47,7 +47,7 @@ class HardwareManager():
             self.motor_interface = PCA9685(self.i2c_bus) # type: ignore # warning normally because ServoKit might not exist
             self.imu = imu.Imu(consts.IMU_I2C_ADDRESS)
 
-            self.motor_interface.frequency = consts.ESC_PWM_FREQUENCY
+            self.motor_interface.frequency = consts.PWM_FREQUENCY
 
             
 
@@ -82,7 +82,7 @@ class HardwareManager():
         # 
         self.motor_interface.channels[address].duty_cycle = RovMath.calc_motor_dutycycle(throttle)
 
-    def set_servo(self, servo: _Servo, byte: int):
+    def set_servo(self, servo: _Servo, byte: int, camera: bool = True):
         byte = RovMath.clamp(0, 180, byte)
 
         self.motor_caches[servo] = byte
@@ -93,7 +93,7 @@ class HardwareManager():
             return
         
         # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
-        self.motor_interface.channels[address].duty_cycle = RovMath.calc_servo_dutycycle(byte)
+        self.motor_interface.channels[address].duty_cycle = RovMath.calc_servo_dutycycle(byte, camera)
 
 
     def print_states(self):

@@ -53,7 +53,7 @@ class Rov():
 
     def motor_init_seq(self, motor: _Motor):
         # needs to go high?
-        self.hardware.set_motor(motor, consts.PWM_INITIALISE_ESC_MICROSECONDS)
+        self.hardware.set_motor(motor, consts.PWM_ESC_INITIALISE)
 
 
     def tick(self):
@@ -90,8 +90,8 @@ class Rov():
         self.hardware.set_motor('right_back',   rb)
 
         self.hardware.set_servo('camera_angle', int(self.net_motor_cache['camera_angle']))
-        self.hardware.set_servo('tool_wrist',   int(self.net_motor_cache['tool_wrist']))
-        self.hardware.set_servo('tool_grip',    int(self.net_motor_cache['tool_grip']))
+        self.hardware.set_servo('tool_wrist',   int(self.net_motor_cache['tool_wrist']), camera = False)
+        self.hardware.set_servo('tool_grip',    int(self.net_motor_cache['tool_grip']), camera = False)
 
         # print if simulated
         if self.hardware.simulated:

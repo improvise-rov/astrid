@@ -71,13 +71,16 @@ MOTOR_THROTTLE_NEUTRAL: float = 0.0
 MOTOR_THROTTLE_POSITIVE: float = 1.0
 
 # pwm values ; now unneeded! but i left them here for reference in case they are needed at some point
-PWM_REVERSE_ESC_MICROSECONDS: int = 1200
-PWM_INITIALISE_ESC_MICROSECONDS: int = 1600 # 100us higher than it should be but we ball
-PWM_FORWARD_ESC_MICROSECONDS: int = 2000
-PWM_SERVO_MINIMUM: int = 1000
-PWM_SERVO_NEUTRAL: int = 1500
-PWM_SERVO_MAXIMUM: int = 2000
-ESC_PWM_FREQUENCY: int = 50
+PWM_ESC_REVERSE: int = 1200
+PWM_ESC_INITIALISE: int = 1600 # 100us higher than it should be but we ball
+PWM_ESC_FORWARD: int = 2000
+PWM_CAMERA_SERVO_MINIMUM: int = 1000
+PWM_CAMERA_SERVO_NEUTRAL: int = 1500
+PWM_CAMERA_SERVO_MAXIMUM: int = 2000
+PWM_TOOL_SERVO_MINIMUM: int = 500
+PWM_TOOL_SERVO_NEUTRAL: int = 1500
+PWM_TOOL_SERVO_MAXIMUM: int = 2500
+PWM_FREQUENCY: int = 50
 
 # imu
 IMU_I2C_ADDRESS: int = 0x00

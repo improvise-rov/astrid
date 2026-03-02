@@ -7,6 +7,6 @@
 
     "axis.rov.strafe": "lstick_x",
     "axis.rov.forward": "lstick_y",
-    "axis.rov.rotate": "rstick_x",
+    "axis.rov.rotate": "none",
     "axis.rov.elevate": "rstick_y"
 }

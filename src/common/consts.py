@@ -21,6 +21,10 @@ IMPROVISE_ASCII_ART_STRING: str = """  _                 ____   _____     ___
  |_|_| |_| |_| .__/|_| \\_\\\\___/  \\_/  |_|___/\\___|
              |_|                                  """
 
+# colors
+SAFETY_ORANGE: int = 0xFF6700
+GLAUCOUS: int = 0x6082B6
+
 # i2c servo board address numbers
 ADDRESS_ESC_MOTOR_FRONT_LEFT: int   = 0
 ADDRESS_ESC_MOTOR_FRONT_RIGHT: int  = 1
@@ -66,9 +70,9 @@ SERVOBOARD_CHANNEL_COUNT: int = 16 # the breakout board has 16 channels. we only
 SERVO_ANGLE_MIN: int = 0
 SERVO_ANGLE_NEUTRAL: int = 90
 SERVO_ANGLE_MAX: int = 180
-MOTOR_THROTTLE_NEGATIVE: float = -1.0
+MOTOR_THROTTLE_NEGATIVE: float = -1.0 / 2 # limit power (prevent current brownout)
 MOTOR_THROTTLE_NEUTRAL: float = 0.0
-MOTOR_THROTTLE_POSITIVE: float = 1.0
+MOTOR_THROTTLE_POSITIVE: float = 1.0 / 2
 
 # pwm values ; now unneeded! but i left them here for reference in case they are needed at some point
 PWM_ESC_REVERSE: int = 1200

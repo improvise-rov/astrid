@@ -4,17 +4,6 @@ from src.common import consts
 from src.client.entrypoint import client_main
 from src.server.entrypoint import server_main
 
-"""
-main program entrypoint.
-
-the main purpose of this script is to extract arguments from the command line
-and delegate to other parts of the program.
-
-this might get rewritten, it feels kinda weird and jank right now, but idk.
-
-- fynn
-"""
-
 def extract_args() -> tuple[str, int, bool]:
     """
     loops over the list of arguments passed to the program and extracts data from them

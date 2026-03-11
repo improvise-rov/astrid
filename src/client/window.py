@@ -7,6 +7,7 @@ from src.client.ui import UiCameraFeed
 from src.client.ui import UiControlMonitor
 from src.client.ui import UiCorrectionSubsysStatus
 from src.client.ui import UiTextLog
+from src.client.render import Renderer
 from src.client.logger import Logger
 from src.client.irov import RovInterface
 from src.client.gamepad import GamepadManager
@@ -41,6 +42,9 @@ class Window():
         # ICON
         astrid_texture = pygame.image.load('docs/astrid_pixelart.png').convert_alpha()
         self.window.set_icon(astrid_texture)
+
+        # RENDERER
+        Renderer.init()
 
         # MANAGEMENT
         self.keep_window_open = False # this boolean is important as it keeps the window loop going. if its ever false at the end of a loop, the window closes.
@@ -106,8 +110,6 @@ class Window():
             pygame.Vector2(1000, 40),
             self.rov
         ))
-
-        
 
         ####################
 
@@ -239,10 +241,14 @@ class Window():
         self.wnd_surface.fill(0x0) # fill window surface
 
         # from here draw to the draw surface
-        self.draw_surface.fill(0x5980b1) # fill with a nice improvise blue
+        self.draw_surface.fill(consts.GLAUCOUS) # fill with a nice improvise blue
+        
+        # add a safety orange bit BECAUSE I CAN HAHAHAHAH
+        pygame.draw.rect(self.draw_surface, consts.SAFETY_ORANGE, (pygame.Vector2(0, consts.WINDOW_HEIGHT * 1/2), pygame.Vector2(consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT))) 
 
         # draw ui container (and therefore everything within it)
         self.container.draw(self.draw_surface)
+
 
         # draw draw surface to window surface
         self.wnd_surface.blit(pygame.transform.scale(self.draw_surface, self.window.size))

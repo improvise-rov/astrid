@@ -5,8 +5,11 @@ import io
 from src.client.irov import RovInterface
 from src.client.logger import Logger
 from src.client.callback import Callback
+from src.client.render import Renderer
 from src.common.network import Netsock
+from src.common.rovmath import RovMath
 from src.common import packets
+from src.common import consts
 
 class UiContainer():
     """
@@ -105,21 +108,12 @@ class UiServerConnectionStatusIndicator(UiElement):
     def __init__(self, pos: pygame.Vector2, net: Netsock):
         super().__init__(pos)
         self.net = net
-
-        self.font = pygame.font.SysFont('consolas', 24)
         
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
-        pygame.draw.circle(surface, 0x000000, self.resolve_position(), 10)
-        pygame.draw.circle(surface, 0x00ff00 if self.net.is_open() else 0xff0000, self.resolve_position(), 8)
-
-        string = "Not Connected"
-        if self.net.is_open():
-            string = "Connected"
-
-        string += f" ({self.net.ip}:{self.net.port})"
-        surface.blit(self.font.render(string, False, 0xffffffff), self.resolve_position() + pygame.Vector2(15, -10))
+        string = f" ({self.net.ip}:{self.net.port})"
+        Renderer.draw_boolean_circle(surface, self.resolve_position(), self.net.is_open(), "Connected" + string, "Not Connected" + string)
 
 class UiCameraFeed(UiElement):
     def __init__(self, pos: pygame.Vector2, no_conn_img: pygame.Surface, net: Netsock):
@@ -146,36 +140,66 @@ class UiCameraFeed(UiElement):
         )
 
 class UiControlMonitor(UiElement):
-    """
-    Half a UI Element, half just decentralised processing. 
-    The UI Element system does a good job at seperating out things that need processing,
-    and this needs processing.
-    """
 
     def __init__(self, pos: pygame.Vector2, rov: RovInterface):
         super().__init__(pos)
 
-        self.font = pygame.font.SysFont('consolas', 24)
         self.rov = rov
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
 
-        text = self.font.render(
-            "lf:".ljust(3) + f"{round(self.rov.motors['lf'], 2)}".rjust(5) + "   " +
-            "rf:".ljust(3) + f"{round(self.rov.motors['rf'], 2)}".rjust(5) + "\n" + 
-            "lt:".ljust(3) + f"{round(self.rov.motors['lt'], 2)}".rjust(5) + "   " +
-            "rt:".ljust(3) + f"{round(self.rov.motors['rt'], 2)}".rjust(5) + "\n" + 
-            "lb:".ljust(3) + f"{round(self.rov.motors['lb'], 2)}".rjust(5) + "   " +
-            "rb:".ljust(3) + f"{round(self.rov.motors['rb'], 2)}".rjust(5) + "\n" +
-            "\n\n\n" +
-            f"camera angle: {round(self.rov.motors['ca'], 2)}\n" +
-            f"grip: {round(self.rov.motors['tg'], 2)}\n" +
-            f"wrist: {round(self.rov.motors['tw'], 2)}\n",
-            False, 0x000000ff
-        )
+        #Renderer.draw_text(surface, 
+        #                   "lf:".ljust(3) + f"{round(self.rov.motors['lf'], 2)}".rjust(5) + "   " +
+        #                   "rf:".ljust(3) + f"{round(self.rov.motors['rf'], 2)}".rjust(5) + "\n" + 
+        #                   "lt:".ljust(3) + f"{round(self.rov.motors['lt'], 2)}".rjust(5) + "   " +
+        #                   "rt:".ljust(3) + f"{round(self.rov.motors['rt'], 2)}".rjust(5) + "\n" + 
+        #                   "lb:".ljust(3) + f"{round(self.rov.motors['lb'], 2)}".rjust(5) + "   " +
+        #                   "rb:".ljust(3) + f"{round(self.rov.motors['rb'], 2)}".rjust(5) + "\n" +
+        #                   "\n\n\n" +
+        #                   f"camera angle: {round(self.rov.motors['ca'], 2)}\n" +
+        #                   f"grip: {round(self.rov.motors['tg'], 2)}\n" +
+        #                   f"wrist: {round(self.rov.motors['tw'], 2)}\n", 
+        #                   (self.resolve_position(), pygame.Vector2(0, 0)),
+        #                   color='black'
+        #    )
+        
+        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(0, 0), 80, 20, RovMath.map(
+            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
+            -self.rov.motors['lf'],
+            -1.0, 0.0, 1.0
+        ), absolute=False, orientation='top_to_bottom')
 
-        surface.blit(text, self.resolve_position())
+        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(50, 0), 80, 20, RovMath.map(
+            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
+            -self.rov.motors['rf'],
+            -1.0, 0.0, 1.0
+        ), absolute=False, orientation='top_to_bottom')
+
+        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(0, 100), 80, 20, RovMath.map(
+            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
+            -self.rov.motors['lt'],
+            -1.0, 0.0, 1.0
+        ), absolute=False, orientation='top_to_bottom')
+
+        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(50, 100), 80, 20, RovMath.map(
+            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
+            -self.rov.motors['rt'],
+            -1.0, 0.0, 1.0
+        ), absolute=False, orientation='top_to_bottom')
+
+        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(0, 200), 80, 20, RovMath.map(
+            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
+            -self.rov.motors['lb'],
+            -1.0, 0.0, 1.0
+        ), absolute=False, orientation='top_to_bottom')
+
+        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(50, 200), 80, 20, RovMath.map(
+            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
+            -self.rov.motors['rb'],
+            -1.0, 0.0, 1.0
+        ), absolute=False, orientation='top_to_bottom')
+
 
 
 
@@ -184,26 +208,18 @@ class UiCorrectionSubsysStatus(UiElement):
         super().__init__(pos)
         self.rov = rov
 
-        self.font = pygame.font.SysFont('consolas', 24)
         
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
-        pygame.draw.circle(surface, 0x000000, self.resolve_position(), 10)
-        pygame.draw.circle(surface, 0x00ff00 if self.rov.correction_enabled else 0xff0000, self.resolve_position(), 8)
 
         string = "IMU-based Angular Correction "
-        if self.rov.correction_enabled:
-            string += "Enabled"
-        else:
-            string += "Disabled"
-        surface.blit(self.font.render(string, False, 0xffffffff), self.resolve_position() + pygame.Vector2(15, -10))
+        Renderer.draw_boolean_circle(surface, self.resolve_position(), self.rov.correction_enabled, string + "Enabled", string + "Disabled")
 
 class UiTextLog(UiElement):
     def __init__(self, pos: pygame.Vector2, dimensions: pygame.Vector2, lines: int):
         super().__init__(pos)
 
-        self.font = pygame.font.SysFont('consolas', 24)
         self.dimensions = dimensions
 
         self.recent_lines: list[str] = []
@@ -220,8 +236,11 @@ class UiTextLog(UiElement):
             self.dimensions
         ))
 
-        for i, line in enumerate(self.recent_lines):
-            surface.blit(self.font.render(line, False, 0xffffffff), self.resolve_position() + pygame.Vector2(15, 10 + 20 * i))
+        Renderer.draw_text(
+                surface, "\n".join(self.recent_lines), 
+                (self.resolve_position() + pygame.Vector2(15, 15), 
+                 pygame.Vector2(self.dimensions.x - 15, 30))
+                 )
 
 
     def _log(self, e: pygame.Event):

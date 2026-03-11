@@ -2,6 +2,7 @@ import typing
 import pygame
 import struct
 from src.common import packets
+from src.common import consts
 from src.common.network import Netsock
 from src.common.rovmath import RovMath
 from src.client.gamepad import GamepadManager
@@ -74,12 +75,12 @@ class RovInterface():
             rotate right            lb - rb   rotate left
             """
 
-            motor_tick['lf'] = RovMath.clamp(-1.0, 1.0, -rotate - strafe + forward )
-            motor_tick['rf'] = RovMath.clamp(-1.0, 1.0,  rotate + strafe + forward )
-            motor_tick['lt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
-            motor_tick['rt'] = RovMath.clamp(-1.0, 1.0,  elevate                   )
-            motor_tick['lb'] = RovMath.clamp(-1.0, 1.0,  rotate - strafe - forward )
-            motor_tick['rb'] = RovMath.clamp(-1.0, 1.0, -rotate + strafe - forward )
+            motor_tick['lf'] = RovMath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE, -rotate - strafe + forward )
+            motor_tick['rf'] = RovMath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,  rotate + strafe + forward )
+            motor_tick['lt'] = RovMath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,  elevate                   )
+            motor_tick['rt'] = RovMath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,  elevate                   )
+            motor_tick['lb'] = RovMath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,  rotate - strafe - forward )
+            motor_tick['rb'] = RovMath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE, -rotate + strafe - forward )
 
             # TODO test that this is the right configuration lol
 

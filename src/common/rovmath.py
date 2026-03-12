@@ -64,6 +64,13 @@ class RovMath():
         return RovMath.clamp(target_low, target_high, value)
     
     @staticmethod
+    def map_no_midpoint(low: Number, high: Number, map: Number, target_low: Number, target_high: Number) -> Number:
+        delta = (map - low) / (high - low)
+        value = target_low + delta * (target_high - target_low)
+
+        return RovMath.clamp(target_low, target_high, value)
+    
+    @staticmethod
     def move_toward(current: float, target: float, delta: float) -> float:
         if current == target:
             return target

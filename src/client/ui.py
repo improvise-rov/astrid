@@ -1,5 +1,6 @@
 from __future__ import annotations
 import pygame
+import typing
 import io
 
 from src.client.irov import RovInterface
@@ -149,56 +150,21 @@ class UiControlMonitor(UiElement):
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
 
-        #Renderer.draw_text(surface, 
-        #                   "lf:".ljust(3) + f"{round(self.rov.motors['lf'], 2)}".rjust(5) + "   " +
-        #                   "rf:".ljust(3) + f"{round(self.rov.motors['rf'], 2)}".rjust(5) + "\n" + 
-        #                   "lt:".ljust(3) + f"{round(self.rov.motors['lt'], 2)}".rjust(5) + "   " +
-        #                   "rt:".ljust(3) + f"{round(self.rov.motors['rt'], 2)}".rjust(5) + "\n" + 
-        #                   "lb:".ljust(3) + f"{round(self.rov.motors['lb'], 2)}".rjust(5) + "   " +
-        #                   "rb:".ljust(3) + f"{round(self.rov.motors['rb'], 2)}".rjust(5) + "\n" +
-        #                   "\n\n\n" +
-        #                   f"camera angle: {round(self.rov.motors['ca'], 2)}\n" +
-        #                   f"grip: {round(self.rov.motors['tg'], 2)}\n" +
-        #                   f"wrist: {round(self.rov.motors['tw'], 2)}\n", 
-        #                   (self.resolve_position(), pygame.Vector2(0, 0)),
-        #                   color='black'
-        #    )
+        Renderer.draw_text(surface, 
+                           "lf:".ljust(3) + f"{round(self.rov.motors['lf'], 2)}".rjust(5) + "   " +
+                           "rf:".ljust(3) + f"{round(self.rov.motors['rf'], 2)}".rjust(5) + "\n" + 
+                           "lt:".ljust(3) + f"{round(self.rov.motors['lt'], 2)}".rjust(5) + "   " +
+                           "rt:".ljust(3) + f"{round(self.rov.motors['rt'], 2)}".rjust(5) + "\n" + 
+                           "lb:".ljust(3) + f"{round(self.rov.motors['lb'], 2)}".rjust(5) + "   " +
+                           "rb:".ljust(3) + f"{round(self.rov.motors['rb'], 2)}".rjust(5) + "\n" +
+                           "\n\n\n" +
+                           f"camera angle: {round(self.rov.motors['ca'], 2)}\n" +
+                           f"grip: {round(self.rov.motors['tg'], 2)}\n" +
+                           f"wrist: {round(self.rov.motors['tw'], 2)}\n", 
+                           (self.resolve_position(), pygame.Vector2(0, 0)),
+                           color='black'
+            )
         
-        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(0, 0), 80, 20, RovMath.map(
-            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
-            -self.rov.motors['lf'],
-            -1.0, 0.0, 1.0
-        ), absolute=False, orientation='top_to_bottom')
-
-        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(50, 0), 80, 20, RovMath.map(
-            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
-            -self.rov.motors['rf'],
-            -1.0, 0.0, 1.0
-        ), absolute=False, orientation='top_to_bottom')
-
-        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(0, 100), 80, 20, RovMath.map(
-            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
-            -self.rov.motors['lt'],
-            -1.0, 0.0, 1.0
-        ), absolute=False, orientation='top_to_bottom')
-
-        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(50, 100), 80, 20, RovMath.map(
-            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
-            -self.rov.motors['rt'],
-            -1.0, 0.0, 1.0
-        ), absolute=False, orientation='top_to_bottom')
-
-        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(0, 200), 80, 20, RovMath.map(
-            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
-            -self.rov.motors['lb'],
-            -1.0, 0.0, 1.0
-        ), absolute=False, orientation='top_to_bottom')
-
-        Renderer.draw_progress_bar(surface, self.resolve_position() + pygame.Vector2(50, 200), 80, 20, RovMath.map(
-            consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_NEUTRAL, consts.MOTOR_THROTTLE_POSITIVE,
-            -self.rov.motors['rb'],
-            -1.0, 0.0, 1.0
-        ), absolute=False, orientation='top_to_bottom')
 
 
 
@@ -248,3 +214,143 @@ class UiTextLog(UiElement):
         self.recent_lines.append(line)
         if len(self.recent_lines) > self.lines:
             self.recent_lines.pop(0)
+
+
+class UiLineGraph(UiElement):
+    """
+    Draws a line graph. Origin is top left.
+    """
+
+    type _Axis = typing.Literal['x', 'y']
+
+    def __init__(self, pos: pygame.Vector2):
+        super().__init__(pos)
+
+        self.x_label = "Time (s)"
+        self.y_label = "Depth (m)"
+
+        self.x_range_low = 0
+        self.x_range_high = 0
+        self.y_range_low = 0
+        self.y_range_high = 0
+
+        self.draw_points = True
+        self.draw_lines = True
+        self.draw_axis_labels = True
+        self.draw_axis_numbers = True
+        
+        self.point_color: pygame.typing.ColorLike = 0xFF000000
+        self.line_color: pygame.typing.ColorLike = 0xFF00FF00
+        self.axis_color: pygame.typing.ColorLike = 0xFFFFFFFF
+
+        self.axis_line_length = 400
+        self.axis_line_width = 8
+        self.point_size = 5
+        self.line_width = 5
+        self.axis_numbers = 5
+
+        self.auto_calculate_bounds = True
+
+        self.points: list[tuple[float, float]] = [(i, i**.5) for i in range(10)]
+
+    def draw(self, surface: pygame.Surface):
+        super().draw(surface)
+
+        origin = self.resolve_position()
+        horizontal = pygame.Vector2(self.axis_line_length, 0)
+        vertical = pygame.Vector2(0, self.axis_line_length)
+
+        # draw axis lines
+        
+        pygame.draw.line(surface, self.axis_color, origin, origin + horizontal, self.axis_line_width)
+        # arrow head
+        pygame.draw.line(surface, self.axis_color, origin + horizontal, origin+horizontal+pygame.Vector2(-20, 20), self.axis_line_width)
+        pygame.draw.line(surface, self.axis_color, origin + horizontal, origin+horizontal+pygame.Vector2(-20, -20), self.axis_line_width)
+
+        pygame.draw.line(surface, self.axis_color, origin, origin + vertical, self.axis_line_width)
+        # arrow head
+        pygame.draw.line(surface, self.axis_color, origin + vertical, origin+vertical+pygame.Vector2(20, -20), self.axis_line_width)
+        pygame.draw.line(surface, self.axis_color, origin + vertical, origin+vertical+pygame.Vector2(-20, -20), self.axis_line_width)
+
+        # draw axis labels
+        if self.draw_axis_labels:
+            Renderer.draw_text(surface, self.x_label, (origin + pygame.Vector2(0, -60), pygame.Vector2(self.axis_line_length, 30)), 'left_to_right', justify='center', color=self.axis_color, italic=True)
+            Renderer.draw_text(surface, self.y_label, (origin + pygame.Vector2(-60, 0), pygame.Vector2(30, self.axis_line_length)), 'bottom_to_top', justify='center', color=self.axis_color, italic=True)
+
+        # draw axis numbers
+        if self.draw_axis_numbers:
+            for i in range(self.axis_numbers):
+                pos = origin + pygame.Vector2(i * self.axis_line_length / self.axis_numbers, -30)
+                pygame.draw.line(surface, self.axis_color, pos + pygame.Vector2(0, 30), pos + pygame.Vector2(0, 20), self.axis_line_width // 2)
+                Renderer.draw_text(surface, str(round(RovMath.map_no_midpoint(
+                    0, self.axis_line_length,
+                    i * self.axis_line_length / self.axis_numbers,
+                    self.x_range_low, self.x_range_high
+                ), 1)), (pos, pygame.Vector2()), 'left_to_right', color=self.axis_color)
+
+            for i in range(self.axis_numbers):
+                pos = origin + pygame.Vector2(-30, i * self.axis_line_length / self.axis_numbers)
+                pygame.draw.line(surface, self.axis_color, pos + pygame.Vector2(30, 0), pos + pygame.Vector2(20, 0), self.axis_line_width // 2)
+                Renderer.draw_text(surface, str(round(RovMath.map_no_midpoint(
+                    0, self.axis_line_length,
+                    i * self.axis_line_length / self.axis_numbers,
+                    self.y_range_low, self.y_range_high
+                ), 1)), (pos, pygame.Vector2()), 'bottom_to_top', color=self.axis_color)
+
+        # draw points
+        if self.draw_points:
+            for (x, y) in self.points:
+                pygame.draw.circle(
+                    surface, 
+                    self.point_color, 
+                    (
+                        origin.x + (self.axis_line_length * self._map_value('x', x)), 
+                        origin.y + (self.axis_line_length * self._map_value('y', y))
+                    ),
+                    self.point_size
+                    )
+        
+        # draw lines between points
+        if self.draw_lines:
+            last_point = self.points[0]
+            for i, (x, y) in enumerate(self.points):
+                if i == 0:
+                    continue
+
+                pygame.draw.line(surface, self.line_color, (
+                    origin.x + (self.axis_line_length * self._map_value('x', last_point[0])), 
+                    origin.y + (self.axis_line_length * self._map_value('y', last_point[1]))
+                ), (
+                    origin.x + (self.axis_line_length * self._map_value('x', x)), 
+                    origin.y + (self.axis_line_length * self._map_value('y', y))
+                ), self.line_width)
+                last_point = (x, y)
+
+    def update(self, dt: float, surface: pygame.Surface):
+        super().update(dt, surface)
+
+        if self.auto_calculate_bounds:
+            self.x_range_low = self.points[0][0]
+            self.x_range_high = self.points[0][0]
+            self.y_range_low = self.points[0][1]
+            self.y_range_high = self.points[0][1]
+
+            for (x, y) in self.points:
+                if x < self.x_range_low: self.x_range_low = x
+                if x > self.x_range_high: self.x_range_high = x
+                if y < self.y_range_low: self.y_range_low = y
+                if y > self.y_range_high: self.y_range_high = y
+    
+    def _map_value(self, axis: _Axis, v: float) -> float:
+        if axis == 'x':
+            return RovMath.map_no_midpoint(
+                self.x_range_low, self.x_range_high,
+                v,
+                0.0, 1.0
+            )
+        else:
+            return RovMath.map_no_midpoint(
+                self.y_range_low, self.y_range_high,
+                v,
+                0.0, 1.0
+            )

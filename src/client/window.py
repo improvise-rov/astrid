@@ -7,6 +7,7 @@ from src.client.ui import UiCameraFeed
 from src.client.ui import UiControlMonitor
 from src.client.ui import UiCorrectionSubsysStatus
 from src.client.ui import UiTextLog
+from src.client.ui import UiLineGraph
 from src.client.render import Renderer
 from src.client.logger import Logger
 from src.client.irov import RovInterface
@@ -109,6 +110,10 @@ class Window():
         self.container.add(UiControlMonitor(
             pygame.Vector2(1000, 40),
             self.rov
+        ))
+
+        self.container.add(UiLineGraph(
+            pygame.Vector2(1000, 600)
         ))
 
         ####################

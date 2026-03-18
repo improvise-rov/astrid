@@ -1,6 +1,7 @@
 from __future__ import annotations
 import pygame
 import typing
+import datetime
 import io
 
 from src.client.irov import RovInterface
@@ -354,3 +355,20 @@ class UiLineGraph(UiElement):
                 v,
                 0.0, 1.0
             )
+
+class UiCountdownClock(UiElement):
+    def __init__(self, pos: pygame.Vector2, seconds: float):
+        super().__init__(pos)
+        self.time = seconds
+        self.ticking = True
+
+    def update(self, dt: float, surface: pygame.Surface):
+        super().update(dt, surface)
+        if self.ticking and self.time > 0:
+            self.time -= dt
+            if self.time < 0:
+                self.time = 0
+    
+    def draw(self, surface: pygame.Surface):
+        super().draw(surface)
+        Renderer.draw_text(surface, str(datetime.timedelta(seconds=self.time)), (self.resolve_position(), pygame.Vector2()))

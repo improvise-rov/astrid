@@ -8,6 +8,7 @@ from src.client.ui import UiControlMonitor
 from src.client.ui import UiCorrectionSubsysStatus
 from src.client.ui import UiTextLog
 from src.client.ui import UiLineGraph
+from src.client.ui import UiCountdownClock
 from src.client.render import Renderer
 from src.client.logger import Logger
 from src.client.irov import RovInterface
@@ -91,29 +92,34 @@ class Window():
             pygame.Vector2(20, 50),
             pygame.transform.scale_by(
                 pygame.image.load("src/resource/no_camera.jpg"),
-                10
+                15
             ),
             self.net
         ))
 
         self.container.add(UiTextLog(
-            pygame.Vector2(20, 710),
-            pygame.Vector2(850, 350),
-            16
+            pygame.Vector2(1320, 50),
+            pygame.Vector2(350, 450),
+            15
         ))
 
         self.container.add(UiCorrectionSubsysStatus(
-            pygame.Vector2(1000, 20),
+            pygame.Vector2(800, 20),
             self.rov
         ))
 
         self.container.add(UiControlMonitor(
-            pygame.Vector2(1000, 40),
+            pygame.Vector2(1700, 80),
             self.rov
         ))
 
         self.container.add(UiLineGraph(
-            pygame.Vector2(1000, 600)
+            pygame.Vector2(1400, 600)
+        ))
+
+        self.container.add(UiCountdownClock(
+            pygame.Vector2(500, 10),
+            consts.POOL_RUN_TIME_SECONDS
         ))
 
         ####################

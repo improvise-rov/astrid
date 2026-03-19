@@ -74,7 +74,7 @@ MOTOR_THROTTLE_NEGATIVE: float = -1.0 / 2 # limit power (prevent current brownou
 MOTOR_THROTTLE_NEUTRAL: float = 0.0
 MOTOR_THROTTLE_POSITIVE: float = 1.0 / 2
 
-# pwm values ; now unneeded! but i left them here for reference in case they are needed at some point
+# pwm values 
 PWM_ESC_REVERSE: int = 1200
 PWM_ESC_INITIALISE: int = 1600 # 100us higher than it should be but we ball
 PWM_ESC_FORWARD: int = 2000
@@ -92,6 +92,7 @@ IMU_I2C_ADDRESS: int = 0x00
 # opencv
 CAMERA_ID: int = 0
 CAMERA_JPEG_COMPRESSION_VALUE: int = 65
+CAMERA_ROTATE: int = 1 # 0 = 0 ; 1 = 90cw ; 2 = 90ccw ; 3 = 180
 
 # competition
 POOL_RUN_TIME_SECONDS: int = 15 * 60

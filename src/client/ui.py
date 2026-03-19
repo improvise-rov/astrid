@@ -376,4 +376,7 @@ class UiCountdownClock(UiElement):
     
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
-        Renderer.draw_text(surface, str(datetime.timedelta(seconds=self.time)), (self.resolve_position(), pygame.Vector2()))
+        td = str(datetime.timedelta(seconds=self.time))[2:]
+        if len(td) > 8:
+            td = td[:8]
+        Renderer.draw_text(surface, td, (self.resolve_position(), pygame.Vector2()))

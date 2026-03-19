@@ -22,6 +22,13 @@ class CameraFeed():
         if not success:
             print("failed frame read")
             return b''
+        
+        # rotate
+        match consts.CAMERA_ROTATE:
+            case 1: frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+            case 2: frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            case 3: frame = cv2.rotate(frame, cv2.ROTATE_180)
+            case _: frame = frame
 
         # encode
         success, frame = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), cam_quality])

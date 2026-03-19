@@ -360,10 +360,15 @@ class UiCountdownClock(UiElement):
     def __init__(self, pos: pygame.Vector2, seconds: float):
         super().__init__(pos)
         self.time = seconds
-        self.ticking = True
+        self.ticking = False
 
     def update(self, dt: float, surface: pygame.Surface):
         super().update(dt, surface)
+
+        keys = pygame.key.get_just_pressed()
+        if keys[pygame.K_a]:
+            self.ticking = not self.ticking
+
         if self.ticking and self.time > 0:
             self.time -= dt
             if self.time < 0:

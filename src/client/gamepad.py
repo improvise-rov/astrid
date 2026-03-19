@@ -7,6 +7,11 @@ from src.client.logger import Logger
 from src.client.callback import Callback
 
 class GamepadManager():
+    """
+    Manager over gamepads. Keeps track of several gamepads that are connected, 
+    but you probably only want the first. Use `GamepadManager#fetch_first()` for that.
+    """
+
     def __init__(self) -> None:
         self.gamepads: dict[int, Gamepad] = {}
 
@@ -16,21 +21,51 @@ class GamepadManager():
         Callback.add_listener(pygame.JOYDEVICEREMOVED, self._device_remove)
 
     def has(self) -> bool:
+        """
+        if `True`, there is AT LEAST one gamepad attached.
+        """
         return len(self.gamepads) > 0
 
     def fetch_first(self) -> Gamepad:
+        """
+        Get the first gamepad attached. This code is ass.
+
+        Also it throws an error if there aren't any. Check `GamepadManager#has()` first.
+        """
         for value in self.gamepads.values():
             return value
         raise RuntimeError("Tried to fetch gamepad when none was available")
     
     def keymap_translate(self, mapping_key: str) -> str:
+        """
+        Gets a key-code from an name in the keymap. (see `Gamepad#load_mappings()`)
+        """
         return self.mappings.get(mapping_key, Gamepad.NONE)
 
     def load_mappings(self, path: str):
+        """
+        I use a "keymap" system for assigning keys. 
+        This lets you assign names to keys dependent on what they are doing.
+        `path` is a path to a JSON file defining the names and assigning them keys. For example:
+
+        ```
+        {
+            "move": "lstick",
+            "jump": "a",
+            "some_other_key_i_dont_know": "none"
+        }
+        ```
+
+        This function just loads that file and lets you use `GamepadManager#keymap_translate()`, which
+        gets the actual keys from these names.
+        """
         with open(path, 'r') as f:
             self.mappings = json.load(f)
 
     def _device_connect(self, event: pygame.Event):
+        """
+        internal event callback to track device connects
+        """
         id: int = event.device_index
 
         joystick = pygame.Joystick(id)
@@ -40,6 +75,9 @@ class GamepadManager():
         Logger.log(f"Gamepad (id: {id}, instance: {instance_id}) connected!")
 
     def _device_remove(self, event: pygame.Event):
+        """
+        internal event callback to track device disconnects
+        """
         id: int = event.instance_id
         if id in self.gamepads:
             Logger.log(f"Gamepad (instance: {id}) disconnected!")
@@ -51,6 +89,20 @@ class Gamepad():
     """
     Acts more or less as a wrapper around pygame's joystick module.
     Mostly taken from the source code of VRÖÖM because it works and i didnt want to write it again :P
+
+    Note to the poor, poor future developer:
+    VRÖÖM is a game i, Fynn, am making. (slowly).
+
+    there are a BUNCH of constants on this class, for every key.
+    plus two things you can change if you like, `NINTENDOIFIED_MAPPING` and `STICK_AXIS_AS_DIGITAL_DEADZONE`.
+    
+    in this classes functions i use the word "fallback" alot. this is a bit misleading, since
+    the keyboard fallback actually takes priority. why'd i do that? i dont know, i wrote this a while ago.
+    i guess i just forgot what fallback means; refactor it if you like, idc
+
+    anyway also "deadzone" refers to the absolute value in which if the axis value is within, it is ignored
+    for a stick, that can be assumed to be a radius of a circle around the stick center that always returns 0
+    this is a common form of error correction that can account for slight imprecisions in older sticks
     """
 
     NINTENDOIFIED_MAPPING: bool = False
@@ -250,6 +302,9 @@ class Gamepad():
     ##
 
     def digital_down(self, *keys: str, keyboard_fallback: int = pygame.K_UNKNOWN) -> bool:
+        """
+        Returns `True` if at least one of the specified keys (or fallback) is DOWN.
+        """
         if keyboard_fallback != pygame.K_UNKNOWN and self._fallback_keyboard_down_read[keyboard_fallback]:
             return True
         
@@ -263,6 +318,9 @@ class Gamepad():
 
     
     def digital_pressed(self, *keys: str, keyboard_fallback: int = pygame.K_UNKNOWN) -> bool:
+        """
+        Returns `True` if at least one of the specified keys (or fallback) is DOWN, but WAS NOT the previous poll.
+        """
         if keyboard_fallback != pygame.K_UNKNOWN and self._fallback_keyboard_press_read[keyboard_fallback]:
             return True
         
@@ -276,6 +334,9 @@ class Gamepad():
         return False
 
     def digital_released(self, *keys: str, keyboard_fallback: int = pygame.K_UNKNOWN) -> bool:
+        """
+        Returns `True` if at least one of the specified keys (or fallback) is UP, but WAS NOT the previous frame.
+        """
         if keyboard_fallback != pygame.K_UNKNOWN and self._fallback_keyboard_release_read[keyboard_fallback]:
             return True
         
@@ -289,7 +350,12 @@ class Gamepad():
         return False
     
     def read_axis(self, key: str, deadzone: float = 0.1, *, keyboard_fallback_pos: int = pygame.K_UNKNOWN, keyboard_fallback_neg: int = pygame.K_UNKNOWN) -> float:
+        """
+        Returns the value of a given axial value.
         
+        `_pos`: positive, `_neg`: negative
+        """
+
         fallback = 0.0
         if keyboard_fallback_pos != pygame.K_UNKNOWN and self._fallback_keyboard_release_read[keyboard_fallback_pos]:
             fallback += 1.0
@@ -305,7 +371,12 @@ class Gamepad():
         return fallback
     
     def read_vector(self, key_x: str, key_y: str, deadzone: float = 0.1, *, keyboard_fallback_x_pos: int = pygame.K_UNKNOWN, keyboard_fallback_x_neg: int = pygame.K_UNKNOWN, keyboard_fallback_y_pos: int = pygame.K_UNKNOWN, keyboard_fallback_y_neg: int = pygame.K_UNKNOWN) -> pygame.Vector2:
+        """
+        Returns a vector representing two axial values.
         
+        `_pos`: positive, `_neg`: negative
+        """
+
         x = 0
         y = 0
 
@@ -323,6 +394,9 @@ class Gamepad():
         return pygame.Vector2(0, 0)
     
     def destroy(self):
+        """
+        ya yeet the internal object out of existence GET OUTTA HEREEEEE
+        """
         del self.joystick
     
 

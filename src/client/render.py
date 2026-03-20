@@ -17,7 +17,7 @@ class Renderer():
 
     
     @staticmethod
-    def draw_text(surface: pygame.Surface, text: str, rect: pygame.typing.RectLike, orientation: _Orientation = 'left_to_right', scale: float = 1.0, color: pygame.typing.ColorLike = 'white', justify: _TextJustification = 'left', font: str = 'src/resource/roboto.ttf', sysfont: bool = False, bold: bool = False, italic: bool = False, underline: bool = False, strikethrough: bool = False):
+    def draw_text(surface: pygame.Surface, text: str, rect: pygame.typing.RectLike, orientation: _Orientation = 'left_to_right', scale: float = 1.0, color: pygame.typing.ColorLike = 'white', justify: _TextJustification = 'left', font: str = 'src/resource/LeagueSpartan-SemiBold.ttf', sysfont: bool = False, bold: bool = False, italic: bool = False, underline: bool = False, strikethrough: bool = False):
         
         # fix like types
         rect = pygame.Rect(rect)

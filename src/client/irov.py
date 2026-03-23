@@ -60,7 +60,8 @@ class RovInterface():
             gp = self.gamepad_manager.fetch_first()
 
             camera_angle_change = gp.read_axis(self.gamepad_manager.keymap_translate('axis.camera_angle_change'))
-            tool_grip = gp.read_axis(self.gamepad_manager.keymap_translate('axis.tool_grip'))
+            tool_grip_v = gp.read_axis(self.gamepad_manager.keymap_translate('axis.tool_grip'))
+            tool_grip_h = gp.read_axis(self.gamepad_manager.keymap_translate('axis.tool_grip_h'))
             wrist = gp.digital_down(self.gamepad_manager.keymap_translate('digital.rotate_wrist.cw')) - gp.digital_down(self.gamepad_manager.keymap_translate('digital.rotate_wrist.ccw'))
 
             forward = gp.read_axis(self.gamepad_manager.keymap_translate('axis.rov.forward'))
@@ -86,8 +87,9 @@ class RovInterface():
 
 
             self.motors['ca'] = RovMath.clamp(-1, 1, self.motors['ca'] + camera_angle_change * self.camera_angle_speed)
-            self.motors['tg'] = tool_grip
-            self.motors['tw'] = RovMath.clamp(-1, 1, self.motors['tw'] + wrist * self.wrist_rotate_speed)
+            self.motors['tg'] = tool_grip_v
+            self.motors['tw'] = tool_grip_h
+            #self.motors['tw'] = RovMath.clamp(-1, 1, self.motors['tw'] + wrist * self.wrist_rotate_speed)
 
         # manual override
         keys = pygame.key.get_pressed()

@@ -160,8 +160,8 @@ class UiControlMonitor(UiElement):
                            "rb:".ljust(3) + f"{round(self.rov.motors['rb'], 2)}".rjust(5) + "\n" +
                            "\n\n\n" +
                            f"camera angle: {round(self.rov.motors['ca'], 2)}\n" +
-                           f"grip: {round(self.rov.motors['tg'], 2)}\n" +
-                           f"wrist: {round(self.rov.motors['tw'], 2)}\n", 
+                           f"vert grip: {round(self.rov.motors['tg'], 2)}\n" +
+                           f"hor grip: {round(self.rov.motors['tw'], 2)}\n", # euan wants two tools now so im repurposing the tool wrist code that we arent using now
                            (self.resolve_position(), pygame.Vector2(0, 0)),
                            color='black'
             )

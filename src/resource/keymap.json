@@ -1,5 +1,6 @@
 {
     "axis.tool_grip": "rtrigger_analogue",
+    "axis.tool_grip_h": "ltrigger_analogue",
     "axis.camera_angle_change": "dpad_y",
 
     "digital.rotate_wrist.ccw": "lbumper",

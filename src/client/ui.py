@@ -251,7 +251,7 @@ class UiLineGraph(UiElement):
         self.axis_numbers = 5
 
         self.auto_calculate_bounds = True
-
+        self.data_fetcher = data_fetcher
         self.points: list[tuple[float, float]] = []
 
     def draw(self, surface: pygame.Surface):
@@ -329,6 +329,8 @@ class UiLineGraph(UiElement):
 
     def update(self, dt: float, surface: pygame.Surface):
         super().update(dt, surface)
+
+        self.points = self.data_fetcher()
 
         if self.auto_calculate_bounds and len(self.points) > 0:
             self.x_range_low = self.points[0][0]

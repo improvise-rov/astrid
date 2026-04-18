@@ -10,23 +10,16 @@ except:
     NO_SERVOKIT = True
 from src.server import imu
 from src.common import consts
+from src.common import types
 from src.common.rovmath import RovMath
 
-type _Motor = typing.Literal[
-        'left_front', 'right_front',
-        'left_top', 'right_top',
-        'left_back', 'right_back'
-        ]
-    
-type _Servo = typing.Literal[
-    'camera_angle', 'tool_wrist', 'tool_grip'
-]
+
 
 class HardwareManager():
     """
     Manage the hardware pins of the Pi.
     """
-    ADDRESSES: dict[_Motor | _Servo, int] = {
+    ADDRESSES: dict[types._Motor | types._Servo, int] = {
         'left_front': consts.ADDRESS_ESC_MOTOR_FRONT_LEFT,
         'right_front': consts.ADDRESS_ESC_MOTOR_FRONT_RIGHT,
         'left_top': consts.ADDRESS_ESC_MOTOR_TOP_LEFT,
@@ -35,8 +28,8 @@ class HardwareManager():
         'right_back': consts.ADDRESS_ESC_MOTOR_BACK_RIGHT,
 
         'camera_angle': consts.ADDRESS_SERVO_CAMERA_ANGLE,
-        'tool_wrist': consts.ADDRESS_SERVO_CLAW_WRIST,
-        'tool_grip': consts.ADDRESS_SERVO_CLAW_GRIP,
+        'tool_ver': consts.ADDRESS_SERVO_TOOL_VER,
+        'tool_hor': consts.ADDRESS_SERVO_TOOL_HOR,
     }
 
 
@@ -51,7 +44,7 @@ class HardwareManager():
 
             
 
-        self.motor_caches: dict[_Motor | _Servo, float] = {}
+        self.motor_caches: dict[types._Motor | types._Servo, float] = {}
 
     def get_gyroscope(self) -> RovMath.Vec:
         if self.simulated:
@@ -69,7 +62,7 @@ class HardwareManager():
         return self.imu.gyro()
 
 
-    def set_motor(self, motor: _Motor, throttle: float):
+    def set_motor(self, motor: types._Motor, throttle: float):
         throttle = RovMath.clamp(-1.0, 1.0, throttle)
 
         self.motor_caches[motor] = throttle
@@ -82,7 +75,7 @@ class HardwareManager():
         # 
         self.motor_interface.channels[address].duty_cycle = RovMath.calc_motor_dutycycle(throttle)
 
-    def set_servo(self, servo: _Servo, byte: int, camera: bool = True):
+    def set_servo(self, servo: types._Servo, byte: int, camera: bool = True):
         byte = RovMath.clamp(0, 180, byte)
 
         self.motor_caches[servo] = byte
@@ -105,8 +98,8 @@ class HardwareManager():
             self.motor_caches.get('left_back', -1),
             self.motor_caches.get('right_back', -1),
             self.motor_caches.get('camera_angle', -1),
-            self.motor_caches.get('tool_wrist', -1),
-            self.motor_caches.get('tool_grip', -1),
+            self.motor_caches.get('tool_ver', -1),
+            self.motor_caches.get('tool_hor', -1),
             )  
         
     def cleanup(self):

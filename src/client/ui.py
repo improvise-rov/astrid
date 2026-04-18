@@ -152,16 +152,16 @@ class UiControlMonitor(UiElement):
         super().draw(surface)
 
         Renderer.draw_text(surface, 
-                           "lf:".ljust(3) + f"{round(self.rov.motors['lf'], 2)}".rjust(5) + "   " +
-                           "rf:".ljust(3) + f"{round(self.rov.motors['rf'], 2)}".rjust(5) + "\n" + 
-                           "lt:".ljust(3) + f"{round(self.rov.motors['lt'], 2)}".rjust(5) + "   " +
-                           "rt:".ljust(3) + f"{round(self.rov.motors['rt'], 2)}".rjust(5) + "\n" + 
-                           "lb:".ljust(3) + f"{round(self.rov.motors['lb'], 2)}".rjust(5) + "   " +
-                           "rb:".ljust(3) + f"{round(self.rov.motors['rb'], 2)}".rjust(5) + "\n" +
+                           "lf:".ljust(3) + f"{round(self.rov.motors['left_front']  , 2)}".rjust(5) + "   " +
+                           "rf:".ljust(3) + f"{round(self.rov.motors['right_front'] , 2)}".rjust(5) + "\n" + 
+                           "lt:".ljust(3) + f"{round(self.rov.motors['left_top']    , 2)}".rjust(5) + "   " +
+                           "rt:".ljust(3) + f"{round(self.rov.motors['right_top']   , 2)}".rjust(5) + "\n" + 
+                           "lb:".ljust(3) + f"{round(self.rov.motors['left_back']   , 2)}".rjust(5) + "   " +
+                           "rb:".ljust(3) + f"{round(self.rov.motors['right_back']  , 2)}".rjust(5) + "\n" +
                            "\n\n\n" +
-                           f"camera angle: {round(self.rov.motors['ca'], 2)}\n" +
-                           f"vert grip: {round(self.rov.motors['tg'], 2)}\n" +
-                           f"hor grip: {round(self.rov.motors['tw'], 2)}\n", # euan wants two tools now so im repurposing the tool wrist code that we arent using now
+                           f"camera angle: {round(self.rov.motors['camera_angle'], 2)}\n" +
+                           f"ver grip: {round(self.rov.motors['tool_ver'], 2)}\n" +
+                           f"hor grip: {round(self.rov.motors['tool_hor'], 2)}\n", 
                            (self.resolve_position(), pygame.Vector2(0, 0)),
                            color='black'
             )

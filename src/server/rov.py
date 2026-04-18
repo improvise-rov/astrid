@@ -4,9 +4,10 @@ import time
 import struct
 from src.common import packets
 from src.common import consts
+from src.common import types
 from src.common.network import Netsock
 from src.common.rovmath import RovMath
-from src.server.hardware import HardwareManager, _Motor, _Servo
+from src.server.hardware import HardwareManager
 from src.server.camera import CameraFeed
 
 
@@ -24,7 +25,7 @@ class Rov():
         self.hardware = hardware
 
         # values
-        self.net_motor_cache: dict[_Motor | _Servo, RovMath.Number] = {
+        self.net_motor_cache: dict[types._MotorOrServo, RovMath.Number] = {
             "left_front": 0,
             "right_front": 0,
             "left_top": 0,
@@ -33,8 +34,8 @@ class Rov():
             "right_back": 0,
 
             "camera_angle": 0,
-            "tool_wrist": 0,
-            "tool_grip": 0,
+            "tool_ver": 0,
+            "tool_hor": 0,
         }
         self.correction_enabled = False
 
@@ -51,7 +52,7 @@ class Rov():
         self.camera_thread.daemon = True
         self.camera_thread.start()
 
-    def motor_init_seq(self, motor: _Motor):
+    def motor_init_seq(self, motor: types._Motor):
         # needs to go high?
         self.hardware.set_motor(motor, consts.PWM_ESC_INITIALISE)
 
@@ -90,8 +91,8 @@ class Rov():
         self.hardware.set_motor('right_back',   rb)
 
         self.hardware.set_servo('camera_angle', int(self.net_motor_cache['camera_angle']))
-        self.hardware.set_servo('tool_wrist',   int(self.net_motor_cache['tool_wrist'] / 2), camera = False) # the tool gripper only actually needs to go 0..90, so i divide the range by 2 (because its transmitted as a number 0..180)
-        self.hardware.set_servo('tool_grip',    int(self.net_motor_cache['tool_grip']), camera = False)
+        self.hardware.set_servo('tool_ver',   int(self.net_motor_cache['tool_ver'] / 2), camera = False) # the tool gripper only actually needs to go 0..90, so i divide the range by 2 (because its transmitted as a number 0..180)
+        self.hardware.set_servo('tool_hor',    int(self.net_motor_cache['tool_hor']), camera = False)
 
         # print if simulated
         if self.hardware.simulated:
@@ -119,28 +120,18 @@ class Rov():
         assume everything is always okay, and take numbers at face value.
         that is usually a terrible idea, but i dont care. its fine for this
 
-        lf: front left motor esc
-        rf: front right motor esc
-        lt: top left motor esc
-        rt: top right motor esc
-        lb: left back motor esc
-        rb: right back motor esc
-        ca: camera angle servo
-        tw: tool wrist servo
-        tg: tool grip servo
-
         """
 
-        lf, rf, lt, rt, lb, rb, ca, tw, tg = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
+        left_front, right_front, left_top, right_top, left_back, right_back, camera_angle, tool_ver, tool_hor = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
 
 
-        self.net_motor_cache['left_front'] = lf    
-        self.net_motor_cache['right_front'] = rf    
-        self.net_motor_cache['left_top'] = lt    
-        self.net_motor_cache['right_top'] = rt    
-        self.net_motor_cache['left_back'] = lb    
-        self.net_motor_cache['right_back'] = rb
+        self.net_motor_cache['left_front'] = left_front    
+        self.net_motor_cache['right_front'] = right_front    
+        self.net_motor_cache['left_top'] = left_top    
+        self.net_motor_cache['right_top'] = right_top    
+        self.net_motor_cache['left_back'] = left_back    
+        self.net_motor_cache['right_back'] = right_back
 
-        self.net_motor_cache['camera_angle'] = ca
-        self.net_motor_cache['tool_wrist'] = tw
-        self.net_motor_cache['tool_grip'] = tg
+        self.net_motor_cache['camera_angle'] = camera_angle
+        self.net_motor_cache['tool_ver'] = tool_ver
+        self.net_motor_cache['tool_hor'] = tool_hor

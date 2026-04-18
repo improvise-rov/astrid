@@ -12,8 +12,8 @@ from src.client.ui import UiCountdownClock
 from src.client.render import Renderer
 from src.client.logger import Logger
 from src.client.irov import RovInterface
-from src.client.gamepad import GamepadManager
-from src.client.gamepad import Gamepad
+from src.client.control.manager import ControllerManager
+from src.client.control.gamepad import Gamepad
 from src.client.callback import Callback
 from src.common.network import Netsock
 from src.common import packets
@@ -57,9 +57,8 @@ class Window():
         self.target_fps = 0 # target fps (0 means unlimited)
 
         # GAMEPAD
-        self.gamepad_manager = GamepadManager()
+        self.gamepad_manager = ControllerManager(default_gamepads_nintendoified=True)
         self.gamepad_manager.load_mappings('src/resource/keymap.json')
-        Gamepad.NINTENDOIFIED_MAPPING = True
 
         ### NETWORK ###
         self.net = Netsock(ip, port)

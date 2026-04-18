@@ -1,6 +1,5 @@
 import typing
 import pygame
-from src.common.rovmath import RovMath
 
 class Renderer():
     """
@@ -17,7 +16,7 @@ class Renderer():
 
     
     @staticmethod
-    def draw_text(surface: pygame.Surface, text: str, rect: pygame.typing.RectLike, orientation: _Orientation = 'left_to_right', scale: float = 1.0, color: pygame.typing.ColorLike = 'white', justify: _TextJustification = 'left', font: str = 'src/resource/LeagueSpartan-SemiBold.ttf', sysfont: bool = False, bold: bool = False, italic: bool = False, underline: bool = False, strikethrough: bool = False):
+    def draw_text(surface: pygame.Surface, text: str, rect: pygame.typing.RectLike, orientation: _Orientation = 'left_to_right', scale: float = 1.0, color: pygame.typing.ColorLike = 'white', justify: _TextJustification = 'left', font: str = 'src/resource/LeagueSpartan-SemiBold.ttf', sysfont: bool = False, bold: bool = False, italic: bool = False, underline: bool = False, strikethrough: bool = False, draw_rect: bool = False):
         
         # fix like types
         rect = pygame.Rect(rect)
@@ -48,17 +47,20 @@ class Renderer():
             case 'top_to_bottom': major_length = rect.height
             case 'bottom_to_top': major_length = rect.height
 
-        s = f.render(text, color=color, antialias=False, wraplength=major_length)
+        s = f.render(text, color=color, antialias=False, wraplength=int(major_length/scale))
 
         if orientation != 'left_to_right':
             s = pygame.transform.rotate(s, 90)
             if orientation == 'top_to_bottom':
                 s = pygame.transform.flip(s, True, True)
 
+        og_rect = rect.copy()
         if scale != 1.0:
             s = pygame.transform.scale_by(s, scale)
 
         surface.blit(s, rect)
+        if draw_rect:
+            pygame.draw.rect(surface, 'red', og_rect, 2)
 
     @staticmethod
     def draw_boolean_circle(surface: pygame.Surface, pos: pygame.Vector2, bool: bool, true_label: str, false_label: str, label_supplier: _LabelSupplier = None):

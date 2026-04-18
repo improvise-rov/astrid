@@ -1,5 +1,5 @@
 import typing
-from src.common.rovmath import RovMath
+from src.common import rovmath
 
 class Imu():
     """
@@ -10,7 +10,7 @@ class Imu():
         pass
 
     
-    def gyro(self) -> RovMath.Vec:
+    def gyro(self) -> rovmath.Vec:
         return (0, 0, 0) # yaw pitch roll
 
     

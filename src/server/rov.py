@@ -5,8 +5,8 @@ import struct
 from src.common import packets
 from src.common import consts
 from src.common import types
+from src.common import rovmath
 from src.common.network import Netsock
-from src.common.rovmath import RovMath
 from src.server.hardware import HardwareManager
 from src.server.camera import CameraFeed
 
@@ -25,7 +25,7 @@ class Rov():
         self.hardware = hardware
 
         # values
-        self.net_motor_cache: dict[types._MotorOrServo, RovMath.Number] = {
+        self.net_motor_cache: dict[types._MotorOrServo, rovmath.Number] = {
             "left_front": 0,
             "right_front": 0,
             "left_top": 0,

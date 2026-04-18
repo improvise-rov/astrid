@@ -11,7 +11,7 @@ except:
 from src.server import imu
 from src.common import consts
 from src.common import types
-from src.common.rovmath import RovMath
+from src.common import rovmath
 
 
 
@@ -46,7 +46,7 @@ class HardwareManager():
 
         self.motor_caches: dict[types._Motor | types._Servo, float] = {}
 
-    def get_gyroscope(self) -> RovMath.Vec:
+    def get_gyroscope(self) -> rovmath.Vec:
         if self.simulated:
             return (0, 0, 0)
         #          (yaw, pitch, roll)
@@ -63,7 +63,7 @@ class HardwareManager():
 
 
     def set_motor(self, motor: types._Motor, throttle: float):
-        throttle = RovMath.clamp(-1.0, 1.0, throttle)
+        throttle = rovmath.clamp(-1.0, 1.0, throttle)
 
         self.motor_caches[motor] = throttle
 
@@ -73,10 +73,10 @@ class HardwareManager():
             return
         
         # 
-        self.motor_interface.channels[address].duty_cycle = RovMath.calc_motor_dutycycle(throttle)
+        self.motor_interface.channels[address].duty_cycle = rovmath.calc_motor_dutycycle(throttle)
 
     def set_servo(self, servo: types._Servo, byte: int, camera: bool = True):
-        byte = RovMath.clamp(0, 180, byte)
+        byte = rovmath.clamp(0, 180, byte)
 
         self.motor_caches[servo] = byte
 
@@ -86,7 +86,7 @@ class HardwareManager():
             return
         
         # since the range for this is 0..180 which is between 0..255 i can just encode the value directly
-        self.motor_interface.channels[address].duty_cycle = RovMath.calc_servo_dutycycle(byte, camera)
+        self.motor_interface.channels[address].duty_cycle = rovmath.calc_servo_dutycycle(byte, camera)
 
 
     def print_states(self):

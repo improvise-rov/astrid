@@ -11,3 +11,6 @@ type _Servo = typing.Literal[
 ]
 
 type _MotorOrServo = _Motor | _Servo
+
+
+type _InputMethod = typing.Literal['gamepad', 'thrustmaster']

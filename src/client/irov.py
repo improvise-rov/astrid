@@ -99,12 +99,22 @@ class RovInterface():
         motor_tick['left_back']   = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_1] else motor_tick['left_back']   
         motor_tick['right_back']  = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_3] else motor_tick['right_back']  
 
-        self.motors['left_front']   = rovmath.move_toward(self.motors['left_front']  , motor_tick['left_front']  , self.motor_smoothing)
-        self.motors['right_front']  = rovmath.move_toward(self.motors['right_front'] , motor_tick['right_front'] , self.motor_smoothing)
-        self.motors['left_top']     = rovmath.move_toward(self.motors['left_top']    , motor_tick['left_top']    , self.motor_smoothing)
-        self.motors['right_top']    = rovmath.move_toward(self.motors['right_top']   , motor_tick['right_top']   , self.motor_smoothing)
-        self.motors['left_back']    = rovmath.move_toward(self.motors['left_back']   , motor_tick['left_back']   , self.motor_smoothing)
-        self.motors['right_back']   = rovmath.move_toward(self.motors['right_back']  , motor_tick['right_back']  , self.motor_smoothing)
+        if not self.gamepad_manager.has() or self.gamepad_manager.fetch_first().keymap_translate('axis.throttle') == 'none':
+            self.motors['left_front']   = rovmath.move_toward(self.motors['left_front']  , motor_tick['left_front']  , self.motor_smoothing)
+            self.motors['right_front']  = rovmath.move_toward(self.motors['right_front'] , motor_tick['right_front'] , self.motor_smoothing)
+            self.motors['left_top']     = rovmath.move_toward(self.motors['left_top']    , motor_tick['left_top']    , self.motor_smoothing)
+            self.motors['right_top']    = rovmath.move_toward(self.motors['right_top']   , motor_tick['right_top']   , self.motor_smoothing)
+            self.motors['left_back']    = rovmath.move_toward(self.motors['left_back']   , motor_tick['left_back']   , self.motor_smoothing)
+            self.motors['right_back']   = rovmath.move_toward(self.motors['right_back']  , motor_tick['right_back']  , self.motor_smoothing)
+        else:
+            gp = self.gamepad_manager.fetch_first()
+            throttle = gp.read_axis(gp.keymap_translate('axis.throttle'))
+            self.motors['left_front']   = motor_tick['left_front']  * throttle
+            self.motors['right_front']  = motor_tick['right_front'] * throttle
+            self.motors['left_top']     = motor_tick['left_top']    * throttle
+            self.motors['right_top']    = motor_tick['right_top']   * throttle
+            self.motors['left_back']    = motor_tick['left_back']   * throttle
+            self.motors['right_back']   = motor_tick['right_back']  * throttle
 
 
         # send data

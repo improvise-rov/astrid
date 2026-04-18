@@ -26,10 +26,11 @@ class AbstractController[_MappingKeyType]():
     STICK_AXIS_AS_DIGITAL_DEADZONE: float = 0.1
 
     
-    def __init__(self, joystick: pygame.joystick.JoystickType, keys: dict[_MappingKeyType, typing.Callable[[typing.Self], typing.Any]]) -> None:
+    def __init__(self, joystick: pygame.joystick.JoystickType, mapping_group: str, keys: dict[_MappingKeyType, typing.Callable[[typing.Self], typing.Any]]) -> None:
         self.joystick = joystick
 
-        self.named_mappings: dict[str, _MappingKeyType] = {}
+        self.mapping_group = mapping_group
+        self.named_mappings: dict[str, dict[str, _MappingKeyType]] = {}
 
         self.keys = keys
     
@@ -108,8 +109,8 @@ class AbstractController[_MappingKeyType]():
 
     ##
 
-    def keymap_translate(self, key: str, default: _MappingKeyType = None) -> _MappingKeyType:
-        return self.named_mappings.get(key, default)
+    def keymap_translate(self, key: str, default: _MappingKeyType = 'none') -> _MappingKeyType:
+        return self.named_mappings.get(self.mapping_group, {}).get(key, default)
     
     def poll_states(self) -> bool:
         """

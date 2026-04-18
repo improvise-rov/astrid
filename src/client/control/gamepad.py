@@ -120,7 +120,7 @@ class Gamepad(AbstractController[_Key]):
     
     def __init__(self, joystick: JoystickType) -> None:
         self.nintendoified_mapping = False
-        super().__init__(joystick, { # based off an xbox controller even though i have an 8bitdo
+        super().__init__(joystick, 'gamepad', { # based off an xbox controller even though i have an 8bitdo
             Gamepad.NONE:                           lambda g: 0.0,
             
             Gamepad.KEY_A:                          lambda g: g._get_button(1) if g.nintendoified_mapping else g._get_button(0),

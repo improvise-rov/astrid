@@ -95,3 +95,7 @@ CAMERA_ROTATE: int = 1 # 0 = 0 ; 1 = 90cw ; 2 = 90ccw ; 3 = 180
 
 # competition
 POOL_RUN_TIME_SECONDS: int = 15 * 60
+
+# float
+FLOAT_IP: str = "0.0.0.0"
+FLOAT_PORT: int = 8090

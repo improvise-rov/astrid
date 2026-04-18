@@ -1,10 +1,27 @@
 {
-    "axis.tool_grip_v": "rtrigger_analogue",
-    "axis.tool_grip_h": "ltrigger_analogue",
-    "axis.camera_angle_change": "dpad_y",
+    "gamepad": {
+        "axis.tool_grip_v": "rtrigger_analogue",
+        "axis.tool_grip_h": "ltrigger_analogue",
+        "axis.camera_angle_change": "dpad_y",
 
-    "axis.rov.strafe": "lstick_x",
-    "axis.rov.forward": "lstick_y",
-    "axis.rov.rotate": "dpad_x",
-    "axis.rov.elevate": "rstick_y"
+        "axis.rov.strafe": "lstick_x",
+        "axis.rov.forward": "lstick_y",
+        "axis.rov.rotate": "dpad_x",
+        "axis.rov.elevate": "rstick_y"
+    },
+
+    "thrustmaster": {
+
+        "axis.tool_grip_v": "trigger",
+        "axis.tool_grip_h": "2",
+        "axis.camera_angle_change": "rudder",
+
+        "axis.rov.strafe": "stick_x",
+        "axis.rov.forward": "stick_y",
+        "axis.rov.rotate": "stick_twist",
+        "axis.rov.elevate": "nib_y",
+
+        "axis.throttle": "throttle"
+
+    }
 }

@@ -224,7 +224,7 @@ class UiLineGraph(UiElement):
 
     type _Axis = typing.Literal['x', 'y']
 
-    def __init__(self, pos: pygame.Vector2):
+    def __init__(self, pos: pygame.Vector2, data_fetcher: typing.Callable[[], list[tuple[float, float]]]):
         super().__init__(pos)
 
         self.x_label = "Time (s)"
@@ -252,7 +252,7 @@ class UiLineGraph(UiElement):
 
         self.auto_calculate_bounds = True
 
-        self.points: list[tuple[float, float]] = [(i, i**.5) for i in range(10)]
+        self.points: list[tuple[float, float]] = []
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
@@ -299,7 +299,7 @@ class UiLineGraph(UiElement):
                 ), 1)), (pos, pygame.Vector2()), 'bottom_to_top', color=self.axis_color)
 
         # draw points
-        if self.draw_points:
+        if self.draw_points and len(self.points) > 0:
             for (x, y) in self.points:
                 pygame.draw.circle(
                     surface, 
@@ -312,7 +312,7 @@ class UiLineGraph(UiElement):
                     )
         
         # draw lines between points
-        if self.draw_lines:
+        if self.draw_lines and len(self.points) > 1:
             last_point = self.points[0]
             for i, (x, y) in enumerate(self.points):
                 if i == 0:
@@ -330,7 +330,7 @@ class UiLineGraph(UiElement):
     def update(self, dt: float, surface: pygame.Surface):
         super().update(dt, surface)
 
-        if self.auto_calculate_bounds:
+        if self.auto_calculate_bounds and len(self.points) > 0:
             self.x_range_low = self.points[0][0]
             self.x_range_high = self.points[0][0]
             self.y_range_low = self.points[0][1]

@@ -35,6 +35,7 @@ class Netsock():
         self.port = port
 
         self._recent_packet_type: int = -1
+        self._recent_packet_data: bytes = bytes()
         self._consecutive_errors: int = 0
         self._open = False
         self._is_server = False
@@ -99,7 +100,7 @@ class Netsock():
         self.close()
         raise Exception("server closed") # break out loop
 
-    def send(self, type: int, data: bytes):
+    def send(self, type: int, data: bytes = bytes()):
         if not self._open:
             return
 
@@ -113,16 +114,16 @@ class Netsock():
                 self._consecutive_errors += 1
                 self._check_giveup()
 
-    def wait_for_packet(self, type: int):
+    def wait_for_packet(self, type: int) -> bytes | None:
         """
         blocks thread till a packet of the specified type is recv'd. useful for ack.
         """
         if not self._open:
-            return
+            return None
 
         while True:
             if self._recent_packet_type == type:
-                break
+                return bytes(self._recent_packet_data)
 
     def is_open(self) -> bool:
         return self._open
@@ -148,6 +149,7 @@ class Netsock():
 
                 # recv data
                 data = self._recv(size)
+                self._recent_packet_data = data
                 self._handle_packet(id, data)
                 self._consecutive_errors = 0 # reset consecutive errors
             except Exception as e:

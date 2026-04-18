@@ -4,11 +4,12 @@ sys.path[0] = sys.path[0][:-5] # hack around the fact that this file isnt in the
 ##
 
 import pygame
+import typing
 from src.common import consts
 from src.client.callback import Callback
 from src.client.render import Renderer
 from src.client.control.manager import ControllerManager
-from src.client.control.gamepad import Gamepad
+from src.client.control.gamepad import Gamepad, _Key
 
 class GamepadTest():
     
@@ -23,7 +24,8 @@ class GamepadTest():
         self.clock = pygame.Clock()
         self.running = False
 
-        self.gamepad_manager = ControllerManager(default_gamepads_nintendoified=True)
+        self.controller_manager = ControllerManager(default_gamepads_nintendoified=True)
+        self.controller_manager.always_gamepad = True
 
     def run(self):
         self.running = True
@@ -38,8 +40,8 @@ class GamepadTest():
 
 
     def update(self, dt: float):
-        if self.gamepad_manager.has():
-            self.gamepad_manager.fetch_first().poll_states()
+        if self.controller_manager.has():
+            self.controller_manager.fetch_first().poll_states()
 
     def event(self):
         for e in pygame.event.get(): # fetch every event from this frame
@@ -57,12 +59,13 @@ class GamepadTest():
         Renderer.draw_text(s, 'impROVise gamepad tester', (20, 20, 0, 0))
         
 
-        if not self.gamepad_manager.has():
+        if not self.controller_manager.has():
             Renderer.draw_text(s, 'no gamepad!', (20, 60, 0, 0))
             return
 
         # draw info about gamepad
-        gp = self.gamepad_manager.fetch_first()
+        gp = typing.cast(Gamepad, self.controller_manager.fetch_first())
+        
         Renderer.draw_text(s, f'Gamepad: {gp._get_gamepad_name()}', (20, 60, 0, 0), scale=0.8)
         Renderer.draw_text(s, f'Instance ID: {gp._get_pygame_joystick().get_instance_id()}', (20, 80, 0, 0), scale=0.8)
         Renderer.draw_text(s, f'GUID: {gp._get_pygame_joystick().get_guid()}', (20, 100, 0, 0), scale=0.8)
@@ -95,7 +98,7 @@ class GamepadTest():
 
 
     @staticmethod
-    def draw_stick(s: pygame.Surface, x: int, y: int, gp: Gamepad, axial_pair: tuple[Gamepad._Key, Gamepad._Key], press: Gamepad._Key, label: str):
+    def draw_stick(s: pygame.Surface, x: int, y: int, gp: Gamepad, axial_pair: tuple[_Key, _Key], press: _Key, label: str):
         radius = 30
 
         # read
@@ -111,7 +114,7 @@ class GamepadTest():
 
     
     @staticmethod
-    def draw_dpad(s: pygame.Surface, x: int, y: int, gp: Gamepad, axial_pair: tuple[Gamepad._Key, Gamepad._Key], label: str):
+    def draw_dpad(s: pygame.Surface, x: int, y: int, gp: Gamepad, axial_pair: tuple[_Key, _Key], label: str):
         radius = 30
 
         # read
@@ -151,7 +154,7 @@ class GamepadTest():
 
 
     @staticmethod
-    def draw_button_circle(s: pygame.Surface, x: int, y: int, gp: Gamepad, key: Gamepad._Key, label: str):
+    def draw_button_circle(s: pygame.Surface, x: int, y: int, gp: Gamepad, key: _Key, label: str):
         radius = 15
 
         # read
@@ -161,7 +164,7 @@ class GamepadTest():
         Renderer.draw_text(s, label, (x-radius, y-5, radius*2, 20), scale=0.75, justify='center', color='black' if not down else 'white')
 
     @staticmethod
-    def draw_button_rect(s: pygame.Surface, x: int, y: int, gp: Gamepad, key: Gamepad._Key, label: str):
+    def draw_button_rect(s: pygame.Surface, x: int, y: int, gp: Gamepad, key: _Key, label: str):
         w = 35
         h = 15
         rect = (x-w, y-h, w*2, h*2)
@@ -173,7 +176,7 @@ class GamepadTest():
         Renderer.draw_text(s, label, (rect[0], rect[1]+10, rect[2], rect[3]), scale=0.75, justify='center', color='black' if not down else 'white')
 
     @staticmethod
-    def draw_trigger(s: pygame.Surface, x: int, y: int, gp: Gamepad, key: Gamepad._Key, label: str):
+    def draw_trigger(s: pygame.Surface, x: int, y: int, gp: Gamepad, key: _Key, label: str):
         w = 30
         h = 80
 

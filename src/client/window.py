@@ -29,7 +29,7 @@ class Window():
 
     def __init__(self, ip: str, port: int):
 
-        # WINDOW OBJECTS
+        ## WINDOW OBJECTS ##
 
         # there are several ways to create a window in pygame. for this, im using the newer object oriented api rather than the older procedural one
         # why? because i like it. there arent many differences anyway
@@ -43,40 +43,35 @@ class Window():
         self.wnd_surface = self.window.get_surface() # get the surface of the window to draw onto. this initialises everything, too
         self.draw_surface = pygame.Surface((consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT))
 
-        # ICON
+        ## ICON ##
         astrid_texture = pygame.image.load('docs/astrid_pixelart.png').convert_alpha()
         self.window.set_icon(astrid_texture)
 
-        # RENDERER
+        ## RENDERER ##
         Renderer.init()
 
-        # MANAGEMENT
+        ## MANAGEMENT ##
         self.keep_window_open = False # this boolean is important as it keeps the window loop going. if its ever false at the end of a loop, the window closes.
         self.fullscreen = False # true if window should fullscreen
 
-        # TIMING
+        ## TIMING ##
         self.clock = pygame.Clock() # pygame clock ; helps keep time (see further down for note on delta time)
         self.target_fps = 0 # target fps (0 means unlimited)
 
-        # GAMEPAD
-        self.gamepad_manager = ControllerManager(default_gamepads_nintendoified=True)
-        self.gamepad_manager.load_mappings('src/resource/keymap.json')
-
-        ### NETWORK ###
-        self.net = Netsock(ip, port)
-
-        self.net.add_packet_handler(packets.DISCONNECT, lambda id, data, args: Logger.log("Server closed!", False))
+        ## GAMEPAD ##
+        self.controller_manager = ControllerManager(default_gamepads_nintendoified=True)
+        self.controller_manager.load_mappings('src/resource/keymap.json')
 
         ## ROV ##
-        self.rov = RovInterface(self.net, self.gamepad_manager)
+        self.net = Netsock(ip, port)
+        self.net.add_packet_handler(packets.DISCONNECT, lambda id, data, args: Logger.log("Server closed!", False))
+        self.rov = RovInterface(self.net, self.controller_manager)
 
         ## FLOAT ##
         self.float = FloatInterface()
+        self.float_graph = UiLineGraph(pygame.Vector2(1400, 610), self.float.get_processed_data)
 
-        ###############
-
-
-        ### UI Container ###
+        ## UI CONTAINER ##
         self.container = UiContainer()
 
         self.container.add(UiServerConnectionStatusIndicator(
@@ -109,14 +104,12 @@ class Window():
             self.rov
         ))
 
-        self.container.add(UiLineGraph(
-            pygame.Vector2(1400, 610)
-        ))
-
         self.container.add(UiServerConnectionStatusIndicator( # float connection
             pygame.Vector2(1400, 525),
             self.float.net
         ))
+
+        self.container.add(self.float_graph)
 
         self.container.add(UiCountdownClock(
             pygame.Vector2(500, 10),
@@ -198,8 +191,8 @@ class Window():
 
     def update(self, dt: float):
         # poll gamepad
-        if self.gamepad_manager.has():
-            self.gamepad_manager.fetch_first().poll_states()
+        if self.controller_manager.has():
+            self.controller_manager.fetch_first().poll_states()
 
         # update rov
         self.rov.update(dt)
@@ -208,8 +201,8 @@ class Window():
         self.container.update(dt, self.draw_surface)
 
         # send status of controller
-        if self.gamepad_manager.has():
-            gp = self.gamepad_manager.fetch_first()
+        if self.controller_manager.has():
+            gp = self.controller_manager.fetch_first()
 
             lstick = gp.read_vector(*Gamepad.LEFT_STICK)
 
@@ -256,6 +249,10 @@ class Window():
                 Logger.log("killing remote server")
                 self.net.close()
                 self.net.send(packets.STOP_SERVER, bytes())
+
+        if just_pressed[pygame.K_RSHIFT]:
+            if self.float:
+                self.float.run()
         
 
     def event(self):

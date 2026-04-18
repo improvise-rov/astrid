@@ -104,7 +104,7 @@ class Thrustmaster(AbstractController[_ThrustmasterKey]):
 
 
     def __init__(self, joystick: JoystickType) -> None:
-        super().__init__(joystick, {
+        super().__init__(joystick, 'thrustmaster', {
             Thrustmaster.KEY_NONE:               lambda g: 0.0,
 
             Thrustmaster.KEY_STICK_FORWARD:      lambda g: 0.0,

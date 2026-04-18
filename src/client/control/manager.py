@@ -17,6 +17,8 @@ class ControllerManager():
     def __init__(self, default_gamepads_nintendoified: bool = False) -> None:
         self.controllers: dict[int, AbstractController] = {}
 
+        self.mappings: dict[str, dict[str, str]] = {}
+        self.always_gamepad = False
         self.default_gamepads_nintendoified = default_gamepads_nintendoified
 
         Callback.add_listener(pygame.JOYDEVICEADDED, self._device_connect)
@@ -75,7 +77,7 @@ class ControllerManager():
         instance_id = joystick.get_instance_id()
         guid = joystick.get_guid()
 
-        if guid == Thrustmaster.DEVICE_GUID:
+        if guid == Thrustmaster.DEVICE_GUID and not self.always_gamepad:
             self.controllers[instance_id] = Thrustmaster(joystick)
         else:
             gp = Gamepad(joystick)

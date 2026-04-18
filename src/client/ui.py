@@ -380,3 +380,17 @@ class UiCountdownClock(UiElement):
         if len(td) > 8:
             td = td[:8]
         Renderer.draw_text(surface, td, (self.resolve_position(), pygame.Vector2()))
+
+class UiStaticText(UiElement):
+    def __init__(self, pos: pygame.Vector2, *args, width: float = 0, height: float = 0, **kwargs):
+        super().__init__(pos)
+        self.width = width
+        self.height = height
+        self.args = args
+        self.kwargs = kwargs
+
+    def draw(self, surface: pygame.Surface):
+        super().draw(surface)
+        pos = self.resolve_position()
+        Renderer.draw_text(surface, *self.args, **self.kwargs, rect=(pos.x, pos.y, self.width, self.height))
+    

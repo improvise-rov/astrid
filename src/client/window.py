@@ -9,9 +9,11 @@ from src.client.ui import UiCorrectionSubsysStatus
 from src.client.ui import UiTextLog
 from src.client.ui import UiLineGraph
 from src.client.ui import UiCountdownClock
+from src.client.ui import UiStaticText
 from src.client.render import Renderer
 from src.client.logger import Logger
 from src.client.irov import RovInterface
+from src.client.float.ifloat import FloatInterface
 from src.client.control.manager import ControllerManager
 from src.client.control.gamepad import Gamepad
 from src.client.callback import Callback
@@ -68,19 +70,14 @@ class Window():
         ## ROV ##
         self.rov = RovInterface(self.net, self.gamepad_manager)
 
+        ## FLOAT ##
+        self.float = FloatInterface()
 
         ###############
 
 
         ### UI Container ###
         self.container = UiContainer()
-
-        self.container.add(UiTexture(
-            pygame.Vector2(1850, 20), 
-            astrid_texture,
-            scale=pygame.Vector2(1, 1),
-            centered=False
-        ))
 
         self.container.add(UiServerConnectionStatusIndicator(
             pygame.Vector2(20, 20),
@@ -113,12 +110,37 @@ class Window():
         ))
 
         self.container.add(UiLineGraph(
-            pygame.Vector2(1400, 600)
+            pygame.Vector2(1400, 610)
+        ))
+
+        self.container.add(UiServerConnectionStatusIndicator( # float connection
+            pygame.Vector2(1400, 525),
+            self.float.net
         ))
 
         self.container.add(UiCountdownClock(
             pygame.Vector2(500, 10),
             consts.POOL_RUN_TIME_SECONDS
+        ))
+
+        self.container.add(UiStaticText(
+            pygame.Vector2(20, consts.WINDOW_HEIGHT-40),
+            "<SPACE>: connect | <BACKSPACE>: kill ROV server & disconnect | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine"
+        ))
+
+
+        self.container.add(UiTexture(
+            pygame.Vector2(consts.WINDOW_WIDTH-30, 30), 
+            pygame.image.load('src/resource/scotland.png').convert_alpha(),
+            scale=pygame.Vector2(0.05, 0.05),
+            centered=True
+        ))
+
+        self.container.add(UiStaticText(
+            pygame.Vector2(consts.WINDOW_WIDTH-60, 20),
+            "impROVise",
+            draw_rect = True,
+            justify = 'right',
         ))
 
         ####################

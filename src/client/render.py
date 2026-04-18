@@ -58,6 +58,9 @@ class Renderer():
         if scale != 1.0:
             s = pygame.transform.scale_by(s, scale)
 
+        if justify == 'right':
+            rect.x -= s.get_rect().w
+
         surface.blit(s, rect)
         if draw_rect:
             pygame.draw.rect(surface, 'red', og_rect, 2)

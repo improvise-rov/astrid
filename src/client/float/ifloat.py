@@ -56,15 +56,20 @@ class FloatInterface():
             if data:
                 self.profile_ready = True
                 Logger.log("started float profile")
+            else:
+                Logger.log("failed to start profile (probably not connected)")
 
         else:
             # ask for data
             self.net.send(FloatNetworker.build_packet(packets.RECEIVE_DATA_PLEASE))
             data = self.net.wait_for_packet(packets.DATA_PAYLOAD)
-            self.consume_raw_data(data)
+            if data:
+                self.consume_raw_data(data)
 
-            # mark as ready for next profile
-            self.profile_ready = False
-            Logger.log("received float profile")
+                # mark as ready for next profile
+                self.profile_ready = False
+                Logger.log("received float profile")
+            else:
+                Logger.log("failed to receive profile (probably not connected)")
 
         pass

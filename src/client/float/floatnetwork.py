@@ -19,18 +19,23 @@ class FloatNetworker():
 
     def __init__(self) -> None:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # use UDP
+        self.client.settimeout(1)
     
     def send(self, packet: bytes):
         self.client.sendto(packet, (consts.FLOAT_IP, consts.FLOAT_PORT))
 
-    def wait_for_packet(self, type: int) -> bytes:
-        id = -1
-        data = bytes()
-        while id != type:
-            data, addr = self.client.recvfrom(consts.FLOAT_PACKET_SIZE)
-            id, = struct.unpack_from(FloatNetworker.HEADER_FORMAT, data)
+    def wait_for_packet(self, type: int) -> bytes | None:
+        try:
+            id = -1
+            data = bytes()
+            while id != type:
+                data, addr = self.client.recvfrom(consts.FLOAT_PACKET_SIZE)
+                id, = struct.unpack_from(FloatNetworker.HEADER_FORMAT, data)
 
-        return data[struct.calcsize(FloatNetworker.HEADER_FORMAT):]
+            return data[struct.calcsize(FloatNetworker.HEADER_FORMAT):]
+        except ConnectionResetError:
+            return None
+            
 
     @staticmethod
     def build_packet(id: int, data: bytes = bytes()) -> bytes:

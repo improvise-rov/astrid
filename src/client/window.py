@@ -9,7 +9,7 @@ from src.client.ui import UiCorrectionSubsysStatus
 from src.client.ui import UiTextLog
 from src.client.ui import UiLineGraph
 from src.client.ui import UiCountdownClock
-from src.client.ui import UiStaticText
+from src.client.ui import UiText
 from src.client.render import Renderer
 from src.client.logger import Logger
 from src.client.irov import RovInterface
@@ -104,7 +104,11 @@ class Window():
             self.rov
         ))
 
-        
+        self.container.add(UiText(
+            pygame.Vector2(consts.WINDOW_WIDTH - 40, consts.WINDOW_HEIGHT - 70),
+            lambda: f"(Morag) Profile: {self.float.profile}\nTemperature: {self.float.temperature:.1f} deg C",
+            justify = "right"
+        ))
         self.container.add(self.float_graph)
 
         self.container.add(UiCountdownClock(
@@ -112,9 +116,9 @@ class Window():
             consts.POOL_RUN_TIME_SECONDS
         ))
 
-        self.container.add(UiStaticText(
+        self.container.add(UiText(
             pygame.Vector2(20, consts.WINDOW_HEIGHT-40),
-            "<SPACE>: connect | <BACKSPACE>: kill ROV server & disconnect | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine"
+            lambda: "<SPACE>: connect | <BACKSPACE>: kill ROV server & disconnect | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine"
         ))
 
 
@@ -125,9 +129,9 @@ class Window():
             centered=True
         ))
 
-        self.container.add(UiStaticText(
+        self.container.add(UiText(
             pygame.Vector2(consts.WINDOW_WIDTH-60, 20),
-            "impROVise",
+            lambda: "impROVise",
             draw_rect = True,
             justify = 'right',
         ))
@@ -269,7 +273,7 @@ class Window():
         self.draw_surface.fill(consts.GLAUCOUS) # fill with a nice improvise blue
         
         # add a safety orange bit BECAUSE I CAN HAHAHAHAH
-        pygame.draw.rect(self.draw_surface, consts.SAFETY_ORANGE, (pygame.Vector2(0, consts.WINDOW_HEIGHT * 1/2), pygame.Vector2(consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT))) 
+        #pygame.draw.rect(self.draw_surface, consts.SAFETY_ORANGE, (pygame.Vector2(0, consts.WINDOW_HEIGHT * 1/2), pygame.Vector2(consts.WINDOW_WIDTH, consts.WINDOW_HEIGHT))) 
 
         # draw ui container (and therefore everything within it)
         self.container.draw(self.draw_surface)

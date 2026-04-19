@@ -15,6 +15,8 @@ from src.client.float import packets
 class FloatNetworker():
     HEADER_FORMAT: str = '>H' # id
     POINT_FORMAT: str = '>ff' # time, depth
+    OTHER_DATA_FORMAT: str = ">if" # profile no., temperature
+
     type _addr = tuple[str, int]
 
     def __init__(self) -> None:
@@ -34,6 +36,8 @@ class FloatNetworker():
 
             return data[struct.calcsize(FloatNetworker.HEADER_FORMAT):]
         except ConnectionResetError:
+            return None
+        except TimeoutError:
             return None
             
 

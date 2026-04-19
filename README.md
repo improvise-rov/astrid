@@ -1,5 +1,11 @@
-<h1 align=center> Astrid <img width=32 height=32 style="vertical-align:middle" src="docs/astrid_pixelart.png"></img> </h1>
+<h1 align=center> 
+
+Astrid 
+<img width=32 height=32 style="vertical-align:middle" src="docs/astrid_pixelart.png"></img>
+</h1>
 <p align=center><i>Source Code to impROVise's ROV, Astrid</i>
+<br><br><br>
+<img height=50 style="vertical-align:middle" src="docs/improvise.png"></img>
 
 ---
 
@@ -39,29 +45,17 @@ python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080> [OPTIONAL: --
 ---
 
 # Hardware
-We use a Raspberry Pi 5 onboard our ROV for flight control. This Pi 5 is connected to a I2C PCA9685 board to control our motors and servos. The addresses for this board are defined in [consts.py](src/consts.py), as well as some other physical quantities such as motor throttles and servo angles. We use a fiber optic cable along our tether ethernet adapters on either end for digital communications. The poolside client computer is a Raspberry Pi 4.
+We use a Raspberry Pi 4 onboard our ROV for flight control. This Pi 4 is connected to a I2C PCA9685 board to control our motors and servos. The addresses for this board are defined in [consts.py](src/consts.py), as well as some other physical quantities such as motor throttles and servo angles. We use Ethernet cable for our tether, and the poolside client computer is a Raspberry Pi 4.
 
-
----
-# To-Do List
-_A certified impROVise classic activity_
-
-## Common
-- [x] Create Netcode Framework
-    - [x] Error Handling (yay...)
-    - [x] S2C Camera Stream Protocol
-    - [x] C2S Control Protocol
-
-## Client (Poolside)
-- [x] Create Window Manager
-    - [x] Maintain Aspect Ratio
-- [x] Create Gamepad Manager
-
-## Server (ROV)
-- [x] Write Camera Handler
-- [x] Write Hardware Handler
-    - [x] Actually handle key inputs
 
 ---
 # Licensing
 We use an MIT License. (Please see [LICENSE](LICENSE) text!) Please feel free to use this code to learn!
+
+
+---
+<footer align=center> 
+    <i>made in scotland with love</i>
+    <br>
+    <img height=20 style="vertical-align:middle" src="docs/scotland.png"></img>
+</footer>

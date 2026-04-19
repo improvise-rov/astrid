@@ -104,11 +104,7 @@ class Window():
             self.rov
         ))
 
-        self.container.add(UiServerConnectionStatusIndicator( # float connection
-            pygame.Vector2(1400, 525),
-            self.float.net
-        ))
-
+        
         self.container.add(self.float_graph)
 
         self.container.add(UiCountdownClock(

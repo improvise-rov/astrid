@@ -35,7 +35,7 @@ class FloatInterface():
         self.processed_data = []
         for datum in points:
             self.processed_data.append(
-                (datum[0], datum[1])
+                (datum[1], datum[0]) # i sent it backwards lol
             )
 
     def get_processed_data(self) -> list[tuple[float, float]]:

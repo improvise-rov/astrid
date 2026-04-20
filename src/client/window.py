@@ -17,8 +17,8 @@ from src.client.float.ifloat import FloatInterface
 from src.client.control.manager import ControllerManager
 from src.client.control.gamepad import Gamepad
 from src.client.callback import Callback
-from src.common.network import Netsock
-from src.common import packets
+from src.common.net.worker import Networker#
+from src.common.net import packets
 from src.common import consts
 
 
@@ -63,8 +63,9 @@ class Window():
         self.controller_manager.load_mappings('src/resource/keymap.json')
 
         ## ROV ##
-        self.net = Netsock(ip, port)
-        self.net.add_packet_handler(packets.DISCONNECT, lambda id, data, args: Logger.log("Server closed!", False))
+        self.rov_ip = ip
+        self.net = Networker(port, consts.PACKET_SIZE)
+        self.net.register_listener(packets.DISCONNECT, lambda addr, data: Logger.log("Server closed!", False))
         self.rov = RovInterface(self.net, self.controller_manager)
 
         ## FLOAT ##
@@ -200,16 +201,10 @@ class Window():
         # update everything in ui container
         self.container.update(dt, self.draw_surface)
 
-        # send status of controller
-        if self.controller_manager.has():
-            gp = self.controller_manager.fetch_first()
-
-            lstick = gp.read_vector(*Gamepad.LEFT_STICK)
-
-            self.net.send(packets.MSG, f"{lstick}".encode('utf-8'))
-
         # keycheck
         just_pressed = pygame.key.get_just_pressed()
+
+
         # check if f11 is pressed to toggle fullscreen
         if just_pressed[pygame.K_F11]:
             self.fullscreen = not self.fullscreen
@@ -224,11 +219,19 @@ class Window():
         if just_pressed[pygame.K_SPACE]:
             if not self.net.is_open():
                 Logger.log("Trying to connect..", False)
-                connected = self.net.start_client()
+                self.net.client(self.rov_ip)
+
+                self.net.send(packets.CONNECT)
+                connected = self.net.wait_for_packet(packets.CONNECT_ACK)
                 if connected:
+
+                    # remember ip
+                    data, addr = connected
+                    
+                    Logger.log(f"Connected! ({addr[0]}:{addr[1]})", False)
+
                     self.rov.correction_enabled = True
-                    self.net.send(packets.ENABLE_CORRECTION, bytes())
-                    Logger.log("Connected!", False)
+                    self.net.send(packets.ENABLE_CORRECTION)
                 else:
                     Logger.log("Connection failed! (the server is probably not open)", False)
 
@@ -237,10 +240,10 @@ class Window():
         if just_pressed[pygame.K_RETURN]:
             self.rov.correction_enabled = not self.rov.correction_enabled
             if self.rov.correction_enabled:
-                self.net.send(packets.ENABLE_CORRECTION, bytes())
+                self.net.send(packets.ENABLE_CORRECTION)
                 Logger.log("Enabled correction")
             else:
-                self.net.send(packets.DISABLE_CORRECTION, bytes())
+                self.net.send(packets.DISABLE_CORRECTION)
                 Logger.log("Disabled correction")
 
         # server die
@@ -248,8 +251,9 @@ class Window():
             if self.net.is_open():
                 Logger.log("killing remote server")
                 self.net.close()
-                self.net.send(packets.STOP_SERVER, bytes())
+                self.net.send(packets.STOP_SERVER)
 
+        # float go
         if just_pressed[pygame.K_RSHIFT]:
             if self.float:
                 self.float.run()
@@ -284,7 +288,5 @@ class Window():
 
 
     def shutdown(self):
-
-        # net
-        self.net.disconnect()
         self.net.close()
+

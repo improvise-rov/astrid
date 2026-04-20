@@ -1,11 +1,11 @@
 import typing
 import pygame
 import struct
-from src.common import packets
 from src.common import consts
 from src.common import types
 from src.common import rovmath
-from src.common.network import Netsock
+from src.common.net import packets
+from src.common.net.worker import Networker
 from src.client.control.manager import ControllerManager
 from src.client.control.thrustmaster import Thrustmaster
 
@@ -18,7 +18,7 @@ class RovInterface():
     This class, being "topside" (that is, NOT part of the code that runs onboard the ROV) is more or less an interface to the ROV.
     """
 
-    def __init__(self, net: Netsock, gamepad_manager: ControllerManager) -> None:
+    def __init__(self, net: Networker, gamepad_manager: ControllerManager) -> None:
         self.net = net
         self.gamepad_manager = gamepad_manager
 
@@ -118,16 +118,16 @@ class RovInterface():
 
 
         # send data
-        self.net.send(packets.CONTROL, struct.pack(packets.FORMAT_PACKET_CONTROL,
-                                                          self.motors['left_front']  ,
-                                                          self.motors['right_front'] ,
-                                                          self.motors['left_top']    ,
-                                                          self.motors['right_top']   ,
-                                                          self.motors['left_back']   ,
-                                                          self.motors['right_back']  ,
+        self.net.send(packets.CONTROL, 
+                                        self.motors['left_front']  ,
+                                        self.motors['right_front'] ,
+                                        self.motors['left_top']    ,
+                                        self.motors['right_top']   ,
+                                        self.motors['left_back']   ,
+                                        self.motors['right_back']  ,
 
-                                                          rovmath.servo_angle_to_byte(self.motors['camera_angle']),
-                                                          rovmath.servo_angle_to_byte(self.motors['tool_ver']),
-                                                          rovmath.servo_angle_to_byte(self.motors['tool_hor']),
-                                                          ))
+                                        rovmath.servo_angle_to_byte(self.motors['camera_angle']),
+                                        rovmath.servo_angle_to_byte(self.motors['tool_ver']),
+                                        rovmath.servo_angle_to_byte(self.motors['tool_hor']),
+                                        )
         

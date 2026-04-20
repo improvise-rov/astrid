@@ -2,11 +2,11 @@ import typing
 import threading
 import time
 import struct
-from src.common import packets
 from src.common import consts
 from src.common import types
 from src.common import rovmath
-from src.common.network import Netsock
+from src.common.net import packets
+from src.common.net.worker import Networker, _Addr
 from src.server.hardware import HardwareManager
 from src.server.camera import CameraFeed
 
@@ -19,7 +19,7 @@ class Rov():
     TARGET_ROLL: float = 0.0
     ROLL_CORRECTION: float = 0.01
 
-    def __init__(self, cam: CameraFeed, net: Netsock, hardware: HardwareManager) -> None:
+    def __init__(self, cam: CameraFeed, net: Networker, hardware: HardwareManager) -> None:
         self.cam = cam
         self.net = net
         self.hardware = hardware
@@ -40,11 +40,11 @@ class Rov():
         self.correction_enabled = False
 
         # register control packet
-        net.add_packet_handler(packets.CONTROL, self.control_packet)
+        net.register_listener(packets.CONTROL, self.control_packet)
         
         # register correction packets
-        net.add_packet_handler(packets.ENABLE_CORRECTION,  self.enable_correction)
-        net.add_packet_handler(packets.DISABLE_CORRECTION, self.disable_correction)
+        net.register_listener(packets.ENABLE_CORRECTION,  self.enable_correction)
+        net.register_listener(packets.DISABLE_CORRECTION, self.disable_correction)
 
         # start camera thread
         self.camera_running = True
@@ -96,7 +96,7 @@ class Rov():
 
         # print if simulated
         if self.hardware.simulated:
-            self.hardware.print_states()
+            pass#self.hardware.print_states()
 
 
     def _camera_thread_activity(self):
@@ -104,15 +104,15 @@ class Rov():
             if self.net.is_open():
                 frame = self.cam.capture() # get frame from camera
                 self.net.send(packets.CAMERA, frame) # send the camera frame down socket
-                time.sleep(1/60) # try and keep camera at 60 hz (this is not really acccurate, as it takes time to do everything. but its approximate enough.)
+                #time.sleep(1/60) # try and keep camera at 60 hz (this is not really acccurate, as it takes time to do everything. but its approximate enough.)
 
-    def enable_correction(self, id: int, data: bytes, args: tuple):
+    def enable_correction(self, addr: _Addr, args: ...):
         self.correction_enabled = True
 
-    def disable_correction(self, id: int, data: bytes, args: tuple):
+    def disable_correction(self, addr: _Addr, args: ...):
         self.correction_enabled = False
 
-    def control_packet(self, id: int, data: bytes, args: tuple):
+    def control_packet(self, addr: _Addr, args: ...):
         """
         runs when the server receives information from the client about controls.
 
@@ -122,7 +122,7 @@ class Rov():
 
         """
 
-        left_front, right_front, left_top, right_top, left_back, right_back, camera_angle, tool_ver, tool_hor = struct.unpack(packets.FORMAT_PACKET_CONTROL, data)
+        left_front, right_front, left_top, right_top, left_back, right_back, camera_angle, tool_ver, tool_hor = args
 
 
         self.net_motor_cache['left_front'] = left_front    

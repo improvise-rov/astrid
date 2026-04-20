@@ -8,9 +8,9 @@ from src.client.irov import RovInterface
 from src.client.logger import Logger
 from src.client.callback import Callback
 from src.client.render import Renderer
-from src.common.network import Netsock
+from src.common.net.worker import Networker, _Addr
+from src.common.net import packets
 from src.common import rovmath
-from src.common import packets
 from src.common import consts
 
 class UiContainer():
@@ -107,24 +107,24 @@ class UiTexture(UiElement):
 
 
 class UiServerConnectionStatusIndicator(UiElement):
-    def __init__(self, pos: pygame.Vector2, net: Netsock):
+    def __init__(self, pos: pygame.Vector2, net: Networker):
         super().__init__(pos)
         self.net = net
         
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
-        string = f" ({self.net.ip}:{self.net.port})"
+        string = f" ({self.net.target_addr}:{self.net.port})"
         Renderer.draw_boolean_circle(surface, self.resolve_position(), self.net.is_open(), "Connected" + string, "Not Connected" + string)
 
 class UiCameraFeed(UiElement):
-    def __init__(self, pos: pygame.Vector2, no_conn_img: pygame.Surface, net: Netsock):
+    def __init__(self, pos: pygame.Vector2, no_conn_img: pygame.Surface, net: Networker):
         super().__init__(pos)
         self.net = net
 
         self._no_connection_frame = no_conn_img
         self._last_frame = pygame.Surface(self._no_connection_frame.size)
-        self.net.add_packet_handler(packets.CAMERA, self._recv_camera_frame)
+        self.net.register_listener(packets.CAMERA, self._recv_camera_frame)
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
@@ -134,7 +134,7 @@ class UiCameraFeed(UiElement):
             surface.blit(self._no_connection_frame, self.resolve_position())
 
 
-    def _recv_camera_frame(self, id: int, data: bytes, args: tuple):
+    def _recv_camera_frame(self, addr: _Addr, data: ...):
         pygame.transform.scale(
             pygame.image.load(io.BytesIO(data), 'jpg').convert(),
             self._last_frame.size,

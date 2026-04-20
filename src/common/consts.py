@@ -48,13 +48,8 @@ ADDRESS_SERVO_CAMERA_ANGLE: int     = 15
 # likewise, if i put the camera servo at the opposite end and the tool servos somewhere in the middle
 # 
 
-# rpi pins
-PIN_FRONT_LEFT_MOTOR: int = 17
-PIN_FRONT_RIGHT_MOTOR: int = 27
-PIN_TOP_LEFT_MOTOR: int = 23
-PIN_TOP_RIGHT_MOTOR: int = 24
-PIN_BACK_LEFT_MOTOR: int = 5
-PIN_BACK_RIGHT_MOTOR: int = 6
+# networking
+PACKET_SIZE: int = 1024*16
 
 # byte quantities
 ESC_BYTE_MOTOR_SPEED_FULL_REVERSE: int = 0
@@ -90,7 +85,7 @@ IMU_I2C_ADDRESS: int = 0x00
 
 # opencv
 CAMERA_ID: int = 0
-CAMERA_JPEG_COMPRESSION_VALUE: int = 65
+CAMERA_JPEG_COMPRESSION_VALUE: int = 35
 CAMERA_ROTATE: int = 1 # 0 = 0 ; 1 = 90cw ; 2 = 90ccw ; 3 = 180
 
 # competition

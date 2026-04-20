@@ -2,10 +2,10 @@ import pygame
 
 from src.client.ui import UiContainer
 from src.client.ui import UiTexture
-from src.client.ui import UiServerConnectionStatusIndicator
+from src.client.ui import UiConnectionStatusIndicator
 from src.client.ui import UiCameraFeed
 from src.client.ui import UiControlMonitor
-from src.client.ui import UiCorrectionSubsysStatus
+from src.client.ui import UiPidStatus
 from src.client.ui import UiTextLog
 from src.client.ui import UiLineGraph
 from src.client.ui import UiCountdownClock
@@ -75,7 +75,7 @@ class Window():
         ## UI CONTAINER ##
         self.container = UiContainer()
 
-        self.container.add(UiServerConnectionStatusIndicator(
+        self.container.add(UiConnectionStatusIndicator(
             pygame.Vector2(20, 20),
             self.net
         ))
@@ -95,7 +95,7 @@ class Window():
             15
         ))
 
-        self.container.add(UiCorrectionSubsysStatus(
+        self.container.add(UiPidStatus(
             pygame.Vector2(800, 20),
             self.rov
         ))

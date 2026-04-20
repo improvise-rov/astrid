@@ -65,10 +65,9 @@ class Rov():
 
         # calculate
         if self.correction_enabled and not self.hardware.simulated:
-            self.hardware.stabiliser.update(dt)
             
             # roll
-            correction = self.hardware.stabiliser.value
+            correction = self.hardware.stabiliser.compute_modulation(self.hardware.imu.roll(), dt) * dt
             if   correction > 0: # roll is less than 0, (from back?) left needs up and right needs down
                 lt +=  abs(correction)
                 rt += -abs(correction)
@@ -93,7 +92,7 @@ class Rov():
 
         # print if simulated
         if self.hardware.simulated:
-            self.hardware.print_states()
+            pass#self.hardware.print_states()
 
 
     def _camera_thread_activity(self):

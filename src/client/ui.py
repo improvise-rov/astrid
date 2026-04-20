@@ -106,7 +106,7 @@ class UiTexture(UiElement):
         self.texture = pygame.transform.rotate(self.texture, self.rotation)
 
 
-class UiServerConnectionStatusIndicator(UiElement):
+class UiConnectionStatusIndicator(UiElement):
     def __init__(self, pos: pygame.Vector2, net: Networker):
         super().__init__(pos)
         self.net = net
@@ -114,7 +114,7 @@ class UiServerConnectionStatusIndicator(UiElement):
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
-        string = f" ({self.net.target_addr}:{self.net.port})"
+        string = f" ({self.net.target_addr})"
         Renderer.draw_boolean_circle(surface, self.resolve_position(), self.net.is_open(), "Connected" + string, "Not Connected" + string)
 
 class UiCameraFeed(UiElement):
@@ -170,7 +170,7 @@ class UiControlMonitor(UiElement):
 
 
 
-class UiCorrectionSubsysStatus(UiElement):
+class UiPidStatus(UiElement):
     def __init__(self, pos: pygame.Vector2, rov: RovInterface):
         super().__init__(pos)
         self.rov = rov
@@ -180,7 +180,7 @@ class UiCorrectionSubsysStatus(UiElement):
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
 
-        string = "IMU-based Angular Correction "
+        string = "IMU-PID Stabiliser: "
         Renderer.draw_boolean_circle(surface, self.resolve_position(), self.rov.correction_enabled, string + "Enabled", string + "Disabled")
 
 class UiTextLog(UiElement):
@@ -249,10 +249,16 @@ class UiLineGraph(UiElement):
         self.point_size = 5
         self.line_width = 5
         self.axis_numbers = 5
+        self.drawn_points = -1
+        self.bounds_from_all_x = False
+        self.bounds_from_all_y = True
 
         self.auto_calculate_bounds = True
         self.data_fetcher = data_fetcher
         self.points: list[tuple[float, float]] = []
+
+
+        self._points_to_draw: list[tuple[float, float]] = []
 
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
@@ -272,6 +278,7 @@ class UiLineGraph(UiElement):
         # arrow head
         pygame.draw.line(surface, self.axis_color, origin + vertical, origin+vertical+pygame.Vector2(20, -20), self.axis_line_width)
         pygame.draw.line(surface, self.axis_color, origin + vertical, origin+vertical+pygame.Vector2(-20, -20), self.axis_line_width)
+
 
         # draw axis labels
         if self.draw_axis_labels:
@@ -298,9 +305,10 @@ class UiLineGraph(UiElement):
                     self.y_range_low, self.y_range_high
                 ), 1)), (pos, pygame.Vector2()), 'bottom_to_top', color=self.axis_color)
 
+
         # draw points
-        if self.draw_points and len(self.points) > 0:
-            for (x, y) in self.points:
+        if self.draw_points and len(self._points_to_draw) > 0:
+            for (x, y) in self._points_to_draw:
                 pygame.draw.circle(
                     surface, 
                     self.point_color, 
@@ -312,9 +320,9 @@ class UiLineGraph(UiElement):
                     )
         
         # draw lines between points
-        if self.draw_lines and len(self.points) > 1:
-            last_point = self.points[0]
-            for i, (x, y) in enumerate(self.points):
+        if self.draw_lines and len(self._points_to_draw) > 1:
+            last_point = self._points_to_draw[0]
+            for i, (x, y) in enumerate(self._points_to_draw):
                 if i == 0:
                     continue
 
@@ -332,15 +340,22 @@ class UiLineGraph(UiElement):
 
         self.points = self.data_fetcher()
 
-        if self.auto_calculate_bounds and len(self.points) > 0:
-            self.x_range_low = self.points[0][0]
-            self.x_range_high = self.points[0][0]
-            self.y_range_low = self.points[0][1]
-            self.y_range_high = self.points[0][1]
+        self._points_to_draw = self.points if self.drawn_points <= 0 or len(self.points) < self.drawn_points else self.points[len(self.points)-self.drawn_points:]
 
-            for (x, y) in self.points:
+        if self.auto_calculate_bounds and len(self.points) > 0:
+            x_group = (self.points if self.bounds_from_all_x else self._points_to_draw)
+            y_group = (self.points if self.bounds_from_all_y else self._points_to_draw)
+
+            self.x_range_low = x_group[0][0]
+            self.x_range_high = x_group[0][0]
+            self.y_range_low = y_group[0][1]
+            self.y_range_high = y_group[0][1]
+
+            for (x, y) in x_group:
                 if x < self.x_range_low: self.x_range_low = x
                 if x > self.x_range_high: self.x_range_high = x
+            
+            for (x, y) in y_group:
                 if y < self.y_range_low: self.y_range_low = y
                 if y > self.y_range_high: self.y_range_high = y
     

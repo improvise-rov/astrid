@@ -31,7 +31,7 @@ class CameraFeed():
             case _: frame = frame
 
         # encode
-        success, frame = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), cam_quality])
+        success, frame = cv2.imencode('.png', frame, [int(cv2.IMWRITE_PNG_COMPRESSION), cam_quality])
         if not success:
             print("failed frame encode")
             return b''

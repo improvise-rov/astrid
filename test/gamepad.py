@@ -14,7 +14,7 @@ from src.client.control.gamepad import Gamepad, _Key
 class GamepadTest():
     
     TARGET_FPS: int = 60
-    TITLE: str = "impROVise Gamepad Tester"
+    TITLE: str = "impROVise gamepad tester"
     W: int = 1280
     H: int = 800
     
@@ -35,7 +35,7 @@ class GamepadTest():
             self.event()
             self.draw(self.surf)
             pygame.display.flip()
-            dt = self.clock.tick() / GamepadTest.TARGET_FPS
+            dt = self.clock.tick(GamepadTest.TARGET_FPS) / 1000
         self.stop()
 
 
@@ -56,7 +56,7 @@ class GamepadTest():
     def draw(self, s: pygame.Surface):
         s.fill(consts.GLAUCOUS)
         
-        Renderer.draw_text(s, 'impROVise gamepad tester', (20, 20, 0, 0))
+        Renderer.draw_text(s, GamepadTest.TITLE, (20, 20, 0, 0))
         
 
         if not self.controller_manager.has():

@@ -40,8 +40,7 @@ class HardwareManager():
             self.motor_interface = PCA9685(self.i2c_bus) # type: ignore # warning normally because ServoKit might not exist
             
             self.imu = imu.Imu(consts.IMU_I2C_ADDRESS)
-            self.stabiliser = rovmath.PIDController(self.imu.roll, 0.0, 
-                                                    1.0, 0.1, 0.05)
+            self.stabiliser = rovmath.PIDController(0.0)
 
             self.motor_interface.frequency = consts.PWM_FREQUENCY
 

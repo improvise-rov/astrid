@@ -5,7 +5,7 @@ from src.server.rov import Rov
 from src.common.net.worker import Networker, _Addr
 from src.common.net import packets
 from src.common import consts
-import os, signal
+import os, signal, time
 
 def server_main(ip: str, port: int, simulated_hardware: bool):
     """
@@ -39,8 +39,12 @@ def server_main(ip: str, port: int, simulated_hardware: bool):
         rov.motor_init_seq('right_back')
         
         print("ready")
+        dt = 0.0
+        last_frame_time = 0.0
         while net.is_open(): # loops until the server is stopped
-            rov.tick()
+            last_frame_time = time.time()
+            rov.tick(dt)
+            dt = time.time() - last_frame_time
     except:
         pass
 

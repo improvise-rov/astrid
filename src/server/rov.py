@@ -16,9 +16,6 @@ class Rov():
     General "orchestrator" class for the entire ROV control system.
     """
 
-    TARGET_ROLL: float = 0.0
-    ROLL_CORRECTION: float = 0.01
-
     def __init__(self, cam: CameraFeed, net: Networker, hardware: HardwareManager) -> None:
         self.cam = cam
         self.net = net
@@ -57,7 +54,7 @@ class Rov():
         self.hardware.set_motor(motor, consts.PWM_ESC_INITIALISE)
 
 
-    def tick(self):
+    def tick(self, dt: float):
 
         lf = self.net_motor_cache['left_front']
         rf = self.net_motor_cache['right_front']
@@ -66,19 +63,19 @@ class Rov():
         lb = self.net_motor_cache['left_back']
         rb = self.net_motor_cache['right_back']
 
-        # calculate correction ; PID?? honestly i have no idea if this works
-        if self.correction_enabled:
-            yaw, pitch, roll = self.hardware.get_gyroscope()
+        # calculate
+        if self.correction_enabled and not self.hardware.simulated:
+            self.hardware.stabiliser.update(dt)
             
             # roll
-            roll_diff = roll - Rov.TARGET_ROLL
-            if   roll_diff > 0: # roll is less than 0, (from back?) left needs up and right needs down
-                lt +=  Rov.ROLL_CORRECTION * roll_diff
-                rt += -Rov.ROLL_CORRECTION * roll_diff
-            elif roll_diff < 0:
+            correction = self.hardware.stabiliser.value
+            if   correction > 0: # roll is less than 0, (from back?) left needs up and right needs down
+                lt +=  abs(correction)
+                rt += -abs(correction)
+            elif correction < 0:
                 # roll is greater than 0, (from back?) left needs down and right needs up
-                lt += -Rov.ROLL_CORRECTION * roll_diff
-                rt +=  Rov.ROLL_CORRECTION * roll_diff
+                lt += -abs(correction)
+                rt +=  abs(correction)
 
 
 
@@ -96,7 +93,7 @@ class Rov():
 
         # print if simulated
         if self.hardware.simulated:
-            pass#self.hardware.print_states()
+            self.hardware.print_states()
 
 
     def _camera_thread_activity(self):
@@ -104,8 +101,8 @@ class Rov():
             if self.net.is_open():
                 frame = self.cam.capture() # get frame from camera
                 self.net.send(packets.CAMERA, frame) # send the camera frame down socket
-                #time.sleep(1/60) # try and keep camera at 60 hz (this is not really acccurate, as it takes time to do everything. but its approximate enough.)
-
+                
+                
     def enable_correction(self, addr: _Addr, args: ...):
         self.correction_enabled = True
 

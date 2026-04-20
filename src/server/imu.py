@@ -12,5 +12,8 @@ class Imu():
     
     def gyro(self) -> rovmath.Vec:
         return (0, 0, 0) # yaw pitch roll
+    
+    def roll(self) -> float:
+        return self.gyro()[2]
 
     

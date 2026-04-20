@@ -13,7 +13,7 @@ class CameraFeed():
         self.camera = cv2.VideoCapture(self.cam_id) # get the opencv camera feed
 
 
-    def capture(self, cam_quality: int = consts.CAMERA_JPEG_COMPRESSION_VALUE) -> bytes:
+    def capture(self, cam_quality: int = consts.CAMERA_COMPRESSION_VALUE) -> bytes:
         """
         gets and encodes a frame from the camera. returns the bytes of the encoded JPEG
         """
@@ -31,7 +31,7 @@ class CameraFeed():
             case _: frame = frame
 
         # encode
-        success, frame = cv2.imencode('.png', frame, [int(cv2.IMWRITE_PNG_COMPRESSION), cam_quality])
+        success, frame = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), cam_quality])
         if not success:
             print("failed frame encode")
             return b''

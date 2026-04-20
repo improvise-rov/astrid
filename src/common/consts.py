@@ -84,8 +84,8 @@ PWM_FREQUENCY: int = 50
 IMU_I2C_ADDRESS: int = 0x00
 
 # opencv
-CAMERA_ID: int = 0
-CAMERA_JPEG_COMPRESSION_VALUE: int = 65
+CAMERA_ID: int = 1
+CAMERA_COMPRESSION_VALUE: int = 65
 CAMERA_ROTATE: int = 1 # 0 = 0 ; 1 = 90cw ; 2 = 90ccw ; 3 = 180
 
 # competition

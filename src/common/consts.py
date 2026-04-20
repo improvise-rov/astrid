@@ -49,7 +49,7 @@ ADDRESS_SERVO_CAMERA_ANGLE: int     = 15
 # 
 
 # networking
-PACKET_SIZE: int = 1024*16
+PACKET_SIZE: int = 1024*32
 
 # byte quantities
 ESC_BYTE_MOTOR_SPEED_FULL_REVERSE: int = 0
@@ -85,7 +85,7 @@ IMU_I2C_ADDRESS: int = 0x00
 
 # opencv
 CAMERA_ID: int = 0
-CAMERA_JPEG_COMPRESSION_VALUE: int = 35
+CAMERA_JPEG_COMPRESSION_VALUE: int = 65
 CAMERA_ROTATE: int = 1 # 0 = 0 ; 1 = 90cw ; 2 = 90ccw ; 3 = 180
 
 # competition

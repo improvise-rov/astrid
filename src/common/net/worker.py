@@ -1,4 +1,5 @@
 import typing
+import time
 import socket
 import struct
 import threading
@@ -26,7 +27,6 @@ class Networker():
         self.target_addr: _Addr | None = None
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.settimeout(1.0)
 
         self.listeners: dict[_Packet, list[_Listener]] = {}
         self.recv_thread: threading.Thread
@@ -38,6 +38,7 @@ class Networker():
 
         self.recv_thread = threading.Thread(name="NetworkerRecvThread", target=self._recv_thread)
         self.recv_thread.start()
+        self.socket.settimeout(1.0)
         
         return True
 
@@ -48,6 +49,7 @@ class Networker():
 
         self.recv_thread = threading.Thread(name="NetworkerRecvThread", target=self._recv_thread)
         self.recv_thread.start()
+        self.socket.settimeout(1.0)
         return True
 
     def build_packet(self, pkt_type: _Packet, *data) -> bytes:
@@ -71,11 +73,13 @@ class Networker():
             #print("send", type, self.target_addr)
             self._send(self.target_addr, self.build_packet(type, *data))
 
-    def wait_for_packet(self, type: _Packet) -> tuple[bytes, _Addr] | None:
+    def wait_for_packet(self, type: _Packet, timeout: float = 1.0) -> tuple[bytes, _Addr] | None:
         id = -1
         data = None
 
-        while id != type[0]:
+        start = time.time()
+
+        while id != type[0] and time.time() <= start + timeout:
             result = self._recv()
             if result:
                 id, data, addr = result
@@ -116,9 +120,7 @@ class Networker():
                 pkt_type, data = self._unpack_header(raw_pkt)
                 #print("recv", pkt_type, self.target_addr)
                 return pkt_type, data, addr
-            except ConnectionResetError:
-                return None
-            except TimeoutError:
+            except:
                 return None
         else:
             return None

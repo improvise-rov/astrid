@@ -233,6 +233,7 @@ class Window():
                     self.rov.correction_enabled = True
                     self.net.send(packets.ENABLE_CORRECTION)
                 else:
+                    self.net.close()
                     Logger.log("Connection failed! (the server is probably not open)", False)
 
 
@@ -250,8 +251,8 @@ class Window():
         if just_pressed[pygame.K_BACKSPACE]:
             if self.net.is_open():
                 Logger.log("killing remote server")
-                self.net.close()
                 self.net.send(packets.STOP_SERVER)
+                self.net.close()
 
         # float go
         if just_pressed[pygame.K_RSHIFT]:

@@ -86,6 +86,8 @@ IMU_I2C_ADDRESS: int = 0x00
 # opencv
 CAMERA_ID: int = 0
 CAMERA_COMPRESSION_VALUE: int = 65
+CAMERA_IMAGE_WIDTH: int = 85 * 7
+CAMERA_IMAGE_HEIGHT: int = 64 * 7
 CAMERA_ROTATE: int = 1 # 0 = 0 ; 1 = 90cw ; 2 = 90ccw ; 3 = 180
 
 # competition

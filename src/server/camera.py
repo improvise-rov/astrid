@@ -23,6 +23,9 @@ class CameraFeed():
             print("failed frame read")
             return b''
         
+        # resize
+        frame = cv2.resize(frame, (consts.CAMERA_IMAGE_WIDTH, consts.CAMERA_IMAGE_HEIGHT))
+        
         # rotate
         match consts.CAMERA_ROTATE:
             case 1: frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)

@@ -7,9 +7,9 @@ import pygame
 import typing
 from src.common import consts
 from src.common import rovmath
-from src.client.callback import Callback
-from src.client.render import Renderer
-from src.client.ui import UiContainer, UiLineGraph
+from src.poolside.callback import Callback
+from src.poolside.render import Renderer
+from src.poolside.ui import UiContainer, UiLineGraph
 
 class PidTest():
     

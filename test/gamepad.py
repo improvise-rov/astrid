@@ -6,10 +6,10 @@ sys.path[0] = sys.path[0][:-5] # hack around the fact that this file isnt in the
 import pygame
 import typing
 from src.common import consts
-from src.client.callback import Callback
-from src.client.render import Renderer
-from src.client.control.manager import ControllerManager
-from src.client.control.gamepad import Gamepad, _Key
+from src.poolside.callback import Callback
+from src.poolside.render import Renderer
+from src.poolside.control.manager import ControllerManager
+from src.poolside.control.gamepad import Gamepad, _Key
 
 class GamepadTest():
     

@@ -7,8 +7,8 @@ from src.common import types
 from src.common import rovmath
 from src.common.net import packets
 from src.common.net.worker import Networker, _Addr
-from src.server.hardware import HardwareManager
-from src.server.camera import CameraFeed
+from src.rov.hardware import HardwareManager
+from src.rov.camera import CameraFeed
 
 
 class Rov():
@@ -103,9 +103,11 @@ class Rov():
                 
                 
     def enable_correction(self, addr: _Addr, args: ...):
+        print("enabled correction")
         self.correction_enabled = True
 
     def disable_correction(self, addr: _Addr, args: ...):
+        print("disabled correction")
         self.correction_enabled = False
 
     def control_packet(self, addr: _Addr, args: ...):

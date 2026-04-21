@@ -1,9 +1,9 @@
 import threading
 import struct
 from src.common import consts
-from src.client.logger import Logger
-from src.client.float import packets
-from src.client.float.floatnetwork import FloatNetworker
+from src.poolside.logger import Logger
+from src.poolside.float import packets
+from src.poolside.float.floatnetwork import FloatNetworker
 
 
 

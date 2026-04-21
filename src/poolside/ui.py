@@ -4,10 +4,10 @@ import typing
 import datetime
 import io
 
-from src.client.irov import RovInterface
-from src.client.logger import Logger
-from src.client.callback import Callback
-from src.client.render import Renderer
+from src.poolside.irov import RovInterface
+from src.poolside.logger import Logger
+from src.poolside.callback import Callback
+from src.poolside.render import Renderer
 from src.common.net.worker import Networker, _Addr
 from src.common.net import packets
 from src.common import rovmath

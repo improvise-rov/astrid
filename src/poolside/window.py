@@ -1,22 +1,22 @@
 import pygame
 
-from src.client.ui import UiContainer
-from src.client.ui import UiTexture
-from src.client.ui import UiConnectionStatusIndicator
-from src.client.ui import UiCameraFeed
-from src.client.ui import UiControlMonitor
-from src.client.ui import UiPidStatus
-from src.client.ui import UiTextLog
-from src.client.ui import UiLineGraph
-from src.client.ui import UiCountdownClock
-from src.client.ui import UiText
-from src.client.render import Renderer
-from src.client.logger import Logger
-from src.client.irov import RovInterface
-from src.client.float.ifloat import FloatInterface
-from src.client.control.manager import ControllerManager
-from src.client.control.gamepad import Gamepad
-from src.client.callback import Callback
+from src.poolside.ui import UiContainer
+from src.poolside.ui import UiTexture
+from src.poolside.ui import UiConnectionStatusIndicator
+from src.poolside.ui import UiCameraFeed
+from src.poolside.ui import UiControlMonitor
+from src.poolside.ui import UiPidStatus
+from src.poolside.ui import UiTextLog
+from src.poolside.ui import UiLineGraph
+from src.poolside.ui import UiCountdownClock
+from src.poolside.ui import UiText
+from src.poolside.render import Renderer
+from src.poolside.logger import Logger
+from src.poolside.irov import RovInterface
+from src.poolside.float.ifloat import FloatInterface
+from src.poolside.control.manager import ControllerManager
+from src.poolside.control.gamepad import Gamepad
+from src.poolside.callback import Callback
 from src.common.net.worker import Networker#
 from src.common.net import packets
 from src.common import consts
@@ -65,7 +65,7 @@ class Window():
         ## ROV ##
         self.rov_ip = ip
         self.net = Networker(port, consts.PACKET_SIZE)
-        self.net.register_listener(packets.DISCONNECT, lambda addr, data: Logger.log("Server closed!", False))
+        self.net.register_listener(packets.KILL, lambda addr, data: Logger.log("Server closed!", False))
         self.rov = RovInterface(self.net, self.controller_manager)
 
         ## FLOAT ##
@@ -92,7 +92,7 @@ class Window():
         self.container.add(UiTextLog(
             pygame.Vector2(1320, 50),
             pygame.Vector2(350, 450),
-            15
+            10
         ))
 
         self.container.add(UiPidStatus(
@@ -251,7 +251,7 @@ class Window():
         if just_pressed[pygame.K_BACKSPACE]:
             if self.net.is_open():
                 Logger.log("killing remote server")
-                self.net.send(packets.STOP_SERVER)
+                self.net.send(packets.KILL)
                 self.net.close()
 
         # float go

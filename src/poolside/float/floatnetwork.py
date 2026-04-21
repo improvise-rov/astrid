@@ -9,7 +9,7 @@ import socket
 import struct
 
 from src.common import consts
-from src.client.float import packets
+from src.poolside.float import packets
 
 
 class FloatNetworker():

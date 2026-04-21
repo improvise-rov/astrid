@@ -6,8 +6,8 @@ from src.common import types
 from src.common import rovmath
 from src.common.net import packets
 from src.common.net.worker import Networker
-from src.client.control.manager import ControllerManager
-from src.client.control.thrustmaster import Thrustmaster
+from src.poolside.control.manager import ControllerManager
+from src.poolside.control.thrustmaster import Thrustmaster
 
 
 

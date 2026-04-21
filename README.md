@@ -38,8 +38,8 @@ python main.py --server --ip <IP = 127.0.0.1> --port <PORT = 8080> [OPTIONAL: --
 ```
 
 > [!TIP]
-> - Use `--client` for the code that runs on the computer on the poolside.
-> - Use `--server` for the code that runs on the ROV.
+> - Use `--poolside` for the code that runs on the computer on the poolside.
+> - Use `--rov` for the code that runs on the ROV.
 > - Use `--simulated` on the server to test the software without the actual hardware attached.
 
 ---

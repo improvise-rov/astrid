@@ -1,8 +1,8 @@
 import sys
 
 from src.common import consts
-from src.client.entrypoint import client_main
-from src.server.entrypoint import server_main
+from src.poolside.entrypoint import poolside_main
+from src.rov.entrypoint import rov_main
 
 def extract_args() -> tuple[str, int, bool]:
     """
@@ -25,25 +25,25 @@ if __name__ == "__main__":
     print(" -=- ASTRID -=- ")
     print()
 
-    use_client = '--client' in sys.argv
-    use_server = '--server' in sys.argv
+    poolside = '--poolside' in sys.argv
+    rov = '--rov' in sys.argv
 
-    if use_client and use_server:
+    if poolside and rov:
         # if both cmdline flags are present, pretend neither are
-        use_client = False
-        use_server = False
+        poolside = False
+        rov = False
 
     ip, port, simulated_gpio = extract_args()
 
-    if use_client:
-        print("[client]")
-        client_main(ip, port)
+    if poolside:
+        print("[poolside]")
+        poolside_main(ip, port)
         exit()
-    if use_server:
-        print("[server]")
-        server_main(ip, port, simulated_gpio)
+    if rov:
+        print("[rov]")
+        rov_main(ip, port, simulated_gpio)
         exit()
 
-    print("please use --client for the client xor --server for the server.")
+    print("please use --poolside for the poolside xor --rov for the rov.")
     print("(using neither or both will result in this message)")
     exit(-1)

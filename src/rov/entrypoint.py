@@ -1,13 +1,13 @@
 
-from src.server.camera import CameraFeed
-from src.server.hardware import HardwareManager
-from src.server.rov import Rov
+from src.rov.camera import CameraFeed
+from src.rov.hardware import HardwareManager
+from src.rov.rov import Rov
 from src.common.net.worker import Networker, _Addr
 from src.common.net import packets
 from src.common import consts
 import os, signal, time
 
-def server_main(ip: str, port: int, simulated_hardware: bool):
+def rov_main(ip: str, port: int, simulated_hardware: bool):
     """
     Main Entrypoint for the server.
     """
@@ -23,7 +23,7 @@ def server_main(ip: str, port: int, simulated_hardware: bool):
     net.register_listener(packets.CONNECT, lambda addr, args: _connect(net, addr, args))
 
     # register kill packet
-    net.register_listener(packets.STOP_SERVER, lambda addr, args: net.close())
+    net.register_listener(packets.KILL, lambda addr, args: net.close())
 
     rov = Rov(cam, net, hardware)
 

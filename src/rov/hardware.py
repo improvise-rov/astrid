@@ -8,7 +8,7 @@ try:
 except:
     print("** NO SERVOKIT LIB FOUND!! **")
     NO_SERVOKIT = True
-from src.server import imu
+from src.rov import imu
 from src.common import consts
 from src.common import types
 from src.common import rovmath

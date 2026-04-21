@@ -1,8 +1,8 @@
 import pygame
 
-from src.client.window import Window
+from src.poolside.window import Window
 
-def client_main(ip: str, port: int):
+def poolside_main(ip: str, port: int):
     """
     Main Entrypoint for the client.
     """

@@ -2,11 +2,11 @@ from __future__ import annotations
 import pygame
 import json
 
-from src.client.logger import Logger
-from src.client.callback import Callback
-from src.client.control.controller import AbstractController
-from src.client.control.gamepad import Gamepad
-from src.client.control.thrustmaster import Thrustmaster
+from src.poolside.logger import Logger
+from src.poolside.callback import Callback
+from src.poolside.control.controller import AbstractController
+from src.poolside.control.gamepad import Gamepad
+from src.poolside.control.thrustmaster import Thrustmaster
 
 class ControllerManager():
     """

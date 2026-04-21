@@ -5,7 +5,7 @@ from pygame.joystick import JoystickType
 
 from src.common import types
 from src.common import rovmath
-from src.client.control.controller import AbstractController
+from src.poolside.control.controller import AbstractController
 
 
 type _ThrustmasterKey = typing.Literal[

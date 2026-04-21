@@ -4,7 +4,7 @@ import typing
 
 from pygame.joystick import JoystickType
 
-from src.client.control.controller import AbstractController
+from src.poolside.control.controller import AbstractController
 
 
 type _Key = typing.Literal[

@@ -69,7 +69,7 @@ class Renderer():
     def draw_boolean_circle(surface: pygame.Surface, pos: pygame.Vector2, bool: bool, true_label: str, false_label: str, label_supplier: _LabelSupplier = None):
         pygame.draw.circle(surface, 0x000000, pos, 10)
         pygame.draw.circle(surface, 0x00ff00 if bool else 0xff0000, pos, 8)
-        Renderer._supply_label(true_label if bool else false_label, (pos + pygame.Vector2(15, -12), pygame.Vector2(0, 0)), surface, label_supplier)
+        Renderer._supply_label(true_label if bool else false_label, (pos + pygame.Vector2(15, -7), pygame.Vector2(0, 0)), surface, label_supplier)
 
     @staticmethod
     def draw_progress_bar(surface: pygame.Surface, topleft: pygame.Vector2, length: float, width: float, progress: float, absolute: bool = True, orientation: _Orientation = 'left_to_right', outline_color: pygame.typing.ColorLike = 'black', fill_color: pygame.typing.ColorLike = 'white', outline_width: int = 8):

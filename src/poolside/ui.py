@@ -111,7 +111,7 @@ class UiCameraFeed(UiElement):
         self.net = net
 
         self._no_connection_frame = no_conn_img
-        self._last_frame = self._no_connection_frame.copy()
+        self.set_no_camera()
         self.net.register_listener(packets.CAMERA, self._recv_camera_frame)
 
     def draw(self, surface: pygame.Surface):
@@ -121,6 +121,8 @@ class UiCameraFeed(UiElement):
         else:
             surface.blit(self._no_connection_frame, self.resolve_position())
 
+    def set_no_camera(self):
+        self._last_frame = self._no_connection_frame.copy()
 
     def _recv_camera_frame(self, addr: _Addr, data: ...):
         pygame.transform.scale(
@@ -364,6 +366,7 @@ class UiLineGraph(UiElement):
 class UiCountdownClock(UiElement):
     def __init__(self, pos: pygame.Vector2, seconds: float):
         super().__init__(pos)
+        self.total_time = seconds
         self.time = seconds
         self.ticking = False
 
@@ -372,7 +375,11 @@ class UiCountdownClock(UiElement):
 
         keys = pygame.key.get_just_pressed()
         if keys[pygame.K_a]:
-            self.ticking = not self.ticking
+            if pygame.key.get_pressed()[pygame.K_LCTRL]:
+                self.time = self.total_time
+                self.ticking = False
+            else:
+                self.ticking = not self.ticking
 
         if self.ticking and self.time > 0:
             self.time -= dt

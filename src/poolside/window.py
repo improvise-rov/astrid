@@ -65,6 +65,14 @@ class Window():
         self.net.start()
         self.net.register_listener(packets.KILL, lambda addr, data: Logger.log("ROV killed!", False))
         self.rov = RovInterface(self.net, self.controller_manager)
+        self.camera_feed = UiCameraFeed(
+            pygame.Vector2(20, 50),
+            pygame.transform.scale_by(
+                pygame.image.load("src/resource/no_camera.jpg").convert(),
+                15
+            ),
+            self.net
+        )
 
         ## FLOAT ##
         self.float = FloatInterface()
@@ -73,14 +81,12 @@ class Window():
         ## UI CONTAINER ##
         self.container = UiContainer()
 
-        self.container.add(UiCameraFeed(
-            pygame.Vector2(20, 50),
-            pygame.transform.scale_by(
-                pygame.image.load("src/resource/no_camera.jpg").convert(),
-                15
-            ),
-            self.net
+        self.container.add(UiText(
+            pygame.Vector2(20, 15),
+            lambda: f"{self.net.target_ip}:{self.net.target_port}, listening on port {self.net.port}",
         ))
+
+        self.container.add(self.camera_feed)
 
         self.container.add(UiTextLog(
             pygame.Vector2(1320, 50),
@@ -106,7 +112,7 @@ class Window():
         self.container.add(self.float_graph)
 
         self.container.add(UiCountdownClock(
-            pygame.Vector2(500, 10),
+            pygame.Vector2(500, 15),
             consts.POOL_RUN_TIME_SECONDS
         ))
 
@@ -223,7 +229,7 @@ class Window():
             if self.net.is_open():
                 Logger.log("killing rov")
                 self.net.send(packets.KILL)
-                self.net.close()
+                self.camera_feed.set_no_camera()
 
         # float go
         if just_pressed[pygame.K_RSHIFT]:

@@ -105,25 +105,13 @@ class UiTexture(UiElement):
         self.texture = pygame.transform.scale_by(self.original_texture, self.scale)
         self.texture = pygame.transform.rotate(self.texture, self.rotation)
 
-
-class UiConnectionStatusIndicator(UiElement):
-    def __init__(self, pos: pygame.Vector2, net: Networker):
-        super().__init__(pos)
-        self.net = net
-        
-
-    def draw(self, surface: pygame.Surface):
-        super().draw(surface)
-        string = f" ({self.net.target_addr})"
-        Renderer.draw_boolean_circle(surface, self.resolve_position(), self.net.is_open(), "Connected" + string, "Not Connected" + string)
-
 class UiCameraFeed(UiElement):
     def __init__(self, pos: pygame.Vector2, no_conn_img: pygame.Surface, net: Networker):
         super().__init__(pos)
         self.net = net
 
         self._no_connection_frame = no_conn_img
-        self._last_frame = pygame.Surface(self._no_connection_frame.size)
+        self._last_frame = self._no_connection_frame.copy()
         self.net.register_listener(packets.CAMERA, self._recv_camera_frame)
 
     def draw(self, surface: pygame.Surface):

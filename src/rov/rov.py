@@ -96,7 +96,7 @@ class Rov():
 
 
     def _camera_thread_activity(self):
-        while self.camera_running: # loops until the client disconnects!
+        while self.camera_running: # loops until the poolside disconnects!
             if self.net.is_open():
                 frame = self.cam.capture() # get frame from camera
                 self.net.send(packets.CAMERA, frame) # send the camera frame down socket
@@ -112,9 +112,9 @@ class Rov():
 
     def control_packet(self, addr: _Addr, args: ...):
         """
-        runs when the server receives information from the client about controls.
+        runs when the rov receives information from the poolside about controls.
 
-        this data, to reduce processing time, should not be validated (that should be done on the client)
+        this data, to reduce processing time, should not be validated (that should be done on the poolside)
         assume everything is always okay, and take numbers at face value.
         that is usually a terrible idea, but i dont care. its fine for this
 

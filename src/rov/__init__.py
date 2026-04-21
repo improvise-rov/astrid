@@ -1,4 +1,4 @@
 
-# this is the server. you can import things from /server and /common, but not from /client.
+# this is the rov. you can import things from /rov and /common, but not from /poolside.
 # things like GPIO control and camera handling will go here.
 # avoid importing pygame.

@@ -17,12 +17,13 @@ class Networker():
 
     PACKET_HEADER: str = ">H16s"
 
-    def __init__(self, port: int, packet_size: int) -> None:
+    def __init__(self, target_ip: str, target_port: int, port: int,packet_size: int) -> None:
+        self.target_ip = target_ip
+        self.target_port = target_port
         self.port = port
         self.packet_size = packet_size
 
-        self.is_client = False
-        self.is_server = False
+        self.open = False
 
         self.target_addr: _Addr | None = None
 
@@ -31,10 +32,12 @@ class Networker():
         self.listeners: dict[_Packet, list[_Listener]] = {}
         self.recv_thread: threading.Thread
 
-    def server(self) -> bool:
+    def start(self) -> bool:
+        print(f"starting networker (listening on port {self.port}, sending to {self.target_ip}:{self.target_port})")
         self.socket.bind(('', self.port))
-        self.is_client = False
-        self.is_server = True
+        self.target_addr = (self.target_ip, self.target_port)
+        self.open = True
+
 
         self.recv_thread = threading.Thread(name="NetworkerRecvThread", target=self._recv_thread)
         self.recv_thread.start()
@@ -42,15 +45,7 @@ class Networker():
         
         return True
 
-    def client(self, server_ip: str) -> bool:
-        self.is_client = True
-        self.is_server = False
-        self.target_addr = (server_ip, self.port)
 
-        self.recv_thread = threading.Thread(name="NetworkerRecvThread", target=self._recv_thread)
-        self.recv_thread.start()
-        self.socket.settimeout(1.0)
-        return True
 
     def build_packet(self, pkt_type: _Packet, *data) -> bytes:
         pkt_id, format = pkt_type
@@ -96,14 +91,13 @@ class Networker():
         return func
     
     def is_open(self) -> bool:
-        return self.is_client or self.is_server
+        return self.open
     
     def close(self):
         print("closing")
-        self.is_client = False
-        self.is_server = False
+        self.open = False
 
-    def _remember_addr(self, addr: _Addr, *data):
+    def set_target_address(self, addr: _Addr):
         self.target_addr = addr
 
     def _send(self, addr: _Addr, pkt: bytes):
@@ -161,7 +155,7 @@ class Networker():
             return struct.unpack(type[1], data)
 
     def _recv_thread(self):
-        while self.is_client or self.is_server:
+        while self.open:
             packet = self._recv()
             if packet:
                 type, data, addr = packet

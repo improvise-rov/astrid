@@ -2,7 +2,6 @@ import pygame
 
 from src.poolside.ui import UiContainer
 from src.poolside.ui import UiTexture
-from src.poolside.ui import UiConnectionStatusIndicator
 from src.poolside.ui import UiCameraFeed
 from src.poolside.ui import UiControlMonitor
 from src.poolside.ui import UiPidStatus
@@ -15,9 +14,8 @@ from src.poolside.logger import Logger
 from src.poolside.irov import RovInterface
 from src.poolside.float.ifloat import FloatInterface
 from src.poolside.control.manager import ControllerManager
-from src.poolside.control.gamepad import Gamepad
 from src.poolside.callback import Callback
-from src.common.net.worker import Networker#
+from src.common.net.worker import Networker
 from src.common.net import packets
 from src.common import consts
 
@@ -27,7 +25,7 @@ class Window():
     Pygame Window Manager Class.
     """
 
-    def __init__(self, ip: str, port: int):
+    def __init__(self, target_ip: str, target_port: int, port: int):
 
         ## WINDOW OBJECTS ##
 
@@ -63,9 +61,9 @@ class Window():
         self.controller_manager.load_mappings('src/resource/keymap.json')
 
         ## ROV ##
-        self.rov_ip = ip
-        self.net = Networker(port, consts.PACKET_SIZE)
-        self.net.register_listener(packets.KILL, lambda addr, data: Logger.log("Server closed!", False))
+        self.net = Networker(target_ip, target_port, port, consts.PACKET_SIZE)
+        self.net.start()
+        self.net.register_listener(packets.KILL, lambda addr, data: Logger.log("ROV killed!", False))
         self.rov = RovInterface(self.net, self.controller_manager)
 
         ## FLOAT ##
@@ -75,15 +73,10 @@ class Window():
         ## UI CONTAINER ##
         self.container = UiContainer()
 
-        self.container.add(UiConnectionStatusIndicator(
-            pygame.Vector2(20, 20),
-            self.net
-        ))
-
         self.container.add(UiCameraFeed(
             pygame.Vector2(20, 50),
             pygame.transform.scale_by(
-                pygame.image.load("src/resource/no_camera.jpg"),
+                pygame.image.load("src/resource/no_camera.jpg").convert(),
                 15
             ),
             self.net
@@ -106,8 +99,8 @@ class Window():
         ))
 
         self.container.add(UiText(
-            pygame.Vector2(consts.WINDOW_WIDTH - 40, consts.WINDOW_HEIGHT - 70),
-            lambda: f"(Morag) Profile: {self.float.profile}\nTemperature: {self.float.temperature:.1f} deg C",
+            pygame.Vector2(consts.WINDOW_WIDTH - 40, consts.WINDOW_HEIGHT - 130),
+            lambda: f"Morag\n\n{consts.FLOAT_IP}:{consts.FLOAT_PORT}\nProfile: {self.float.profile}\nTemperature: {self.float.temperature:.1f} deg C",
             justify = "right"
         ))
         self.container.add(self.float_graph)
@@ -119,7 +112,7 @@ class Window():
 
         self.container.add(UiText(
             pygame.Vector2(20, consts.WINDOW_HEIGHT-40),
-            lambda: "<SPACE>: connect | <BACKSPACE>: kill ROV server & disconnect | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine"
+            lambda: "<BACKSPACE>: kill ROV server | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine"
         ))
 
 
@@ -215,28 +208,6 @@ class Window():
                 self.window.set_windowed()
 
 
-        # check if connect button is pressed
-        if just_pressed[pygame.K_SPACE]:
-            if not self.net.is_open():
-                Logger.log("Trying to connect..", False)
-                self.net.client(self.rov_ip)
-
-                self.net.send(packets.CONNECT)
-                connected = self.net.wait_for_packet(packets.CONNECT_ACK)
-                if connected:
-
-                    # remember ip
-                    data, addr = connected
-                    
-                    Logger.log(f"Connected! ({addr[0]}:{addr[1]})", False)
-
-                    self.rov.correction_enabled = True
-                    self.net.send(packets.ENABLE_CORRECTION)
-                else:
-                    self.net.close()
-                    Logger.log("Connection failed! (the server is probably not open)", False)
-
-
         # correction
         if just_pressed[pygame.K_RETURN]:
             self.rov.correction_enabled = not self.rov.correction_enabled
@@ -247,10 +218,10 @@ class Window():
                 self.net.send(packets.DISABLE_CORRECTION)
                 Logger.log("Disabled correction")
 
-        # server die
+        # rov die
         if just_pressed[pygame.K_BACKSPACE]:
             if self.net.is_open():
-                Logger.log("killing remote server")
+                Logger.log("killing rov")
                 self.net.send(packets.KILL)
                 self.net.close()
 

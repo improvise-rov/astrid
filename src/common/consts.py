@@ -7,7 +7,7 @@ Don't import anything here, we dont want cyclic imports.
 """
 
 # window
-WINDOW_TITLE: str = "impROVise: Astrid Client v2"
+WINDOW_TITLE: str = "impROVise: Astrid"
 WINDOW_WIDTH: int = 1920
 WINDOW_HEIGHT: int = 1080
 SCREEN_WIDTH: int = 1280 //2

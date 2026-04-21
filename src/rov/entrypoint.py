@@ -7,20 +7,19 @@ from src.common.net import packets
 from src.common import consts
 import os, signal, time
 
-def rov_main(ip: str, port: int, simulated_hardware: bool):
+def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: int):
     """
-    Main Entrypoint for the server.
+    Main Entrypoint for the ROV.
     """
 
     if simulated_hardware:
         print("(simulating hardware)")
 
-    net = Networker(port, consts.PACKET_SIZE) # create networking socket
+    net = Networker(target_ip, target_port, port, consts.PACKET_SIZE) # create networking socket
+    net.start() # start the networker
     cam = CameraFeed(cam_id=consts.CAMERA_ID) # create camera handler
     hardware = HardwareManager(simulated_hardware)
 
-    # register connect loop packet
-    net.register_listener(packets.CONNECT, lambda addr, args: _connect(net, addr, args))
 
     # register kill packet
     net.register_listener(packets.KILL, lambda addr, args: net.close())
@@ -28,7 +27,6 @@ def rov_main(ip: str, port: int, simulated_hardware: bool):
     rov = Rov(cam, net, hardware)
 
     try:
-        net.server() # start the server
 
         # motor init seq
         rov.motor_init_seq('left_front')
@@ -41,7 +39,7 @@ def rov_main(ip: str, port: int, simulated_hardware: bool):
         print("ready")
         dt = 0.0
         last_frame_time = 0.0
-        while net.is_open(): # loops until the server is stopped
+        while net.is_open(): # loops until the networker is stopped
             last_frame_time = time.time()
             rov.tick(dt)
             dt = time.time() - last_frame_time
@@ -53,8 +51,3 @@ def rov_main(ip: str, port: int, simulated_hardware: bool):
     net.close()
 
     os.kill(os.getpid(), signal.SIGTERM) # is this bad? i almost guarantee it
-        
-
-def _connect(networker: Networker, addr: _Addr, *args):
-    networker._remember_addr(addr, args)
-    networker.send(packets.CONNECT_ACK)

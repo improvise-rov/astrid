@@ -55,8 +55,10 @@ class Thrustmaster(AbstractController[_ThrustmasterKey]):
     _(Quite possibly the worst named object of all time)_\n\n
 
     interface for the flight stick control. hardcoded to work with what we (impROVise) have
+
+    needs to be on PC setting
     """
-    DEVICE_GUID: str = "" # i need a way for the existing code to know that ive connected the thrustmaster. i can identify it by the guid
+    DEVICE_GUID: str = "03006fe34f04000008b1000000000000" # i need a way for the existing code to know that ive connected the thrustmaster. i can identify it by the guid
 
     KEY_NONE: _ThrustmasterKey = 'none'
 
@@ -107,48 +109,48 @@ class Thrustmaster(AbstractController[_ThrustmasterKey]):
         super().__init__(joystick, 'thrustmaster', {
             Thrustmaster.KEY_NONE:               lambda g: 0.0,
 
-            Thrustmaster.KEY_STICK_FORWARD:      lambda g: 0.0,
-            Thrustmaster.KEY_STICK_BACKWARD:     lambda g: 0.0,
-            Thrustmaster.KEY_STICK_LEFT:         lambda g: 0.0,
-            Thrustmaster.KEY_STICK_RIGHT:        lambda g: 0.0,
+            Thrustmaster.KEY_STICK_FORWARD:      lambda g: 0.0, # not needed
+            Thrustmaster.KEY_STICK_BACKWARD:     lambda g: 0.0, # not needed
+            Thrustmaster.KEY_STICK_LEFT:         lambda g: 0.0, # not needed
+            Thrustmaster.KEY_STICK_RIGHT:        lambda g: 0.0, # not needed
 
-            Thrustmaster.KEY_STICK_TWIST_CW:     lambda g: 0.0,
-            Thrustmaster.KEY_STICK_TWIST_CCW:    lambda g: 0.0,
+            Thrustmaster.KEY_STICK_TWIST_CW:     lambda g: 0.0, # not needed
+            Thrustmaster.KEY_STICK_TWIST_CCW:    lambda g: 0.0, # not needed
 
-            Thrustmaster.AXIS_STICK_X:           lambda g: g._get_axis(2),
-            Thrustmaster.AXIS_STICK_Y:           lambda g: g._get_axis(3),
-            Thrustmaster.AXIS_STICK_TWIST:       lambda g: 0.0,
+            Thrustmaster.AXIS_STICK_X:           lambda g: g._get_axis(0),
+            Thrustmaster.AXIS_STICK_Y:           lambda g: g._get_axis(1),
+            Thrustmaster.AXIS_STICK_TWIST:       lambda g: g._get_axis(3),
 
-            Thrustmaster.KEY_RUDDER_LEFT:        lambda g: 0.0,
-            Thrustmaster.KEY_RUDDER_RIGHT:       lambda g: 0.0,
+            Thrustmaster.KEY_RUDDER_LEFT:        lambda g: 0.0, # not needed
+            Thrustmaster.KEY_RUDDER_RIGHT:       lambda g: 0.0, # not needed
 
-            Thrustmaster.AXIS_RUDDER:            lambda g: 0.0,
+            Thrustmaster.AXIS_RUDDER:            lambda g: g._get_axis(4),
 
-            Thrustmaster.KEY_THROTTLE_FORWARD:   lambda g: 0.0,
-            Thrustmaster.KEY_THROTTLE_BACKWARD:  lambda g: 0.0,
+            Thrustmaster.KEY_THROTTLE_FORWARD:   lambda g: 0.0, # not needed
+            Thrustmaster.KEY_THROTTLE_BACKWARD:  lambda g: 0.0, # not needed
 
-            Thrustmaster.AXIS_THROTTLE:          lambda g: 0.0,
+            Thrustmaster.AXIS_THROTTLE:          lambda g: g._get_axis(2),
 
-            Thrustmaster.KEY_NIB_UP:             lambda g: 0.0,
-            Thrustmaster.KEY_NIB_DOWN:           lambda g: 0.0,
-            Thrustmaster.KEY_NIB_LEFT:           lambda g: 0.0,
-            Thrustmaster.KEY_NIB_RIGHT:          lambda g: 0.0,
+            Thrustmaster.KEY_NIB_UP:             lambda g: lambda g: g._get_dpad(0)[1] == 1,
+            Thrustmaster.KEY_NIB_DOWN:           lambda g: lambda g: g._get_dpad(0)[1] == -1,
+            Thrustmaster.KEY_NIB_LEFT:           lambda g: lambda g: g._get_dpad(0)[0] == -1,
+            Thrustmaster.KEY_NIB_RIGHT:          lambda g: lambda g: g._get_dpad(0)[0] == 1,
 
-            Thrustmaster.AXIS_NIB_X:             lambda g: 0.0,
-            Thrustmaster.AXIS_NIB_Y:             lambda g: 0.0,
+            Thrustmaster.AXIS_NIB_X:             lambda g: float(g._get_dpad(0)[0]),
+            Thrustmaster.AXIS_NIB_Y:             lambda g: float(g._get_dpad(0)[1]),
             
-            Thrustmaster.BUTTON_TRIGGER:         lambda g: 0.0,
-            Thrustmaster.BUTTON_2:               lambda g: 0.0,
-            Thrustmaster.BUTTON_3:               lambda g: 0.0,
-            Thrustmaster.BUTTON_4:               lambda g: 0.0,
-            Thrustmaster.BUTTON_5:               lambda g: 0.0,
-            Thrustmaster.BUTTON_6:               lambda g: 0.0,
-            Thrustmaster.BUTTON_7:               lambda g: 0.0,
-            Thrustmaster.BUTTON_8:               lambda g: 0.0,
-            Thrustmaster.BUTTON_9:               lambda g: 0.0,
-            Thrustmaster.BUTTON_10:              lambda g: 0.0,
-            Thrustmaster.BUTTON_SE:              lambda g: 0.0,
-            Thrustmaster.BUTTON_ST:              lambda g: 0.0,
+            Thrustmaster.BUTTON_TRIGGER:         lambda g: g._get_button(0),
+            Thrustmaster.BUTTON_2:               lambda g: g._get_button(1),
+            Thrustmaster.BUTTON_3:               lambda g: g._get_button(2),
+            Thrustmaster.BUTTON_4:               lambda g: g._get_button(3),
+            Thrustmaster.BUTTON_5:               lambda g: g._get_button(4),
+            Thrustmaster.BUTTON_6:               lambda g: g._get_button(5),
+            Thrustmaster.BUTTON_7:               lambda g: g._get_button(6),
+            Thrustmaster.BUTTON_8:               lambda g: g._get_button(7),
+            Thrustmaster.BUTTON_9:               lambda g: g._get_button(8),
+            Thrustmaster.BUTTON_10:              lambda g: g._get_button(9),
+            Thrustmaster.BUTTON_SE:              lambda g: g._get_button(10),
+            Thrustmaster.BUTTON_ST:              lambda g: g._get_button(11),
         })      
     
     

@@ -138,15 +138,15 @@ class Gamepad(AbstractController[_Key]):
             Gamepad.KEY_LEFT_STICK:                 lambda g: g._get_button(8),
             Gamepad.KEY_RIGHT_STICK:                lambda g: g._get_button(9),
             
-            Gamepad.KEY_LEFT_STICK_UP:              lambda g: g._get_axis(1) < -Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
-            Gamepad.KEY_LEFT_STICK_DOWN:            lambda g: g._get_axis(1) > Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
-            Gamepad.KEY_LEFT_STICK_LEFT:            lambda g: g._get_axis(0) < -Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
-            Gamepad.KEY_LEFT_STICK_RIGHT:           lambda g: g._get_axis(0) > Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_LEFT_STICK_UP:              lambda g: g._get_axis(1) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_LEFT_STICK_DOWN:            lambda g: g._get_axis(1) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_LEFT_STICK_LEFT:            lambda g: g._get_axis(0) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_LEFT_STICK_RIGHT:           lambda g: g._get_axis(0) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
 
-            Gamepad.KEY_RIGHT_STICK_UP:             lambda g: g._get_axis(3) < -Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
-            Gamepad.KEY_RIGHT_STICK_DOWN:           lambda g: g._get_axis(3) > Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
-            Gamepad.KEY_RIGHT_STICK_LEFT:           lambda g: g._get_axis(2) < -Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
-            Gamepad.KEY_RIGHT_STICK_RIGHT:          lambda g: g._get_axis(2) > Gamepad.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_RIGHT_STICK_UP:             lambda g: g._get_axis(3) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_RIGHT_STICK_DOWN:           lambda g: g._get_axis(3) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_RIGHT_STICK_LEFT:           lambda g: g._get_axis(2) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Gamepad.KEY_RIGHT_STICK_RIGHT:          lambda g: g._get_axis(2) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
 
             Gamepad.KEY_DPAD_UP:                    lambda g: g._get_dpad(0)[1] == 1,
             Gamepad.KEY_DPAD_DOWN:                  lambda g: g._get_dpad(0)[1] == -1,

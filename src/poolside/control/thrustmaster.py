@@ -109,25 +109,25 @@ class Thrustmaster(AbstractController[_ThrustmasterKey]):
         super().__init__(joystick, 'thrustmaster', {
             Thrustmaster.KEY_NONE:               lambda g: 0.0,
 
-            Thrustmaster.KEY_STICK_FORWARD:      lambda g: 0.0, # not needed
-            Thrustmaster.KEY_STICK_BACKWARD:     lambda g: 0.0, # not needed
-            Thrustmaster.KEY_STICK_LEFT:         lambda g: 0.0, # not needed
-            Thrustmaster.KEY_STICK_RIGHT:        lambda g: 0.0, # not needed
+            Thrustmaster.KEY_STICK_FORWARD:      lambda g: g._get_axis(1) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE, 
+            Thrustmaster.KEY_STICK_BACKWARD:     lambda g: g._get_axis(1) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE, 
+            Thrustmaster.KEY_STICK_LEFT:         lambda g: g._get_axis(0) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Thrustmaster.KEY_STICK_RIGHT:        lambda g: g._get_axis(0) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
 
-            Thrustmaster.KEY_STICK_TWIST_CW:     lambda g: 0.0, # not needed
-            Thrustmaster.KEY_STICK_TWIST_CCW:    lambda g: 0.0, # not needed
+            Thrustmaster.KEY_STICK_TWIST_CW:     lambda g: g._get_axis(3) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Thrustmaster.KEY_STICK_TWIST_CCW:    lambda g: g._get_axis(3) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
 
             Thrustmaster.AXIS_STICK_X:           lambda g: g._get_axis(0),
             Thrustmaster.AXIS_STICK_Y:           lambda g: g._get_axis(1),
             Thrustmaster.AXIS_STICK_TWIST:       lambda g: g._get_axis(3),
 
-            Thrustmaster.KEY_RUDDER_LEFT:        lambda g: 0.0, # not needed
-            Thrustmaster.KEY_RUDDER_RIGHT:       lambda g: 0.0, # not needed
+            Thrustmaster.KEY_RUDDER_LEFT:        lambda g: g._get_axis(4) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Thrustmaster.KEY_RUDDER_RIGHT:       lambda g: g._get_axis(4) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
 
             Thrustmaster.AXIS_RUDDER:            lambda g: g._get_axis(4),
 
-            Thrustmaster.KEY_THROTTLE_FORWARD:   lambda g: 0.0, # not needed
-            Thrustmaster.KEY_THROTTLE_BACKWARD:  lambda g: 0.0, # not needed
+            Thrustmaster.KEY_THROTTLE_FORWARD:   lambda g: g._get_axis(2) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
+            Thrustmaster.KEY_THROTTLE_BACKWARD:  lambda g: g._get_axis(2) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
 
             Thrustmaster.AXIS_THROTTLE:          lambda g: g._get_axis(2),
 

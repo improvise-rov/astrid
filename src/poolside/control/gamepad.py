@@ -56,25 +56,6 @@ type _Key = typing.Literal[
     ]
 
 class Gamepad(AbstractController[_Key]):
-    """
-    Acts more or less as a wrapper around pygame's joystick module.
-    Mostly taken from the source code of VRÖÖM because it works and i didnt want to write it again :P
-
-    Note to the poor, poor future developer:
-    VRÖÖM is a game i, Fynn, am making. (slowly).
-
-    there are a BUNCH of constants on this class, for every key.
-    plus two things you can change if you like, `NINTENDOIFIED_MAPPING` and `STICK_AXIS_AS_DIGITAL_DEADZONE`.
-    
-    in this classes functions i use the word "fallback" alot. this is a bit misleading, since
-    the keyboard fallback actually takes priority. why'd i do that? i dont know, i wrote this a while ago.
-    i guess i just forgot what fallback means; refactor it if you like, idc
-
-    anyway also "deadzone" refers to the absolute value in which if the axis value is within, it is ignored
-    for a stick, that can be assumed to be a radius of a circle around the stick center that always returns 0
-    this is a common form of error correction that can account for slight imprecisions in older sticks
-    """
-
 
     NONE: _Key = 'none'
 

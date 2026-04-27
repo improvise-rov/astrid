@@ -94,6 +94,6 @@ CAMERA_ROTATE: int = 1 # 0 = 0 ; 1 = 90cw ; 2 = 90ccw ; 3 = 180
 POOL_RUN_TIME_SECONDS: int = 15 * 60
 
 # float
-FLOAT_IP: str = "127.0.0.1"
+FLOAT_IP: str = "192.168.4.1"
 FLOAT_PORT: int = 8090
 FLOAT_PACKET_SIZE: int = 1024

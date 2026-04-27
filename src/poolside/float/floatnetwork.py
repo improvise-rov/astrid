@@ -1,10 +1,3 @@
-"""
-Test script to simulate the float.
-
-Since we dont have the ESP32s at time of writing, this stands as a test for the poolside code.
-This is also a template for the networking micropython that needs to be written on them.
-"""
-
 import socket
 import struct
 

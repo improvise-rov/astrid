@@ -280,7 +280,7 @@ class UiLineGraph(UiElement):
             for i in range(self.axis_numbers):
                 pos = origin + pygame.Vector2(i * self.axis_line_length / self.axis_numbers, -30)
                 pygame.draw.line(surface, self.axis_color, pos + pygame.Vector2(0, 30), pos + pygame.Vector2(0, 20), self.axis_line_width // 2)
-                Renderer.draw_text(surface, str(round(rovmath.map_no_midpoint(
+                Renderer.draw_text(surface, str(round(rovmath.map(
                     0, self.axis_line_length,
                     i * self.axis_line_length / self.axis_numbers,
                     self.x_range_low, self.x_range_high
@@ -289,7 +289,7 @@ class UiLineGraph(UiElement):
             for i in range(self.axis_numbers):
                 pos = origin + pygame.Vector2(-30, i * self.axis_line_length / self.axis_numbers)
                 pygame.draw.line(surface, self.axis_color, pos + pygame.Vector2(30, 0), pos + pygame.Vector2(20, 0), self.axis_line_width // 2)
-                Renderer.draw_text(surface, str(round(rovmath.map_no_midpoint(
+                Renderer.draw_text(surface, str(round(rovmath.map(
                     0, self.axis_line_length,
                     i * self.axis_line_length / self.axis_numbers,
                     self.y_range_low, self.y_range_high
@@ -351,13 +351,13 @@ class UiLineGraph(UiElement):
     
     def _map_value(self, axis: _Axis, v: float) -> float:
         if axis == 'x':
-            return rovmath.map_no_midpoint(
+            return rovmath.map(
                 self.x_range_low, self.x_range_high,
                 v,
                 0.0, 1.0
             )
         else:
-            return rovmath.map_no_midpoint(
+            return rovmath.map(
                 self.y_range_low, self.y_range_high,
                 v,
                 0.0, 1.0

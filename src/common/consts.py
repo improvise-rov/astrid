@@ -64,14 +64,16 @@ SERVOBOARD_CHANNEL_COUNT: int = 16 # the breakout board has 16 channels. we only
 SERVO_ANGLE_MIN: int = 0
 SERVO_ANGLE_NEUTRAL: int = 90
 SERVO_ANGLE_MAX: int = 180
-MOTOR_THROTTLE_NEGATIVE: float = -1.0 / 2 # limit power (prevent current brownout)
+MOTOR_THROTTLE_NEGATIVE: float = -1.0 # limit power (prevent current brownout)
 MOTOR_THROTTLE_NEUTRAL: float = 0.0
-MOTOR_THROTTLE_POSITIVE: float = 1.0 / 2
+MOTOR_THROTTLE_POSITIVE: float = 1.0
 
 # pwm values 
-PWM_ESC_REVERSE: int = 1200
-PWM_ESC_INITIALISE: int = 1600 # 100us higher than it should be but we ball
-PWM_ESC_FORWARD: int = 2000
+PWM_BLUEROBOTICS_ESC_REVERSE: int = 1200
+PWM_BLUEROBOTICS_ESC_NEUTRAL: int = 1600 # 100us higher than it should be but we ball
+PWM_BLUEROBOTICS_ESC_FORWARD: int = 2000
+PWM_4IN1_ESC_NEUTRAL: int = 1000
+PWM_4IN1_ESC_FORWARD: int = 2000
 PWM_CAMERA_SERVO_MINIMUM: int = 1000
 PWM_CAMERA_SERVO_NEUTRAL: int = 1500
 PWM_CAMERA_SERVO_MAXIMUM: int = 2000

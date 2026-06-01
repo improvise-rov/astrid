@@ -22,7 +22,7 @@ class RovInterface():
         self.net = net
         self.gamepad_manager = gamepad_manager
 
-        self.motors: dict[types._Motor | types._Servo, rovmath.Number] = {
+        self.motors: dict[types._MotorKey | types._ServoKey, rovmath.Number] = {
             'left_front': 0,
             'right_front': 0,
             'left_top': 0,
@@ -44,7 +44,7 @@ class RovInterface():
     def update(self, dt: float):
 
         # tick
-        motor_tick: dict[types._Motor, rovmath.Number] = {
+        motor_tick: dict[types._MotorKey, rovmath.Number] = {
             'left_front': 0, # front left
             'right_front': 0, # front right
             'left_top': 0, # top left

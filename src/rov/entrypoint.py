@@ -29,12 +29,7 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
     try:
 
         # motor init seq
-        rov.motor_init_seq('left_front')
-        rov.motor_init_seq('right_front')
-        rov.motor_init_seq('left_top')
-        rov.motor_init_seq('right_top')
-        rov.motor_init_seq('left_back')
-        rov.motor_init_seq('right_back')
+        rov.initialise_motors()
         
         print("ready")
         dt = 0.0

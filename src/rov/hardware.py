@@ -1,6 +1,5 @@
 NO_SERVOKIT: bool = False
 
-import typing
 try:
     import busio
     import board
@@ -9,6 +8,7 @@ except:
     print("** NO SERVOKIT LIB FOUND!! **")
     NO_SERVOKIT = True
 from src.rov import imu
+from src.rov import motor
 from src.common import consts
 from src.common import types
 from src.common import rovmath
@@ -19,7 +19,7 @@ class HardwareManager():
     """
     Manage the hardware pins of the Pi.
     """
-    ADDRESSES: dict[types._Motor | types._Servo, int] = {
+    ADDRESSES: dict[types._MotorKey | types._ServoKey, int] = {
         'left_front': consts.ADDRESS_ESC_MOTOR_FRONT_LEFT,
         'right_front': consts.ADDRESS_ESC_MOTOR_FRONT_RIGHT,
         'left_top': consts.ADDRESS_ESC_MOTOR_TOP_LEFT,
@@ -43,10 +43,12 @@ class HardwareManager():
             self.stabiliser = rovmath.PIDController(0.0)
 
             self.motor_interface.frequency = consts.PWM_FREQUENCY
-
             
 
-        self.motor_caches: dict[types._Motor | types._Servo, float] = {}
+        self.motors: dict[types._MotorKey, motor.Motor] = {
+
+        }
+        self.servos: dict[types._ServoKey, float] = {}
 
     def get_gyroscope(self) -> rovmath.Vec:
         if self.simulated:
@@ -64,23 +66,14 @@ class HardwareManager():
         return self.imu.gyro()
 
 
-    def set_motor(self, motor: types._Motor, throttle: float):
-        throttle = rovmath.clamp(-1.0, 1.0, throttle)
+    def set_motor(self, motor: types._MotorKey, throttle: float):
+        self.motors[motor].set_throttle(self.motor_interface, self.simulated, throttle)
 
-        self.motor_caches[motor] = throttle
 
-        address = HardwareManager.ADDRESSES[motor]
-
-        if self.simulated: # make sure we arent simulating
-            return
-        
-        # 
-        self.motor_interface.channels[address].duty_cycle = rovmath.calc_motor_dutycycle(throttle)
-
-    def set_servo(self, servo: types._Servo, byte: int, camera: bool = True):
+    def set_servo(self, servo: types._ServoKey, byte: int, camera: bool = True):
         byte = rovmath.clamp(0, 180, byte)
 
-        self.motor_caches[servo] = byte
+        self.servos[servo] = byte
 
         address = HardwareManager.ADDRESSES[servo]
 
@@ -93,15 +86,15 @@ class HardwareManager():
 
     def print_states(self):
         print(
-            self.motor_caches.get('left_front', -1),
-            self.motor_caches.get('right_front', -1),
-            self.motor_caches.get('left_top', -1),
-            self.motor_caches.get('right_top', -1),
-            self.motor_caches.get('left_back', -1),
-            self.motor_caches.get('right_back', -1),
-            self.motor_caches.get('camera_angle', -1),
-            self.motor_caches.get('tool_ver', -1),
-            self.motor_caches.get('tool_hor', -1),
+            self.motors['left_front'].get_throttle(),
+            self.motors['right_front'].get_throttle(),
+            self.motors['left_top'].get_throttle(),
+            self.motors['right_top'].get_throttle(),
+            self.motors['left_back'].get_throttle(),
+            self.motors['right_back'].get_throttle(),
+            self.servos.get('camera_angle', -1),
+            self.servos.get('tool_ver', -1),
+            self.servos.get('tool_hor', -1),
             )  
         
     def cleanup(self):

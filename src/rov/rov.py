@@ -49,9 +49,9 @@ class Rov():
         self.camera_thread.daemon = True
         self.camera_thread.start()
 
-    def motor_init_seq(self, motor: types._Motor):
-        # needs to go high?
-        self.hardware.set_motor(motor, consts.PWM_ESC_INITIALISE)
+    def initialise_motors(self):
+        for key in self.hardware.motors:
+            self.hardware.motors[key].arm(self.hardware.motor_interface, self.hardware.simulated)
 
 
     def tick(self, dt: float):

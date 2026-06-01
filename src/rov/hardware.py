@@ -19,13 +19,7 @@ class HardwareManager():
     """
     Manage the hardware pins of the Pi.
     """
-    ADDRESSES: dict[types._MotorKey | types._ServoKey, int] = {
-        'left_front': consts.ADDRESS_ESC_MOTOR_FRONT_LEFT,
-        'right_front': consts.ADDRESS_ESC_MOTOR_FRONT_RIGHT,
-        'left_top': consts.ADDRESS_ESC_MOTOR_TOP_LEFT,
-        'right_top': consts.ADDRESS_ESC_MOTOR_TOP_RIGHT,
-        'left_back': consts.ADDRESS_ESC_MOTOR_BACK_LEFT,
-        'right_back': consts.ADDRESS_ESC_MOTOR_BACK_RIGHT,
+    ADDRESSES: dict[types._ServoKey, int] = {
 
         'camera_angle': consts.ADDRESS_SERVO_CAMERA_ANGLE,
         'tool_ver': consts.ADDRESS_SERVO_TOOL_VER,
@@ -46,7 +40,12 @@ class HardwareManager():
             
 
         self.motors: dict[types._MotorKey, motor.Motor] = {
-
+            'left_front': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_FRONT_LEFT),
+            'right_front': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_FRONT_RIGHT),
+            'left_top': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_TOP_LEFT),
+            'right_top': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_TOP_RIGHT),
+            'left_back': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_BACK_LEFT),
+            'right_back': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_BACK_RIGHT)
         }
         self.servos: dict[types._ServoKey, float] = {}
 
@@ -67,7 +66,8 @@ class HardwareManager():
 
 
     def set_motor(self, motor: types._MotorKey, throttle: float):
-        self.motors[motor].set_throttle(self.motor_interface, self.simulated, throttle)
+        if not self.simulated:
+            self.motors[motor].set_throttle(self.motor_interface, self.simulated, throttle)
 
 
     def set_servo(self, servo: types._ServoKey, byte: int, camera: bool = True):

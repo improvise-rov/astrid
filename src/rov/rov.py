@@ -50,8 +50,9 @@ class Rov():
         self.camera_thread.start()
 
     def initialise_motors(self):
-        for key in self.hardware.motors:
-            self.hardware.motors[key].arm(self.hardware.motor_interface, self.hardware.simulated)
+        if not self.hardware.simulated:
+            for key in self.hardware.motors:
+                self.hardware.motors[key].arm(self.hardware.motor_interface, self.hardware.simulated)
 
 
     def tick(self, dt: float):

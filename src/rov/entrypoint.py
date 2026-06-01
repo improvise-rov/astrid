@@ -38,8 +38,8 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
             last_frame_time = time.time()
             rov.tick(dt)
             dt = time.time() - last_frame_time
-    except:
-        pass
+    except Exception as e:
+        print("oopsies!", e)
 
     rov.camera_running = False
     rov.hardware.cleanup()

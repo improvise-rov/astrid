@@ -22,7 +22,7 @@ class Motor():
         self.reverse = reverse
         self.bidirectional = bidirectional
 
-        self._arm: typing.Callable[[PCA9685, bool, Motor], None] = lambda interface, sim, mot: None
+        self._arm: typing.Callable[[PCA9685, bool, Motor], None] | None = None
 
         self._throttle = 0.0
 
@@ -45,25 +45,20 @@ class Motor():
         return self._throttle
     
     def arm(self, interface: PCA9685, simulated: bool):
-        self._arm(interface, simulated, self)
+        if self._arm != None: 
+            self._arm(interface, simulated, self)
+        else:
+            self.set_throttle(interface, simulated, 0.0)
 
     @staticmethod
     def esc_bluerobotics(address: int) -> Motor:
         mot = Motor(address)
-        def _arm(interface: PCA9685, simulated: bool, mot: Motor):
-            # neutral
-            mot.set_throttle(interface, simulated, 0.0)
-        mot._arm = _arm
+        # default arm behaviour works
         return mot
     
     @staticmethod
     def esc_4in1(address: int) -> Motor:
         mot = Motor(address, neutral=consts.PWM_4IN1_ESC_NEUTRAL, forward=consts.PWM_4IN1_ESC_FORWARD, reverse=0, bidirectional=False)
-        def _arm(interface: PCA9685, simulated: bool, mot: Motor):
-            # calibrate?
-            #mot.set_throttle(interface, simulated, 1.0)
-            #time.sleep(0.1)
-            mot.set_throttle(interface, simulated, 0.0)
-        mot._arm = _arm
+        # default arm behaviour works
         return mot
     

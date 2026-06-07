@@ -28,8 +28,8 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
 
     try:
 
-        # motor init seq
-        rov.initialise_motors()
+        # ARMING IS NOW A MANUAL PROCESS.
+        # POWER TO ESCS HAPPENS AFTER INIT.
         
         print("ready")
         dt = 0.0

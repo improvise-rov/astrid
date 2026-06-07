@@ -35,6 +35,7 @@ class Rov():
             "tool_hor": 0,
         }
         self.correction_enabled = False
+        self.arming_mode = False
 
         # register control packet
         net.register_listener(packets.CONTROL, self.control_packet)
@@ -43,49 +44,53 @@ class Rov():
         net.register_listener(packets.ENABLE_CORRECTION,  self.enable_correction)
         net.register_listener(packets.DISABLE_CORRECTION, self.disable_correction)
 
+        # register arming packets
+        net.register_listener(packets.ARM_ON,  self.enable_arm)
+        net.register_listener(packets.ARM_OFF, self.disable_arm)
+
         # start camera thread
         self.camera_running = True
         self.camera_thread = threading.Thread(name="Camera Thread", target=self._camera_thread_activity)
         self.camera_thread.daemon = True
         self.camera_thread.start()
 
-    def initialise_motors(self):
-        if not self.hardware.simulated:
-            for key in self.hardware.motors:
-                self.hardware.motors[key].arm(self.hardware.motor_interface, self.hardware.simulated)
-
 
     def tick(self, dt: float):
 
-        lf = self.net_motor_cache['left_front']
-        rf = self.net_motor_cache['right_front']
-        lt = self.net_motor_cache['left_top']
-        rt = self.net_motor_cache['right_top']
-        lb = self.net_motor_cache['left_back']
-        rb = self.net_motor_cache['right_back']
+        if self.arming_mode:
+            for mot in self.hardware.motors:
+                self.hardware.motors[mot].arm(self.hardware.motor_interface, self.hardware.simulated)
+        else:
 
-        # calculate
-        if self.correction_enabled and not self.hardware.simulated:
-            
-            # roll
-            correction = self.hardware.stabiliser.compute_modulation(self.hardware.imu.roll(), dt) * dt
-            if   correction > 0: # roll is less than 0, (from back?) left needs up and right needs down
-                lt +=  abs(correction)
-                rt += -abs(correction)
-            elif correction < 0:
-                # roll is greater than 0, (from back?) left needs down and right needs up
-                lt += -abs(correction)
-                rt +=  abs(correction)
+            lf = self.net_motor_cache['left_front']
+            rf = self.net_motor_cache['right_front']
+            lt = self.net_motor_cache['left_top']
+            rt = self.net_motor_cache['right_top']
+            lb = self.net_motor_cache['left_back']
+            rb = self.net_motor_cache['right_back']
+
+            # calculate
+            if self.correction_enabled and not self.hardware.simulated:
+                
+                # roll
+                correction = self.hardware.stabiliser.compute_modulation(self.hardware.imu.roll(), dt) * dt
+                if   correction > 0: # roll is less than 0, (from back?) left needs up and right needs down
+                    lt +=  abs(correction)
+                    rt += -abs(correction)
+                elif correction < 0:
+                    # roll is greater than 0, (from back?) left needs down and right needs up
+                    lt += -abs(correction)
+                    rt +=  abs(correction)
 
 
 
-        # set motors
-        self.hardware.set_motor('left_front',   lf)
-        self.hardware.set_motor('right_front',  rf)
-        self.hardware.set_motor('left_top',     lt)
-        self.hardware.set_motor('right_top',    rt)
-        self.hardware.set_motor('left_back',    lb)
-        self.hardware.set_motor('right_back',   rb)
+            # set motors
+            self.hardware.set_motor('left_front',   lf)
+            self.hardware.set_motor('right_front',  rf)
+            self.hardware.set_motor('left_top',     lt)
+            self.hardware.set_motor('right_top',    rt)
+            self.hardware.set_motor('left_back',    lb)
+            self.hardware.set_motor('right_back',   rb)
 
         self.hardware.set_servo('camera_angle', int(self.net_motor_cache['camera_angle']))
         self.hardware.set_servo('tool_ver',   int(self.net_motor_cache['tool_ver'] / 2), camera = False) # the tool gripper only actually needs to go 0..90, so i divide the range by 2 (because its transmitted as a number 0..180)
@@ -93,7 +98,7 @@ class Rov():
 
         # print if simulated
         if self.hardware.simulated:
-            pass#self.hardware.print_states()
+            self.hardware.print_states()
 
 
     def _camera_thread_activity(self):
@@ -111,6 +116,14 @@ class Rov():
         print("disabled correction")
         self.correction_enabled = False
 
+    def enable_arm(self, addr: _Addr, args: ...):
+        print("enabled arming mode")
+        self.arming_mode = True
+
+    def disable_arm(self, addr: _Addr, args: ...):
+        print("disabled arming mode")
+        self.arming_mode = False
+
     def control_packet(self, addr: _Addr, args: ...):
         """
         runs when the rov receives information from the poolside about controls.
@@ -120,17 +133,18 @@ class Rov():
         that is usually a terrible idea, but i dont care. its fine for this
 
         """
+        if not self.arming_mode:
 
-        left_front, right_front, left_top, right_top, left_back, right_back, camera_angle, tool_ver, tool_hor = args
+            left_front, right_front, left_top, right_top, left_back, right_back, camera_angle, tool_ver, tool_hor = args
 
 
-        self.net_motor_cache['left_front'] = left_front    
-        self.net_motor_cache['right_front'] = right_front    
-        self.net_motor_cache['left_top'] = left_top    
-        self.net_motor_cache['right_top'] = right_top    
-        self.net_motor_cache['left_back'] = left_back    
-        self.net_motor_cache['right_back'] = right_back
+            self.net_motor_cache['left_front'] = left_front    
+            self.net_motor_cache['right_front'] = right_front    
+            self.net_motor_cache['left_top'] = left_top    
+            self.net_motor_cache['right_top'] = right_top    
+            self.net_motor_cache['left_back'] = left_back    
+            self.net_motor_cache['right_back'] = right_back
 
-        self.net_motor_cache['camera_angle'] = camera_angle
-        self.net_motor_cache['tool_ver'] = tool_ver
-        self.net_motor_cache['tool_hor'] = tool_hor
+            self.net_motor_cache['camera_angle'] = camera_angle
+            self.net_motor_cache['tool_ver'] = tool_ver
+            self.net_motor_cache['tool_hor'] = tool_hor

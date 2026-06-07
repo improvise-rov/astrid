@@ -165,13 +165,22 @@ class UiPidStatus(UiElement):
         super().__init__(pos)
         self.rov = rov
 
-        
-
     def draw(self, surface: pygame.Surface):
         super().draw(surface)
 
         string = "IMU-PID Stabiliser: "
         Renderer.draw_boolean_circle(surface, self.resolve_position(), self.rov.correction_enabled, string + "Enabled", string + "Disabled")
+
+class UiArmingModeStatus(UiElement):
+    def __init__(self, pos: pygame.Vector2, rov: RovInterface):
+        super().__init__(pos)
+        self.rov = rov
+
+    def draw(self, surface: pygame.Surface):
+        super().draw(surface)
+
+        string = "Arming Moded: "
+        Renderer.draw_boolean_circle(surface, self.resolve_position(), self.rov.arming_mode, string + "Enabled", string + "Disabled")
 
 class UiTextLog(UiElement):
     def __init__(self, pos: pygame.Vector2, dimensions: pygame.Vector2, lines: int):

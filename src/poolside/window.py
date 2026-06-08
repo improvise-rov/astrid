@@ -5,6 +5,7 @@ from src.poolside.ui import UiTexture
 from src.poolside.ui import UiCameraFeed
 from src.poolside.ui import UiControlMonitor
 from src.poolside.ui import UiPidStatus
+from src.poolside.ui import UiArmingModeStatus
 from src.poolside.ui import UiTextLog
 from src.poolside.ui import UiLineGraph
 from src.poolside.ui import UiCountdownClock
@@ -64,6 +65,7 @@ class Window():
         self.net = Networker(target_ip, target_port, port, consts.PACKET_SIZE)
         self.net.start()
         self.net.register_listener(packets.KILL, lambda addr, data: Logger.log("ROV killed!", False))
+        #self.net.register_listener(packets.MSG, lambda addr, data: Logger.log(data))
         self.rov = RovInterface(self.net, self.controller_manager)
         self.camera_feed = UiCameraFeed(
             pygame.Vector2(20, 50),
@@ -99,6 +101,11 @@ class Window():
             self.rov
         ))
 
+        self.container.add(UiArmingModeStatus(
+            pygame.Vector2(1200, 20),
+            self.rov
+        ))
+
         self.container.add(UiControlMonitor(
             pygame.Vector2(1700, 80),
             self.rov
@@ -118,7 +125,7 @@ class Window():
 
         self.container.add(UiText(
             pygame.Vector2(20, consts.WINDOW_HEIGHT-40),
-            lambda: "<BACKSPACE>: kill ROV server | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine"
+            lambda: "<BACKSPACE>: kill ROV server | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine | <TAB>: toggle arm signals"
         ))
 
 
@@ -235,6 +242,16 @@ class Window():
         if just_pressed[pygame.K_RSHIFT]:
             if self.float:
                 self.float.run()
+
+        # arm signals
+        if just_pressed[pygame.K_TAB]:
+            self.rov.arming_mode = not self.rov.arming_mode
+            if self.rov.arming_mode:
+                self.net.send(packets.ARM_ON)
+                Logger.log("Enabled arming mode; controls will be ignored")
+            else:
+                self.net.send(packets.ARM_OFF)
+                Logger.log("Disabled arming mode")
         
 
     def event(self):

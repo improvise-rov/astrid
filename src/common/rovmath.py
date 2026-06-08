@@ -6,14 +6,23 @@ type Number = int | float
 type Vec = tuple[Number, Number, Number]
 
 @staticmethod
-def calc_motor_dutycycle(throttle: float) -> int:
+def calc_motor_dutycycle(reverse_pwm: int, neutral_pwm: int, forward_pwm: int, reversable: bool, throttle: float) -> int:
     assert throttle >= -1.0 and throttle <= 1.0
 
-    pulse =  map(
-        -1.0, 0.0, 1.0,
-        throttle,
-        consts.PWM_ESC_REVERSE, consts.PWM_ESC_INITIALISE, consts.PWM_ESC_FORWARD
-    )
+    pulse = 0
+    if reversable:
+        pulse =  trimap(
+            -1.0, 0.0, 1.0,
+            throttle,
+            reverse_pwm, neutral_pwm, forward_pwm
+        )
+    else:
+        pulse = map(
+            -1.0, 0.0, 1.0,
+            throttle,
+            neutral_pwm, forward_pwm
+        )
+
     period = 1_000_000 / consts.PWM_FREQUENCY
 
     return int((pulse / period) * 0xFFFF)
@@ -22,7 +31,7 @@ def calc_motor_dutycycle(throttle: float) -> int:
 def calc_servo_dutycycle(angle: int, camera: bool) -> int:
     assert angle >= 0 and angle <= 180
 
-    pulse =  map(
+    pulse =  trimap(
         0, 90, 180,
         angle,
         consts.PWM_CAMERA_SERVO_MINIMUM if camera else consts.PWM_TOOL_SERVO_MINIMUM, 
@@ -36,7 +45,7 @@ def calc_servo_dutycycle(angle: int, camera: bool) -> int:
 @staticmethod
 def servo_angle_to_byte(angle: float) -> int:
     angle = clamp(-1.0, 1.0, angle)
-    return int(map(
+    return int(trimap(
         -1.0, 0.0, 1.0, angle,
         consts.SERVO_ANGLE_MIN,
         consts.SERVO_ANGLE_NEUTRAL,
@@ -53,7 +62,7 @@ def clamp[T: Number](low: T, high: T, v: T) -> T:
         return v
 
 @staticmethod
-def map(low: Number, zero: Number, high: Number, map: Number, target_low: Number, target_zero: Number, target_high: Number) -> Number:
+def trimap(low: Number, zero: Number, high: Number, map: Number, target_low: Number, target_zero: Number, target_high: Number) -> Number:
     
     if map == zero:
         return target_zero
@@ -64,7 +73,7 @@ def map(low: Number, zero: Number, high: Number, map: Number, target_low: Number
     return clamp(target_low, target_high, value)
 
 @staticmethod
-def map_no_midpoint(low: Number, high: Number, map: Number, target_low: Number, target_high: Number) -> Number:
+def map(low: Number, high: Number, map: Number, target_low: Number, target_high: Number) -> Number:
     delta = 0 if (high - low) == 0 else (map - low) / (high - low)
     value = target_low + delta * (target_high - target_low)
 

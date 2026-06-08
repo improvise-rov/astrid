@@ -22,7 +22,7 @@ class RovInterface():
         self.net = net
         self.gamepad_manager = gamepad_manager
 
-        self.motors: dict[types._Motor | types._Servo, rovmath.Number] = {
+        self.motors: dict[types._MotorKey | types._ServoKey, rovmath.Number] = {
             'left_front': 0,
             'right_front': 0,
             'left_top': 0,
@@ -39,12 +39,12 @@ class RovInterface():
         self.motor_smoothing = 0.01
 
         self.correction_enabled = True # if true, the ROV will attempt to stabilise itself using its IMU.
-
+        self.arming_mode = False
 
     def update(self, dt: float):
 
         # tick
-        motor_tick: dict[types._Motor, rovmath.Number] = {
+        motor_tick: dict[types._MotorKey, rovmath.Number] = {
             'left_front': 0, # front left
             'right_front': 0, # front right
             'left_top': 0, # top left

@@ -28,13 +28,8 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
 
     try:
 
-        # motor init seq
-        rov.motor_init_seq('left_front')
-        rov.motor_init_seq('right_front')
-        rov.motor_init_seq('left_top')
-        rov.motor_init_seq('right_top')
-        rov.motor_init_seq('left_back')
-        rov.motor_init_seq('right_back')
+        # ARMING IS NOW A MANUAL PROCESS.
+        # POWER TO ESCS HAPPENS AFTER INIT.
         
         print("ready")
         dt = 0.0
@@ -43,8 +38,8 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
             last_frame_time = time.time()
             rov.tick(dt)
             dt = time.time() - last_frame_time
-    except:
-        pass
+    except Exception as e:
+        print("oopsies!", e)
 
     rov.camera_running = False
     rov.hardware.cleanup()

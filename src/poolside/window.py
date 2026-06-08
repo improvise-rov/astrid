@@ -17,6 +17,7 @@ from src.poolside.float.ifloat import FloatInterface
 from src.poolside.control.manager import ControllerManager
 from src.poolside.callback import Callback
 from src.common.net.worker import Networker
+from src.common.net.worker import _Addr
 from src.common.net import packets
 from src.common import consts
 
@@ -64,8 +65,7 @@ class Window():
         ## ROV ##
         self.net = Networker(target_ip, target_port, port, consts.PACKET_SIZE)
         self.net.start()
-        self.net.register_listener(packets.KILL, lambda addr, data: Logger.log("ROV killed!", False))
-        #self.net.register_listener(packets.MSG, lambda addr, data: Logger.log(data))
+        self.net.register_listener(packets.MSG_ROV2POOLSIDE, lambda addr, msg_bytes: Logger.log(bytes(msg_bytes).decode()))
         self.rov = RovInterface(self.net, self.controller_manager)
         self.camera_feed = UiCameraFeed(
             pygame.Vector2(20, 50),

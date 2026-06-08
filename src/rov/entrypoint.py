@@ -32,6 +32,8 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
         # POWER TO ESCS HAPPENS AFTER INIT.
         
         print("ready")
+        net.send(packets.MSG_ROV2POOLSIDE, "escs ready to arm".encode())
+
         dt = 0.0
         last_frame_time = 0.0
         while net.is_open(): # loops until the networker is stopped

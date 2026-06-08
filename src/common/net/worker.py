@@ -3,6 +3,7 @@ import time
 import socket
 import struct
 import threading
+from src.common import consts
 
 type _Packet = tuple[int, str | None] # id, struct format string (raw bytes if none)
 type _Addr = tuple[str, int] # ip, port
@@ -29,7 +30,7 @@ class Networker():
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-        self.listeners: dict[_Packet, list[_Listener]] = {}
+        self.listeners: dict[int, list[_Listener]] = {}
         self.recv_thread: threading.Thread
 
     def start(self) -> bool:
@@ -84,9 +85,9 @@ class Networker():
         return None
     
     def register_listener(self, type: _Packet, func: _Listener) -> _Listener:
-        arr = self.listeners.get(type, [])
+        arr = self.listeners.get(type[0], [])
         arr.append(func)
-        self.listeners[type] = arr
+        self.listeners[type[0]] = arr
             
         return func
     
@@ -146,19 +147,29 @@ class Networker():
     def _unpack_header(self, raw_pkt: bytes) -> tuple[_Packet, bytes]:
         header_size = struct.calcsize(Networker.PACKET_HEADER)
         id, format = struct.unpack_from(Networker.PACKET_HEADER, raw_pkt)
-        return (id, None if bytes(format).decode() == 16*'\0' else format), raw_pkt[header_size:]
+
+        decoded_format = bytes(format).decode()
+        if decoded_format == 16*'\0':
+            decoded_format = None
+        else:
+            decoded_format = decoded_format.rstrip("\0")
+
+        return (id,  decoded_format), raw_pkt[header_size:]
     
     def _unpack_data(self, type: _Packet, data: bytes) -> tuple[typing.Any, ...]:
         if type[1] == None:
             return data,
         else:
-            return struct.unpack(type[1], data)
+            # add padding bytes based off length
+            format = type[1] + ("x" * (len(data) - struct.calcsize(type[1])))
+
+            return struct.unpack(format, data)
 
     def _recv_thread(self):
         while self.open:
             packet = self._recv()
             if packet:
                 type, data, addr = packet
-                arr = self.listeners.get(type, [])
+                arr = self.listeners.get(type[0], [])
                 for listener in arr:
                     listener(addr, *self._unpack_data(type, data))

@@ -58,8 +58,9 @@ class Rov():
     def tick(self, dt: float):
 
         if self.arming_mode:
-            for mot in self.hardware.motors:
-                self.hardware.motors[mot].arm(self.hardware.motor_interface, self.hardware.simulated)
+            if not self.hardware.simulated:
+                for mot in self.hardware.motors:
+                    self.hardware.motors[mot].arm(self.hardware.motor_interface, self.hardware.simulated)
         else:
 
             lf = self.net_motor_cache['left_front']
@@ -98,7 +99,7 @@ class Rov():
 
         # print if simulated
         if self.hardware.simulated:
-            self.hardware.print_states()
+            pass#self.hardware.print_states()
 
 
     def _camera_thread_activity(self):
@@ -124,7 +125,7 @@ class Rov():
         print("disabled arming mode")
         self.arming_mode = False
 
-    def control_packet(self, addr: _Addr, args: ...):
+    def control_packet(self, addr: _Addr, left_front, right_front, left_top, right_top, left_back, right_back, camera_angle, tool_ver, tool_hor):
         """
         runs when the rov receives information from the poolside about controls.
 
@@ -134,8 +135,6 @@ class Rov():
 
         """
         if not self.arming_mode:
-
-            left_front, right_front, left_top, right_top, left_back, right_back, camera_angle, tool_ver, tool_hor = args
 
 
             self.net_motor_cache['left_front'] = left_front    

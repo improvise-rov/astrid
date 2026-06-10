@@ -47,7 +47,7 @@ class HardwareManager():
             'left_back': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_BACK_LEFT),
             'right_back': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_BACK_RIGHT)
         }
-        self.servos: dict[types._ServoKey, float] = {}
+        self.servos: dict[types._ServoKey, int] = {}
 
     def get_gyroscope(self) -> rovmath.Vec:
         if self.simulated:

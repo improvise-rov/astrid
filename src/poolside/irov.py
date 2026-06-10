@@ -35,7 +35,7 @@ class RovInterface():
             'tool_hor': 0.0,
         }
 
-        self.camera_angle_speed = 0.001
+        self.camera_angle_speed = 0.01
         self.motor_smoothing = 0.01
 
         self.correction_enabled = True # if true, the ROV will attempt to stabilise itself using its IMU.

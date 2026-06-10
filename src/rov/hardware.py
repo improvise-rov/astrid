@@ -40,12 +40,12 @@ class HardwareManager():
             
 
         self.motors: dict[types._MotorKey, motor.Motor] = {
-            'left_front': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_FRONT_LEFT),
-            'right_front': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_FRONT_RIGHT),
+            'left_front': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_FRONT_LEFT),
+            'right_front': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_FRONT_RIGHT),
             'left_top': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_TOP_LEFT),
             'right_top': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_TOP_RIGHT),
-            'left_back': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_BACK_LEFT),
-            'right_back': motor.Motor.esc_4in1(consts.ADDRESS_ESC_MOTOR_BACK_RIGHT)
+            'left_back': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_BACK_LEFT),
+            'right_back': motor.Motor.esc_bluerobotics(consts.ADDRESS_ESC_MOTOR_BACK_RIGHT)
         }
         self.servos: dict[types._ServoKey, float] = {}
 

@@ -23,21 +23,21 @@ class CameraFeed():
             print("failed frame read")
             return b''
         
-        # resize
+        # resize to the size we want
         frame = cv2.resize(frame, (consts.CAMERA_IMAGE_WIDTH, consts.CAMERA_IMAGE_HEIGHT))
         
-        # rotate
+        # rotate if we need to
         match consts.CAMERA_ROTATE:
             case 1: frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
             case 2: frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             case 3: frame = cv2.rotate(frame, cv2.ROTATE_180)
             case _: frame = frame
 
-        # encode
+        # encode into jpg format
         success, frame = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), cam_quality])
         if not success:
             print("failed frame encode")
             return b''
         
-        return frame.tobytes() # convert to bytes and return
+        return frame.tobytes() # convert to bytes and return. idk why this line hates me and returns an error cos it defo exists
     

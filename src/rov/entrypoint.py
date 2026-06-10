@@ -12,7 +12,7 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
     Main Entrypoint for the ROV.
     """
 
-    if simulated_hardware:
+    if simulated_hardware: # flag that is used in many places that basically says not to actually do anything with the hardware
         print("(simulating hardware)")
 
     net = Networker(target_ip, target_port, port, consts.PACKET_SIZE) # create networking socket
@@ -29,22 +29,23 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
     try:
 
         # ARMING IS NOW A MANUAL PROCESS.
-        # POWER TO ESCS HAPPENS AFTER INIT.
+        # POWER TO ESCS HAPPENS AFTER INIT VIA HARDWARE SWITCH.
         
         print("ready")
-        net.send(packets.MSG_ROV2POOLSIDE, "escs ready to arm".encode())
+        net.send(packets.MSG_ROV2POOLSIDE, "escs ready to arm".encode()) # it would be better to send this when we are connected, but we're using UDP, so we're never really "connected" per se..
 
         dt = 0.0
         last_frame_time = 0.0
         while net.is_open(): # loops until the networker is stopped
             last_frame_time = time.time()
-            rov.tick(dt)
-            dt = time.time() - last_frame_time
+            rov.tick(dt) # runs every process that the ROV continually does
+            dt = time.time() - last_frame_time # how long did that take
     except Exception as e:
-        print("oopsies!", e)
+        print("oopsies!", e) # something went wrong, so we print the error. its not a great error catching system, but it works, i guess. multithreading is a nightmare
 
-    rov.camera_running = False
-    rov.hardware.cleanup()
-    net.close()
+    rov.camera_running = False # STOP RECORDING ME!!!11!
+    rov.hardware.cleanup() # cleanup hardware stuff
+    net.close() # close the networker
 
     os.kill(os.getpid(), signal.SIGTERM) # is this bad? i almost guarantee it
+    # getpid() returns the process id of this program, i.e. how the OS identifies the program internally

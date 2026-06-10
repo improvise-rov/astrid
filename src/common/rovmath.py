@@ -18,7 +18,7 @@ def calc_motor_dutycycle(reverse_pwm: int, neutral_pwm: int, forward_pwm: int, r
         )
     else:
         pulse = map(
-            -1.0, 0.0, 1.0,
+            0.0, 1.0,
             throttle,
             neutral_pwm, forward_pwm
         )

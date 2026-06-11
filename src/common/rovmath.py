@@ -5,13 +5,14 @@ import typing
 type Number = int | float
 type Vec = tuple[Number, Number, Number]
 
+
 @staticmethod
 def calc_motor_dutycycle(reverse_pwm: int, neutral_pwm: int, forward_pwm: int, reversable: bool, throttle: float) -> int:
     assert throttle >= -1.0 and throttle <= 1.0
 
     pulse = 0
     if reversable:
-        pulse =  trimap(
+        pulse = trimap(
             -1.0, 0.0, 1.0,
             throttle,
             reverse_pwm, neutral_pwm, forward_pwm

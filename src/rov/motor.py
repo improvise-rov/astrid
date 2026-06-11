@@ -15,12 +15,14 @@ class Motor():
                  neutral: int = consts.PWM_BLUEROBOTICS_ESC_NEUTRAL, 
                  forward: int = consts.PWM_BLUEROBOTICS_ESC_FORWARD,
                  reverse: int = consts.PWM_BLUEROBOTICS_ESC_REVERSE,
-                 bidirectional: bool = True) -> None:
+                 bidirectional: bool = True,
+                 flipped: bool = False) -> None:
         self.address = address
         self.neutral = neutral
         self.forward = forward
         self.reverse = reverse
         self.bidirectional = bidirectional
+        self.flipped = flipped
 
         self._arm: typing.Callable[[PCA9685, bool, Motor], None] | None = None
 
@@ -32,6 +34,9 @@ class Motor():
         else:
             power = rovmath.clamp(0.0, 1.0, power)
 
+        if self.flipped:
+            power = -power
+
         if power != self._throttle:
             self._throttle = power
 
@@ -40,6 +45,10 @@ class Motor():
         
             #
             interface.channels[self.address].duty_cycle = rovmath.calc_motor_dutycycle(self.reverse, self.neutral, self.forward, self.bidirectional, self._throttle)
+
+    def set_dc(self, interface: PCA9685, simulated: bool, dc: int):
+        interface.channels[self.address].duty_cycle = dc
+
 
     def get_throttle(self) -> float:
         return self._throttle
@@ -51,14 +60,18 @@ class Motor():
             self.set_throttle(interface, simulated, 0.0)
 
     @staticmethod
-    def esc_bluerobotics(address: int) -> Motor:
-        mot = Motor(address)
+    def esc_bluerobotics(address: int, reverse: bool = False) -> Motor:
+        mot = Motor(address, flipped=reverse)
         # default arm behaviour works
         return mot
     
     @staticmethod
     def esc_4in1(address: int) -> Motor:
         mot = Motor(address, neutral=consts.PWM_4IN1_ESC_NEUTRAL, forward=consts.PWM_4IN1_ESC_FORWARD, reverse=0, bidirectional=False)
-        # default arm behaviour works
+        def armer(i: PCA9685, s: bool, m: Motor):
+            i.channels[m.address].duty_cycle = 205
+            time.sleep(3)
+            i.channels[m.address].duty_cycle = 410
+        mot._arm = armer
         return mot
     

@@ -28,8 +28,7 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
 
     try:
 
-        # ARMING IS NOW A MANUAL PROCESS.
-        # POWER TO ESCS HAPPENS AFTER INIT VIA HARDWARE SWITCH.
+        rov.arm()
         
         print("ready")
         net.send(packets.MSG_ROV2POOLSIDE, "escs ready to arm".encode()) # it would be better to send this when we are connected, but we're using UDP, so we're never really "connected" per se..

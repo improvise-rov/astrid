@@ -45,8 +45,8 @@ class Rov():
         net.register_listener(packets.DISABLE_CORRECTION, self.disable_correction)
 
         # register arming packets
-        net.register_listener(packets.ARM_ON,  self.enable_arm)
-        net.register_listener(packets.ARM_OFF, self.disable_arm)
+        #net.register_listener(packets.ARM_ON,  self.enable_arm)
+        #net.register_listener(packets.ARM_OFF, self.disable_arm)
 
         # start camera thread
         self.camera_running = True
@@ -106,6 +106,10 @@ class Rov():
         # print if simulated
         if self.hardware.simulated:
             pass#self.hardware.print_states()
+
+    def arm(self):
+        for mot in self.hardware.motors:
+            self.hardware.motors[mot].arm(self.hardware.motor_interface, self.hardware.simulated)
 
 
     def _camera_thread_activity(self):

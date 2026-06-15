@@ -101,10 +101,10 @@ class Window():
             self.rov
         ))
 
-        self.container.add(UiArmingModeStatus(
-            pygame.Vector2(1200, 20),
-            self.rov
-        ))
+        #self.container.add(UiArmingModeStatus(
+        #    pygame.Vector2(1200, 20),
+        #    self.rov
+        #))
 
         self.container.add(UiControlMonitor(
             pygame.Vector2(1700, 80),
@@ -125,7 +125,7 @@ class Window():
 
         self.container.add(UiText(
             pygame.Vector2(20, consts.WINDOW_HEIGHT-40),
-            lambda: "<BACKSPACE>: kill ROV server | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine | <TAB>: toggle arm signals"
+            lambda: "<BACKSPACE>: kill ROV server | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine "
         ))
 
 
@@ -243,15 +243,15 @@ class Window():
             if self.float:
                 self.float.run()
 
-        # arm signals
-        if just_pressed[pygame.K_TAB]:
-            self.rov.arming_mode = not self.rov.arming_mode
-            if self.rov.arming_mode:
-                self.net.send(packets.ARM_ON)
-                Logger.log("Enabled arming mode; controls will be ignored")
-            else:
-                self.net.send(packets.ARM_OFF)
-                Logger.log("Disabled arming mode")
+        # arm signals # we dont need arming mode anymore.
+        #if just_pressed[pygame.K_TAB]:
+        #    self.rov.arming_mode = not self.rov.arming_mode
+        #    if self.rov.arming_mode:
+        #        self.net.send(packets.ARM_ON)
+        #        Logger.log("Enabled arming mode; controls will be ignored")
+        #    else:
+        #        self.net.send(packets.ARM_OFF)
+        #        Logger.log("Disabled arming mode")
         
 
     def event(self):

@@ -73,13 +73,12 @@ class RovInterface():
             rotate right            lb - rb   rotate left
             """
 
-            motor_tick['left_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    -rotate - strafe + forward )
-            motor_tick['right_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    rotate + strafe + forward )
+            motor_tick['left_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate +  strafe + forward )
+            motor_tick['right_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe + forward )
             motor_tick['left_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,       elevate                   )
             motor_tick['right_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,      elevate                   )
-            motor_tick['left_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,      rotate - strafe - forward )
-            motor_tick['right_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    -rotate + strafe - forward )
-
+            motor_tick['left_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     -rotate +  strafe + -forward )
+            motor_tick['right_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate + -strafe + -forward )
             # TODO test that this is the right configuration lol
 
             self.motors['camera_angle'] = rovmath.clamp(-1, 1, self.motors['camera_angle'] + camera_angle_change * self.camera_angle_speed)

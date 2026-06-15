@@ -47,12 +47,19 @@ class Motor():
             interface.channels[self.address].duty_cycle = rovmath.calc_motor_dutycycle(self.reverse, self.neutral, self.forward, self.bidirectional, self._throttle)
 
     def set_dc(self, interface: PCA9685, simulated: bool, dc: int):
+        if simulated:
+            return
         interface.channels[self.address].duty_cycle = dc
 
 
     def get_throttle(self) -> float:
         return self._throttle
     
+    def get_duty_cycle(self, interface: PCA9685, simulated: bool) -> int:
+        if simulated:
+            return 0
+        return interface.channels[self.address].duty_cycle
+
     def arm(self, interface: PCA9685, simulated: bool):
         if self._arm != None: 
             self._arm(interface, simulated, self)

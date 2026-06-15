@@ -86,15 +86,15 @@ class HardwareManager():
 
     def print_states(self):
         print(
-            self.motors['left_front'].get_throttle(),
-            self.motors['right_front'].get_throttle(),
-            self.motors['left_top'].get_throttle(),
-            self.motors['right_top'].get_throttle(),
-            self.motors['left_back'].get_throttle(),
-            self.motors['right_back'].get_throttle(),
-            self.servos.get('camera_angle', -1),
-            self.servos.get('tool_ver', -1),
-            self.servos.get('tool_hor', -1),
+            self.motors['left_front'].get_duty_cycle(self.motor_interface, self.simulated),
+            self.motors['right_front'].get_duty_cycle(self.motor_interface, self.simulated),
+            self.motors['left_top'].get_duty_cycle(self.motor_interface, self.simulated),
+            self.motors['right_top'].get_duty_cycle(self.motor_interface, self.simulated),
+            self.motors['left_back'].get_duty_cycle(self.motor_interface, self.simulated),
+            self.motors['right_back'].get_duty_cycle(self.motor_interface, self.simulated),
+            #self.servos.get('camera_angle', -1),
+            #self.servos.get('tool_ver', -1),
+            #self.servos.get('tool_hor', -1),
             )  
         
     def cleanup(self):

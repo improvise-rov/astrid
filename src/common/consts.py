@@ -82,6 +82,9 @@ PWM_TOOL_SERVO_NEUTRAL: int = 1500
 PWM_TOOL_SERVO_MAXIMUM: int = 2500
 PWM_FREQUENCY: int = 50
 
+# motors
+NEGATIVE_FIRE_MOTORS: bool = False
+
 # imu
 IMU_I2C_ADDRESS: int = 0x00
 

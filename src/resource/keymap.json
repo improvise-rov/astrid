@@ -1,7 +1,11 @@
 {
     "gamepad": {
-        "axis.tool_grip_v": "rtrigger_analogue",
-        "axis.tool_grip_h": "ltrigger_analogue",
+        "axis.tool_grip_v.pos": "rtrigger_digital",
+        "axis.tool_grip_v.neg": "rbumper",
+
+        "axis.tool_grip_h.pos": "ltrigger_digital",
+        "axis.tool_grip_h.neg": "lbumper",
+
         "axis.camera_angle_change": "dpad_y",
 
         "axis.rov.strafe": "lstick_x",

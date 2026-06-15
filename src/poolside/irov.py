@@ -36,6 +36,7 @@ class RovInterface():
         }
 
         self.camera_angle_speed = -0.01
+        self.tool_speed = 0.01
         self.motor_smoothing = 0.03
 
         self.correction_enabled = True # if true, the ROV will attempt to stabilise itself using its IMU.
@@ -58,8 +59,8 @@ class RovInterface():
             gp = self.gamepad_manager.fetch_first()
 
             camera_angle_change = gp.read_axis(gp.keymap_translate('axis.camera_angle_change'))
-            tool_grip_v = gp.read_axis(gp.keymap_translate('axis.tool_grip_v'))
-            tool_grip_h = gp.read_axis(gp.keymap_translate('axis.tool_grip_h'))
+            tool_grip_v_change = gp.read_digitals_axis(gp.keymap_translate('axis.tool_grip_v.pos'), gp.keymap_translate('axis.tool_grip_v.neg'))
+            tool_grip_h_change = gp.read_digitals_axis(gp.keymap_translate('axis.tool_grip_h.pos'), gp.keymap_translate('axis.tool_grip_h.neg'))
 
             forward = gp.read_axis(gp.keymap_translate('axis.rov.forward'))
             strafe = gp.read_axis(gp.keymap_translate('axis.rov.strafe'))
@@ -73,17 +74,17 @@ class RovInterface():
             rotate right            lb - rb   rotate left
             """
 
-            motor_tick['left_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate +  strafe + forward )
-            motor_tick['right_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe + forward )
-            motor_tick['left_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,       elevate                   )
-            motor_tick['right_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,      elevate                   )
-            motor_tick['left_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     -rotate +  strafe + -forward )
-            motor_tick['right_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate + -strafe + -forward )
-            # TODO test that this is the right configuration lol
+            motor_tick['left_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate +  strafe +  forward )
+            motor_tick['right_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe +  forward + (0 if consts.NEGATIVE_FIRE_MOTORS else rotate + strafe) )
+            motor_tick['left_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,       elevate                     )
+            motor_tick['right_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,      elevate                     )
+            motor_tick['left_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     -rotate +  strafe + -forward  + (0 if consts.NEGATIVE_FIRE_MOTORS else rotate + forward))
+            motor_tick['right_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate + -strafe + -forward  + (0 if consts.NEGATIVE_FIRE_MOTORS else strafe + forward))
+            
 
             self.motors['camera_angle'] = rovmath.clamp(-1, 1, self.motors['camera_angle'] + camera_angle_change * self.camera_angle_speed)
-            self.motors['tool_ver'] = tool_grip_v
-            self.motors['tool_hor'] = tool_grip_h
+            self.motors['tool_ver'] = rovmath.clamp(-1, 1, self.motors['tool_ver'] + tool_grip_v_change * self.tool_speed)
+            self.motors['tool_hor'] = rovmath.clamp(-1, 1, self.motors['tool_hor'] + tool_grip_h_change * self.tool_speed)
 
 
         # manual override

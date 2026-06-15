@@ -29,6 +29,17 @@ def calc_motor_dutycycle(reverse_pwm: int, neutral_pwm: int, forward_pwm: int, r
     return int((pulse / period) * 0xFFFF)
 
 @staticmethod
+def inv_calc_motor_dutycycle(duty: int) -> int:
+    period = 1_000_000 / consts.PWM_FREQUENCY
+
+    # d = (p / y) * 65536
+    # d / 65536 = p / y
+    # y(d/65536) = p
+
+
+    return int((period / 0xFFFF) * duty)
+
+@staticmethod
 def calc_servo_dutycycle(angle: int, camera: bool) -> int:
     assert angle >= 0 and angle <= 180
 

@@ -31,12 +31,14 @@ class HardwareManager():
         self.simulated = simulated
         if not self.simulated and not NO_SERVOKIT:
             self.i2c_bus = busio.I2C(board.SCL, board.SDA) # type: ignore
-            self.motor_interface = PCA9685(self.i2c_bus) # type: ignore # warning normally because ServoKit might not exist
+            self.motor_interface: PCA9685 = PCA9685(self.i2c_bus) # type: ignore # warning normally because ServoKit might not exist
             
             self.imu = imu.Imu(consts.IMU_I2C_ADDRESS)
             self.stabiliser = rovmath.PIDController(0.0)
 
             self.motor_interface.frequency = consts.PWM_FREQUENCY
+        else:
+            self.motor_interface = None # type: ignore # just so its declared...
             
 
         self.motors: dict[types._MotorKey, motor.Motor] = {
@@ -66,8 +68,7 @@ class HardwareManager():
 
 
     def set_motor(self, motor: types._MotorKey, throttle: float):
-        if not self.simulated:
-            self.motors[motor].set_throttle(self.motor_interface, self.simulated, throttle)
+        self.motors[motor].set_throttle(self.motor_interface, self.simulated, throttle)
 
 
     def set_servo(self, servo: types._ServoKey, byte: int, camera: bool = True):
@@ -86,15 +87,12 @@ class HardwareManager():
 
     def print_states(self):
         print(
-            self.motors['left_front'].get_duty_cycle(self.motor_interface, self.simulated),
-            self.motors['right_front'].get_duty_cycle(self.motor_interface, self.simulated),
-            self.motors['left_top'].get_duty_cycle(self.motor_interface, self.simulated),
-            self.motors['right_top'].get_duty_cycle(self.motor_interface, self.simulated),
-            self.motors['left_back'].get_duty_cycle(self.motor_interface, self.simulated),
-            self.motors['right_back'].get_duty_cycle(self.motor_interface, self.simulated),
-            #self.servos.get('camera_angle', -1),
-            #self.servos.get('tool_ver', -1),
-            #self.servos.get('tool_hor', -1),
+            "fl", rovmath.inv_calc_motor_dutycycle(self.motors['left_front']   .get_duty_cycle()),
+            "fr", rovmath.inv_calc_motor_dutycycle(self.motors['right_front']  .get_duty_cycle()),
+            "tl", rovmath.inv_calc_motor_dutycycle(self.motors['left_top']     .get_duty_cycle()),
+            "tr", rovmath.inv_calc_motor_dutycycle(self.motors['right_top']    .get_duty_cycle()),
+            "bl", rovmath.inv_calc_motor_dutycycle(self.motors['left_back']    .get_duty_cycle()),
+            "br", rovmath.inv_calc_motor_dutycycle(self.motors['right_back']   .get_duty_cycle()),
             )  
         
     def cleanup(self):

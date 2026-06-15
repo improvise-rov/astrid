@@ -27,6 +27,7 @@ class Motor():
         self._arm: typing.Callable[[PCA9685, bool, Motor], None] | None = None
 
         self._throttle = 0.0
+        self._dc = 0
 
     def set_throttle(self, interface: PCA9685, simulated: bool, power: float):
         if self.bidirectional:
@@ -37,31 +38,30 @@ class Motor():
         if self.flipped:
             power = -power
 
-        if power != self._throttle:
-            self._throttle = power
+        self._throttle = power
 
-            if simulated: # make sure we arent simulating
-                return
-        
-            #
-            interface.channels[self.address].duty_cycle = rovmath.calc_motor_dutycycle(self.reverse, self.neutral, self.forward, self.bidirectional, self._throttle)
+        self._dc = rovmath.calc_motor_dutycycle(self.reverse, self.neutral, self.forward, self.bidirectional, self._throttle)
+        if simulated: # make sure we arent simulating
+            return
+    
+        #
+        interface.channels[self.address].duty_cycle = self._dc
 
     def set_dc(self, interface: PCA9685, simulated: bool, dc: int):
+        self._dc = dc
         if simulated:
             return
-        interface.channels[self.address].duty_cycle = dc
+        interface.channels[self.address].duty_cycle = self._dc
 
 
     def get_throttle(self) -> float:
         return self._throttle
     
-    def get_duty_cycle(self, interface: PCA9685, simulated: bool) -> int:
-        if simulated:
-            return 0
-        return interface.channels[self.address].duty_cycle
+    def get_duty_cycle(self) -> int:
+        return self._dc
 
     def arm(self, interface: PCA9685, simulated: bool):
-        if self._arm != None: 
+        if self._arm != None:
             self._arm(interface, simulated, self)
         else:
             self.set_throttle(interface, simulated, 0.0)

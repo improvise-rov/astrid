@@ -206,6 +206,19 @@ class AbstractController[_MappingKeyType]():
         
         return fallback
     
+    def read_digitals_axis(self, pos: _MappingKeyType, neg: _MappingKeyType, *, keyboard_fallback_pos: int = pygame.K_UNKNOWN, keyboard_fallback_neg: int = pygame.K_UNKNOWN) -> float:
+        fallback = 0.0
+        if keyboard_fallback_pos != pygame.K_UNKNOWN and self._fallback_keyboard_release_read[keyboard_fallback_pos]:
+            fallback += 1.0
+        
+        if keyboard_fallback_neg != pygame.K_UNKNOWN and self._fallback_keyboard_release_read[keyboard_fallback_neg]:
+            fallback -= 1.0
+        
+        if self.joystick:
+            return self.digital_down(pos, keyboard_fallback=keyboard_fallback_pos) - self.digital_down(neg, keyboard_fallback=keyboard_fallback_neg)
+        
+        return fallback
+    
     def read_vector(self, key_x: _MappingKeyType, key_y: _MappingKeyType, deadzone: float = 0.1, *, keyboard_fallback_x_pos: int = pygame.K_UNKNOWN, keyboard_fallback_x_neg: int = pygame.K_UNKNOWN, keyboard_fallback_y_pos: int = pygame.K_UNKNOWN, keyboard_fallback_y_neg: int = pygame.K_UNKNOWN) -> pygame.Vector2:
         """
         Returns a vector representing two axial values.

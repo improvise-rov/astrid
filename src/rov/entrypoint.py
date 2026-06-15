@@ -28,8 +28,7 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
 
     try:
 
-        if not simulated_hardware:
-            rov.arm()
+        rov.arm()
         
         print("ready")
         net.build_packet(packets.REQ_SYNC_CAMERA)

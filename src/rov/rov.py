@@ -93,7 +93,7 @@ class Rov():
 
         # print if simulated
         if self.hardware.simulated:
-            pass#self.hardware.print_states()
+            self.hardware.print_states()
 
     def arm(self):
         for mot in self.hardware.motors:

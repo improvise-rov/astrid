@@ -28,10 +28,11 @@ def rov_main(target_ip: str, target_port: int, simulated_hardware: bool, port: i
 
     try:
 
-        rov.arm()
+        if not simulated_hardware:
+            rov.arm()
         
         print("ready")
-        net.send(packets.MSG_ROV2POOLSIDE, "escs ready to arm".encode()) # it would be better to send this when we are connected, but we're using UDP, so we're never really "connected" per se..
+        net.build_packet(packets.REQ_SYNC_CAMERA)
 
         dt = 0.0
         last_frame_time = 0.0

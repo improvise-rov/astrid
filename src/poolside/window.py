@@ -5,7 +5,7 @@ from src.poolside.ui import UiTexture
 from src.poolside.ui import UiCameraFeed
 from src.poolside.ui import UiControlMonitor
 from src.poolside.ui import UiPidStatus
-from src.poolside.ui import UiArmingModeStatus
+from src.poolside.ui import UiCameraEnabledStatus
 from src.poolside.ui import UiTextLog
 from src.poolside.ui import UiLineGraph
 from src.poolside.ui import UiCountdownClock
@@ -66,6 +66,7 @@ class Window():
         self.net = Networker(target_ip, target_port, port, consts.PACKET_SIZE)
         self.net.start()
         self.net.register_listener(packets.MSG_ROV2POOLSIDE, lambda addr, msg_bytes: Logger.log(bytes(msg_bytes).decode()))
+        self.net.register_listener(packets.REQ_SYNC_CAMERA, lambda addr, msg_bytes: self.net.send(packets.SYNC_CAMERA, self.rov.camera_enabled))
         self.rov = RovInterface(self.net, self.controller_manager)
         self.camera_feed = UiCameraFeed(
             pygame.Vector2(20, 50),
@@ -73,8 +74,10 @@ class Window():
                 pygame.image.load("src/resource/no_camera.jpg").convert(),
                 15
             ),
-            self.net
+            self.net,
+            self.rov
         )
+        self.net.send(packets.SYNC_CAMERA, self.rov.camera_enabled)
 
         ## FLOAT ##
         self.float = FloatInterface()
@@ -101,10 +104,10 @@ class Window():
             self.rov
         ))
 
-        #self.container.add(UiArmingModeStatus(
-        #    pygame.Vector2(1200, 20),
-        #    self.rov
-        #))
+        self.container.add(UiCameraEnabledStatus(
+            pygame.Vector2(1200, 20),
+            self.rov
+        ))
 
         self.container.add(UiControlMonitor(
             pygame.Vector2(1700, 80),
@@ -125,7 +128,7 @@ class Window():
 
         self.container.add(UiText(
             pygame.Vector2(20, consts.WINDOW_HEIGHT-40),
-            lambda: "<BACKSPACE>: kill ROV server | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine "
+            lambda: "<BACKSPACE>: kill ROV server | <ENTER>: toggle IMU | <A>: toggle stopwatch | <RSHIFT>: run float subroutine | <TAB> toggle camera"
         ))
 
 
@@ -243,15 +246,14 @@ class Window():
             if self.float:
                 self.float.run()
 
-        # arm signals # we dont need arming mode anymore.
-        #if just_pressed[pygame.K_TAB]:
-        #    self.rov.arming_mode = not self.rov.arming_mode
-        #    if self.rov.arming_mode:
-        #        self.net.send(packets.ARM_ON)
-        #        Logger.log("Enabled arming mode; controls will be ignored")
-        #    else:
-        #        self.net.send(packets.ARM_OFF)
-        #        Logger.log("Disabled arming mode")
+        # toggle camera
+        if just_pressed[pygame.K_TAB]:
+            self.rov.camera_enabled = not self.rov.camera_enabled
+            if self.rov.camera_enabled:
+                Logger.log("Enabled camera")
+            else:
+                Logger.log("Disabled camera")
+            self.net.send(packets.SYNC_CAMERA, self.rov.camera_enabled)
         
 
     def event(self):

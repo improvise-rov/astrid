@@ -39,7 +39,7 @@ class RovInterface():
         self.motor_smoothing = 0.03
 
         self.correction_enabled = True # if true, the ROV will attempt to stabilise itself using its IMU.
-        self.arming_mode = False
+        self.camera_enabled = True
 
     def update(self, dt: float):
 

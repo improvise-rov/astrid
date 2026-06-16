@@ -30,10 +30,12 @@ class Motor():
         self._dc = 0
 
     def set_throttle(self, interface: PCA9685, simulated: bool, power: float):
+        
+        limiter = abs(rovmath.clamp(0.0, 1.0, consts.SPEED_LIMIT))
         if self.bidirectional:
-            power = rovmath.clamp(-1.0, 1.0, power)
+            power = rovmath.clamp(-limiter, limiter, power)
         else:
-            power = rovmath.clamp(0.0, 1.0, power)
+            power = rovmath.clamp(-limiter, limiter, power)
 
         if self.flipped:
             power = -power

@@ -84,6 +84,7 @@ PWM_FREQUENCY: int = 50
 
 # motors
 NEGATIVE_FIRE_MOTORS: bool = False
+SPEED_LIMIT: float = 0.5
 
 # imu
 IMU_I2C_ADDRESS: int = 0x00

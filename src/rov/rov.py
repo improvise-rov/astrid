@@ -35,7 +35,7 @@ class Rov():
             "tool_hor": 0,
         }
         self.correction_enabled = False
-        self.camera_enabled = False
+        self.camera_enabled = True
 
         # register control packet
         net.register_listener(packets.CONTROL, self.control_packet)

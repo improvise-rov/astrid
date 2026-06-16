@@ -84,6 +84,7 @@ PWM_TOOL_SERVO_MAXIMUM: int = 2500
 PWM_FREQUENCY: int = 50
 
 # motors
+LIMIT_MOTOR_COUNT: bool = False
 SPEED_LIMIT: float = 1.0
 
 # imu

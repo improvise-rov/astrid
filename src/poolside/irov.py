@@ -68,18 +68,29 @@ class RovInterface():
             elevate = gp.read_axis(gp.keymap_translate('axis.rov.elevate'))
 
             # calculate motors
-            """
-            rotate left             lf - rf   rotate right
-            only used in elevation  lt - rt   only used in elevation
-            rotate right            lb - rb   rotate left
-            """
 
-            motor_tick['left_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate +  strafe +  forward )
-            motor_tick['right_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe +  forward )
-            motor_tick['left_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,       elevate                     )
-            motor_tick['right_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,      elevate                     )
-            motor_tick['left_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     -rotate +  strafe + -forward )
-            motor_tick['right_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate + -strafe + -forward )
+            if consts.LIMIT_MOTOR_COUNT: # not sure if this works...
+
+                sig_forward  = rovmath.clamp(-1., 0., -forward)
+                sig_backward = rovmath.clamp( 0., 1., -forward)
+                sig_rot_ccw  = rovmath.clamp(-1., 0.,   rotate)
+                sig_rot_cw   = rovmath.clamp( 0., 1.,   rotate)
+                sig_crb_left = rovmath.clamp(-1., 0.,   strafe)
+                sig_crb_right= rovmath.clamp( 0., 1.,   strafe)
+
+                motor_tick['left_front']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    sig_rot_ccw + sig_crb_left + sig_forward )
+                motor_tick['right_front']   = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    sig_rot_cw + sig_crb_right + sig_forward )
+                motor_tick['left_top']      = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    elevate                     )
+                motor_tick['right_top']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    elevate                     )
+                motor_tick['left_back']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    sig_rot_cw + sig_crb_left + sig_backward )
+                motor_tick['right_back']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    sig_rot_ccw + sig_crb_right + sig_backward )
+            else:
+                motor_tick['left_front']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    rotate +  strafe + -forward )
+                motor_tick['right_front']   = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe + -forward )
+                motor_tick['left_top']      = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    elevate                     )
+                motor_tick['right_top']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    elevate                     )
+                motor_tick['left_back']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate +  strafe +  forward )
+                motor_tick['right_back']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    rotate + -strafe +  forward )
             
 
             self.motors['camera_angle'] = rovmath.clamp(-1, 1, self.motors['camera_angle'] + camera_angle_change * self.camera_angle_speed)

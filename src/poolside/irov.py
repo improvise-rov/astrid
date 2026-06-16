@@ -75,11 +75,11 @@ class RovInterface():
             """
 
             motor_tick['left_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate +  strafe +  forward )
-            motor_tick['right_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe +  forward + (0 if consts.NEGATIVE_FIRE_MOTORS else rotate + strafe) )
+            motor_tick['right_front'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe +  forward )
             motor_tick['left_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,       elevate                     )
             motor_tick['right_top'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,      elevate                     )
-            motor_tick['left_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     -rotate +  strafe + -forward  + (0 if consts.NEGATIVE_FIRE_MOTORS else rotate + forward))
-            motor_tick['right_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate + -strafe + -forward  + (0 if consts.NEGATIVE_FIRE_MOTORS else strafe + forward))
+            motor_tick['left_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     -rotate +  strafe + -forward )
+            motor_tick['right_back'] = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,     rotate + -strafe + -forward )
             
 
             self.motors['camera_angle'] = rovmath.clamp(-1, 1, self.motors['camera_angle'] + camera_angle_change * self.camera_angle_speed)

@@ -37,7 +37,6 @@ class RovInterface():
 
         self.camera_angle_speed = -0.01
         self.tool_speed = 0.01
-        self.motor_smoothing = 0.03
 
         self.correction_enabled = True # if true, the ROV will attempt to stabilise itself using its IMU.
         self.camera_enabled = True
@@ -62,7 +61,7 @@ class RovInterface():
             tool_grip_v_change = gp.read_digitals_axis(gp.keymap_translate('axis.tool_grip_v.pos'), gp.keymap_translate('axis.tool_grip_v.neg'))
             tool_grip_h_change = gp.read_digitals_axis(gp.keymap_translate('axis.tool_grip_h.pos'), gp.keymap_translate('axis.tool_grip_h.neg'))
 
-            forward = gp.read_axis(gp.keymap_translate('axis.rov.forward'))
+            forward = -gp.read_axis(gp.keymap_translate('axis.rov.forward'))
             strafe = gp.read_axis(gp.keymap_translate('axis.rov.strafe'))
             rotate = gp.read_axis(gp.keymap_translate('axis.rov.rotate'))
             elevate = gp.read_axis(gp.keymap_translate('axis.rov.elevate'))
@@ -71,8 +70,8 @@ class RovInterface():
 
             if consts.LIMIT_MOTOR_COUNT: # not sure if this works...
 
-                sig_forward  = rovmath.clamp(-1., 0., -forward)
-                sig_backward = rovmath.clamp( 0., 1., -forward)
+                sig_forward  = rovmath.clamp( 0., 1.,  forward)
+                sig_backward = rovmath.clamp( -1., 0.,  forward)
                 sig_rot_ccw  = rovmath.clamp(-1., 0.,   rotate)
                 sig_rot_cw   = rovmath.clamp( 0., 1.,   rotate)
                 sig_crb_left = rovmath.clamp(-1., 0.,   strafe)
@@ -85,12 +84,12 @@ class RovInterface():
                 motor_tick['left_back']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    sig_rot_cw + sig_crb_left + sig_backward )
                 motor_tick['right_back']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    sig_rot_ccw + sig_crb_right + sig_backward )
             else:
-                motor_tick['left_front']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    rotate +  strafe + -forward )
-                motor_tick['right_front']   = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe + -forward )
+                motor_tick['left_front']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    rotate +  strafe +  forward )
+                motor_tick['right_front']   = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate + -strafe +  forward )
                 motor_tick['left_top']      = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    elevate                     )
                 motor_tick['right_top']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    elevate                     )
-                motor_tick['left_back']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate +  strafe +  forward )
-                motor_tick['right_back']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    rotate + -strafe +  forward )
+                motor_tick['left_back']     = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,   -rotate +  strafe + -forward )
+                motor_tick['right_back']    = rovmath.clamp(consts.MOTOR_THROTTLE_NEGATIVE, consts.MOTOR_THROTTLE_POSITIVE,    rotate + -strafe + -forward )
             
 
             self.motors['camera_angle'] = rovmath.clamp(-1, 1, self.motors['camera_angle'] + camera_angle_change * self.camera_angle_speed)
@@ -111,12 +110,12 @@ class RovInterface():
         motor_tick['right_back']  = (-1.0 if reverse else 1.0) if keys[pygame.K_KP_3] else motor_tick['right_back']  
 
         if not self.gamepad_manager.has() or self.gamepad_manager.fetch_first().keymap_translate('axis.throttle') == 'none':
-            self.motors['left_front']   = rovmath.move_toward(self.motors['left_front']  , motor_tick['left_front']  , self.motor_smoothing)
-            self.motors['right_front']  = rovmath.move_toward(self.motors['right_front'] , motor_tick['right_front'] , self.motor_smoothing)
-            self.motors['left_top']     = rovmath.move_toward(self.motors['left_top']    , motor_tick['left_top']    , self.motor_smoothing)
-            self.motors['right_top']    = rovmath.move_toward(self.motors['right_top']   , motor_tick['right_top']   , self.motor_smoothing)
-            self.motors['left_back']    = rovmath.move_toward(self.motors['left_back']   , motor_tick['left_back']   , self.motor_smoothing)
-            self.motors['right_back']   = rovmath.move_toward(self.motors['right_back']  , motor_tick['right_back']  , self.motor_smoothing)
+            self.motors['left_front']   = rovmath.move_toward(self.motors['left_front']  , motor_tick['left_front']  , consts.MOTOR_ACCEL)
+            self.motors['right_front']  = rovmath.move_toward(self.motors['right_front'] , motor_tick['right_front'] , consts.MOTOR_ACCEL)
+            self.motors['left_top']     = rovmath.move_toward(self.motors['left_top']    , motor_tick['left_top']    , consts.MOTOR_ACCEL)
+            self.motors['right_top']    = rovmath.move_toward(self.motors['right_top']   , motor_tick['right_top']   , consts.MOTOR_ACCEL)
+            self.motors['left_back']    = rovmath.move_toward(self.motors['left_back']   , motor_tick['left_back']   , consts.MOTOR_ACCEL)
+            self.motors['right_back']   = rovmath.move_toward(self.motors['right_back']  , motor_tick['right_back']  , consts.MOTOR_ACCEL)
         else:
             gp = self.gamepad_manager.fetch_first()
             throttle = gp.read_axis(gp.keymap_translate('axis.throttle'))

@@ -84,8 +84,9 @@ PWM_TOOL_SERVO_MAXIMUM: int = 2500
 PWM_FREQUENCY: int = 50
 
 # motors
-LIMIT_MOTOR_COUNT: bool = False
-SPEED_LIMIT: float = 1.0
+LIMIT_MOTOR_COUNT: bool = True
+SPEED_LIMIT: float = 0.8
+MOTOR_ACCEL: float = 0.1
 
 # imu
 IMU_I2C_ADDRESS: int = 0x00

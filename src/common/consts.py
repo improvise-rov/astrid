@@ -86,7 +86,7 @@ PWM_FREQUENCY: int = 50
 # motors
 LIMIT_MOTOR_COUNT: bool = True
 SPEED_LIMIT: float = 0.8
-MOTOR_ACCEL: float = 0.1
+MOTOR_ACCEL: float = 0.08
 
 # tooling
 TOOL_LOW_LIMIT: int = 0

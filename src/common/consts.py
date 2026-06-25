@@ -88,6 +88,10 @@ LIMIT_MOTOR_COUNT: bool = True
 SPEED_LIMIT: float = 0.8
 MOTOR_ACCEL: float = 0.1
 
+# tooling
+TOOL_LOW_LIMIT: int = 0
+TOOL_HIGH_LIMIT: int = 45
+
 # imu
 IMU_I2C_ADDRESS: int = 0x00
 

@@ -72,7 +72,10 @@ class HardwareManager():
 
 
     def set_servo(self, servo: types._ServoKey, byte: int, camera: bool = True):
-        byte = rovmath.clamp(0, 180, byte)
+        if camera:
+            byte = rovmath.clamp(0, 180, byte)
+        else:
+            byte = rovmath.clamp(consts.TOOL_LOW_LIMIT, consts.TOOL_HIGH_LIMIT, byte)
 
         self.servos[servo] = byte
 

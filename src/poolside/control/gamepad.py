@@ -134,17 +134,17 @@ class Gamepad(AbstractController[_Key]):
             Gamepad.KEY_DPAD_LEFT:                  lambda g: g._get_dpad(0)[0] == -1,
             Gamepad.KEY_DPAD_RIGHT:                 lambda g: g._get_dpad(0)[0] == 1,
 
-            Gamepad.AXIS_LEFT_TRIGGER_ANALOGUE:     lambda g: g._get_axis(4),
+            Gamepad.AXIS_LEFT_TRIGGER_ANALOGUE:     lambda g: g._get_axis(2),
             Gamepad.AXIS_RIGHT_TRIGGER_ANALOGUE:    lambda g: g._get_axis(5),
 
-            Gamepad.KEY_LEFT_TRIGGER_DIGITAL:       lambda g: g._get_axis(4) > -1,
+            Gamepad.KEY_LEFT_TRIGGER_DIGITAL:       lambda g: g._get_axis(2) > -1,
             Gamepad.KEY_RIGHT_TRIGGER_DIGITAL:      lambda g: g._get_axis(5) > -1,
 
             Gamepad.AXIS_LEFT_STICK_X:              lambda g: g._get_axis(0),
             Gamepad.AXIS_LEFT_STICK_Y:              lambda g: g._get_axis(1),
 
             Gamepad.AXIS_RIGHT_STICK_X:             lambda g: g._get_axis(3),
-            Gamepad.AXIS_RIGHT_STICK_Y:             lambda g: g._get_axis(2),
+            Gamepad.AXIS_RIGHT_STICK_Y:             lambda g: g._get_axis(4),
 
             Gamepad.AXIS_DPAD_X:                    lambda g: float(g._get_dpad(0)[0]),
             Gamepad.AXIS_DPAD_Y:                    lambda g: float(g._get_dpad(0)[1]),

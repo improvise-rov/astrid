@@ -69,7 +69,7 @@ MOTOR_THROTTLE_NEUTRAL: float = 0.0
 MOTOR_THROTTLE_POSITIVE: float = 1.0
 
 # pwm values 
-MOTOR_OFFSET: int = 150 # 150us higher than it should be but we ball
+MOTOR_OFFSET: int = 125 # higher than it should be but we ball
 PWM_BLUEROBOTICS_ESC_REVERSE: int = 1100 + MOTOR_OFFSET
 PWM_BLUEROBOTICS_ESC_NEUTRAL: int = 1500 + MOTOR_OFFSET
 PWM_BLUEROBOTICS_ESC_FORWARD: int = 1900 + MOTOR_OFFSET
@@ -84,9 +84,9 @@ PWM_TOOL_SERVO_MAXIMUM: int = 2500
 PWM_FREQUENCY: int = 50
 
 # motors
-LIMIT_MOTOR_COUNT: bool = True
+LIMIT_MOTOR_COUNT: bool = False
 SPEED_LIMIT: float = 0.8
-MOTOR_ACCEL: float = 0.08
+MOTOR_ACCEL: float = 0.1
 
 # tooling
 TOOL_LOW_LIMIT: int = 0

@@ -110,14 +110,14 @@ class Gamepad(AbstractController[_Key]):
             Gamepad.KEY_Y:                          lambda g: g._get_button(2) if g.nintendoified_mapping else g._get_button(3),
 
             Gamepad.KEY_START:                      lambda g: g._get_button(7),
-            Gamepad.KEY_HOME:                       lambda g: g._get_button(10),
+            Gamepad.KEY_HOME:                       lambda g: g._get_button(8),
             Gamepad.KEY_SELECT:                     lambda g: g._get_button(6),
 
             Gamepad.KEY_LEFT_BUMPER:                lambda g: g._get_button(4),
             Gamepad.KEY_RIGHT_BUMPER:               lambda g: g._get_button(5),
 
-            Gamepad.KEY_LEFT_STICK:                 lambda g: g._get_button(8),
-            Gamepad.KEY_RIGHT_STICK:                lambda g: g._get_button(9),
+            Gamepad.KEY_LEFT_STICK:                 lambda g: g._get_button(9),
+            Gamepad.KEY_RIGHT_STICK:                lambda g: g._get_button(10),
             
             Gamepad.KEY_LEFT_STICK_UP:              lambda g: g._get_axis(1) < -AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
             Gamepad.KEY_LEFT_STICK_DOWN:            lambda g: g._get_axis(1) >  AbstractController.STICK_AXIS_AS_DIGITAL_DEADZONE,
